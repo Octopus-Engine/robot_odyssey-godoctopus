@@ -1,0 +1,4 @@
+[submodule "smart_list"]
+	path = smart_list
+	url = git@github.com:SimonPiCarter/smart_list.git
+	branch = main
