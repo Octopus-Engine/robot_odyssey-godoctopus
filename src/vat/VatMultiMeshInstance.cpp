@@ -43,7 +43,7 @@ void VatMultiMeshInstance::_process(double delta) {
 				d.pickable_color.r,
 				d.pickable_color.g,
 				d.pickable_color.b,
-				d.track_speed
+				d.alt_texture ? 1.0: 0.0
 			);
 			mesh->set_instance_color(instance_id, color_info);
 			// custom data
@@ -52,7 +52,7 @@ void VatMultiMeshInstance::_process(double delta) {
 				d.track_offset,
 				current_track.x,
 				current_track.y,
-				d.alt_texture ? 1.0: 0.0
+				d.track_speed
 			);
 			mesh->set_instance_custom_data(instance_id, custom_data);
 			++instance_id;
