@@ -2,9 +2,10 @@
 
 #include "scene/3d/multimesh_instance_3d.h"
 #include "vat/VatAnimationTrack.h"
+#include "vat/VatInstanceData.h"
 #include "godot_tools.h"
 
-#include <vector>
+#include "smart_list/smart_list.h"
 
 namespace godot {
 
@@ -20,6 +21,9 @@ public:
 
 	void _ready();
 	void _process(double delta);
+
+	int add_instance();
+	void free_instance(int instance_id);
 
 	void update_instance_track(int instance_id, int track_number, float animation_offset);
 	void set_pickable_color(int instance_id, Color color);
@@ -37,6 +41,7 @@ protected:
 	/// @brief time since last position update
 	double elapsed_time = 0.;
 
+	smart_list<VatInstanceData> data;
 	std::vector<Transform3D> old_transform;
 	std::vector<Transform3D> new_transform;
 };
