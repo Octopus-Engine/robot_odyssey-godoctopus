@@ -5,19 +5,18 @@
 namespace godot {
 
 void VatMultiMeshInstance::_ready() {
+	if (!get_multimesh().is_valid()) {
+		set_multimesh(memnew(MultiMesh));
+	}
 	auto mesh = get_multimesh();
-	if (mesh.is_valid()) {
-		mesh->set_instance_count(0);
-		mesh->set_transform_format(MultiMesh::TRANSFORM_3D);
-		mesh->set_use_colors(true);
-		mesh->set_use_custom_data(true);
-		mesh->set_instance_count(instance_count);
-		if (track.is_valid() && track->get_mesh().is_valid() && track->get_material().is_valid()) {
-			mesh->set_mesh(track->get_mesh());
-			set_material_override(track->get_material());
-		}
-	} else {
-		OS::get_singleton()->printerr("VatMultiMeshInstance: No multimesh defined");
+	mesh->set_instance_count(0);
+	mesh->set_transform_format(MultiMesh::TRANSFORM_3D);
+	mesh->set_use_colors(true);
+	mesh->set_use_custom_data(true);
+	mesh->set_instance_count(instance_count);
+	if (track.is_valid() && track->get_mesh().is_valid() && track->get_material().is_valid()) {
+		mesh->set_mesh(track->get_mesh());
+		set_material_override(track->get_material());
 	}
 	// Initialize basic data
 	for(int i = 0 ; i < instance_count ; ++i) {
@@ -97,6 +96,11 @@ void VatMultiMeshInstance::set_alt_texture(int instance_id, bool alt_texture) {
 	data[instance_id].alt_texture = alt_texture;
 }
 
+void VatMultiMeshInstance::set_instance_transform(int instance_id, Transform3D const &transform) {
+	old_transform[instance_id] = transform;
+	new_transform[instance_id] = transform;
+}
+
 void VatMultiMeshInstance::set_new_instance_transform(int instance_id, Transform3D const &transform) {
 	new_transform[instance_id] = transform;
 }
@@ -123,6 +127,7 @@ void VatMultiMeshInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_speed", "instance_id", "speed"), &VatMultiMeshInstance::set_speed);
 	ClassDB::bind_method(D_METHOD("set_alt_texture", "instance_id", "alt_texture"), &VatMultiMeshInstance::set_alt_texture);
 
+	ClassDB::bind_method(D_METHOD("set_instance_transform", "instance_id", "transform"), &VatMultiMeshInstance::set_instance_transform);
 	ClassDB::bind_method(D_METHOD("set_new_instance_transform", "instance_id", "transform"), &VatMultiMeshInstance::set_new_instance_transform);
 	ClassDB::bind_method(D_METHOD("get_old_instance_transform", "instance_id"), &VatMultiMeshInstance::get_old_instance_transform);
 	ClassDB::bind_method(D_METHOD("swap_transforms"), &VatMultiMeshInstance::swap_transforms);

@@ -15,7 +15,7 @@ public:
 	~VatMultiMeshInstance() {}
 
 	SET_GET_PARAM(Ref<VatAnimationTrack>, track);
-	SET_GET_PARAM(int, instance_count);
+	SET_GET_PARAM_DEF(int, instance_count, 0);
 	/// @brief expected duration of a timestep
 	SET_GET_PARAM_DEF(double, time_step, 0.01);
 
@@ -30,6 +30,7 @@ public:
 	void set_speed(int instance_id, float speed);
 	void set_alt_texture(int instance_id, bool alt_texture);
 
+	void set_instance_transform(int instance_id, Transform3D const &transform);
 	void set_new_instance_transform(int instance_id, Transform3D const &transform);
 	Transform3D get_old_instance_transform(int instance_id) const;
 	void swap_transforms();
