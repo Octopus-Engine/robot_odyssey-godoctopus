@@ -27,11 +27,17 @@ void VatMultiMeshInstance::_ready() {
 }
 
 void VatMultiMeshInstance::_process(double delta) {
+	total_elapsed += delta;
 	elapsed_time += delta;
 	auto mesh = get_multimesh();
 	if (mesh.is_valid() && time_step > 0.) {
 		int instance_id = 0;
-		data.for_each([this, &mesh, &instance_id] (VatInstanceData const &d, size_t i) {
+		data.for_each([this, &mesh, &instance_id] (VatInstanceData &d, size_t i) {
+			// reset animation
+			if (d.end_time >= 0. && total_elapsed >= d.end_time) {
+				d.track_number = track->get_idle_anim();
+				d.end_time = -1.;
+			}
 			// transform
 			Transform3D transform;
 			transform.basis = old_transform[i].basis.lerp(new_transform[i].basis, elapsed_time / time_step);
@@ -80,8 +86,23 @@ void VatMultiMeshInstance::free_instance(int instance_id) {
 // Set/Update functions
 
 // Updates the current instance_id with the provided track_number (0..number_of_animation_tracks - 1)
-void VatMultiMeshInstance::update_instance_track(int instance_id, int track_number, float animation_offset) {
+void VatMultiMeshInstance::update_instance_track(int instance_id, int track_number, bool one_shot) {
 	data[instance_id].track_number = track_number;
+
+	Vector2i current_track = track->get_ref_tracks()[data[instance_id].track_number];
+	int num_frames = current_track.y - current_track.x;
+	float fps = 24. * data[instance_id].track_speed;
+	// compute offset to reset animation
+	float time_scale_normalized = fps / num_frames;
+	float time = total_elapsed * time_scale_normalized;
+	float animation_offset = 1. - time * data[instance_id].track_speed;
+
+	if (one_shot) {
+		data[instance_id].end_time = total_elapsed + (num_frames / fps);
+	} else {
+		data[instance_id].end_time = -1.;
+	}
+
 	data[instance_id].track_offset = animation_offset;
 }
 
@@ -130,8 +151,10 @@ void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 tra
 	}
 	int walk = track->get_walking_anim();
 	int idle = track->get_idle_anim();
-	if (data[instance_id].track_number == walk || data[instance_id].track_number == idle) {
-		data[instance_id].track_number = sq > 0.01 ? walk : idle;
+	if (sq > 0.01) {
+		data[instance_id].track_number = walk;
+	} else if (data[instance_id].track_number == walk || data[instance_id].track_number == idle) {
+		data[instance_id].track_number = idle;
 	}
 }
 
@@ -151,7 +174,7 @@ void VatMultiMeshInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_instance"), &VatMultiMeshInstance::add_instance);
 	ClassDB::bind_method(D_METHOD("free_instance", "instance_id"), &VatMultiMeshInstance::free_instance);
 
-	ClassDB::bind_method(D_METHOD("update_instance_track", "instance_id", "track_number", "animation_offset"), &VatMultiMeshInstance::update_instance_track);
+	ClassDB::bind_method(D_METHOD("update_instance_track", "instance_id", "track_number", "one_shot"), &VatMultiMeshInstance::update_instance_track);
 	ClassDB::bind_method(D_METHOD("set_pickable_color", "instance_id", "color"), &VatMultiMeshInstance::set_pickable_color);
 	ClassDB::bind_method(D_METHOD("set_speed", "instance_id", "speed"), &VatMultiMeshInstance::set_speed);
 	ClassDB::bind_method(D_METHOD("set_alt_texture", "instance_id", "alt_texture"), &VatMultiMeshInstance::set_alt_texture);

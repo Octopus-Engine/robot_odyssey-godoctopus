@@ -25,7 +25,7 @@ public:
 	int add_instance();
 	void free_instance(int instance_id);
 
-	void update_instance_track(int instance_id, int track_number, float animation_offset);
+	void update_instance_track(int instance_id, int track_number, bool one_shot);
 	void set_pickable_color(int instance_id, Color color);
 	void set_speed(int instance_id, float speed);
 	void set_alt_texture(int instance_id, bool alt_texture);
@@ -44,6 +44,8 @@ protected:
 
 	/// @brief time since last position update
 	double elapsed_time = 0.;
+
+	double total_elapsed = 0.;
 
 	smart_list<VatInstanceData> data;
 	std::vector<Transform3D> old_transform;
