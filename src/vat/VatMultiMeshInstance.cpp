@@ -36,6 +36,7 @@ void VatMultiMeshInstance::_process(double delta) {
 			Transform3D transform;
 			transform.basis = old_transform[i].basis.lerp(new_transform[i].basis, elapsed_time / time_step);
 			transform.origin = old_transform[i].origin.lerp(new_transform[i].origin, elapsed_time / time_step);
+			transform.origin.y = track->get_z_offset();
 			mesh->set_instance_transform(instance_id, transform);
 			// color info
 			Color color_info(
@@ -114,6 +115,34 @@ void VatMultiMeshInstance::swap_transforms() {
 	std::swap(new_transform, old_transform);
 }
 
+void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 translation) {
+	new_transform[instance_id] = old_transform[instance_id];
+	new_transform[instance_id].origin += translation;
+	float sq = translation.length_squared();
+	if (sq > 0.01) {
+		// compute rotation
+		Vector3 forward = old_transform[instance_id].xform(track->get_forward()) - old_transform[instance_id].origin;
+		float delta_angle = translation.signed_angle_to(-1.*forward, Vector3(0,1,0));
+		if (abs(delta_angle) > 0.01) {
+			float max_angle = track->get_turn_speed() * time_step;
+			new_transform[instance_id] = new_transform[instance_id].rotated_local(Vector3(0,1,0), -std::clamp(delta_angle, -max_angle, max_angle));
+		}
+	}
+	int walk = track->get_walking_anim();
+	int idle = track->get_idle_anim();
+	if (data[instance_id].track_number == walk || data[instance_id].track_number == idle) {
+		data[instance_id].track_number = sq > 0.01 ? walk : idle;
+	}
+}
+
+void VatMultiMeshInstance::snap_rotation(int instance_id, Vector3 direction) {
+	new_transform[instance_id] = old_transform[instance_id];
+	// compute rotation
+	Vector3 forward = old_transform[instance_id].xform(track->get_forward()) - old_transform[instance_id].origin;
+	float delta_angle = direction.signed_angle_to(-1.*forward, Vector3(0,1,0));
+	new_transform[instance_id] = new_transform[instance_id].rotated_local(Vector3(0,1,0), delta_angle);
+}
+
 void VatMultiMeshInstance::_bind_methods() {
 	ADD_OBJECT_PROP(VatMultiMeshInstance, VatAnimationTrack, track);
 	ADD_SIMPLE_PROP(VatMultiMeshInstance, INT, instance_count);
@@ -131,6 +160,9 @@ void VatMultiMeshInstance::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_new_instance_transform", "instance_id", "transform"), &VatMultiMeshInstance::set_new_instance_transform);
 	ClassDB::bind_method(D_METHOD("get_old_instance_transform", "instance_id"), &VatMultiMeshInstance::get_old_instance_transform);
 	ClassDB::bind_method(D_METHOD("swap_transforms"), &VatMultiMeshInstance::swap_transforms);
+
+	ClassDB::bind_method(D_METHOD("set_instance_translation", "instance_id", "translation"), &VatMultiMeshInstance::set_instance_translation);
+	ClassDB::bind_method(D_METHOD("snap_rotation", "instance_id", "direction"), &VatMultiMeshInstance::snap_rotation);
 }
 
 void VatMultiMeshInstance::_notification(int p_notification) {

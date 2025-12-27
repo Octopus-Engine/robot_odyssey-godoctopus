@@ -35,6 +35,9 @@ public:
 	Transform3D get_old_instance_transform(int instance_id) const;
 	void swap_transforms();
 
+	// helpers
+	void set_instance_translation(int instance_id, Vector3 translation);
+	void snap_rotation(int instance_id, Vector3 direction);
 protected:
 	static void _bind_methods();
 	void _notification(int p_notification);
