@@ -8,6 +8,8 @@
 #include "octopus/systems/Systems.hh"
 #include "octopus/world/path/PathFindingCache.hh"
 
+#include "godoctopus/display/vat/VatLibraryHandle.h"
+
 namespace godot
 {
 
@@ -51,7 +53,9 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 
 	set_up_systems<DefaultStepContext<custom_variant> >(_world, step_context, 100);
 
-	// declare_drawable_systems(_drawer, _framesLibrary, *_entity_payload, _fog_drawer, _discover_drawer, _world);
+	if (_vat_library) {
+		declare_vat_library_systems(ecs, _vat_library);
+	}
 
 	advanced_components_support<custom_step_manager,NoOpCommand,MoveCommand,AttackCommand,CastCommand,SetRallyPointCommand>(ecs);
 
@@ -81,6 +85,7 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 	}
 	else
 	{
+		print_line("Init from level");
 		init_world(meta_data, [this](Dictionary const &meta_data_, GameNode &game) {
 			level_node->system_setup(meta_data_, game);
 			level_node->setup(meta_data_, game);
@@ -98,7 +103,7 @@ void GameNode::init_load(String file_name, Dictionary const &meta_data)
 
 void GameNode::init_nodes()
 {
-	// INIT_NODE_PATH(EntityDrawer, discover_drawer);
+	INIT_NODE_PATH(VatLibrary, vat_library);
 }
 
 double GameNode::get_avg_engine_times()
@@ -114,7 +119,8 @@ double GameNode::get_avg_engine_times()
 
 void GameNode::_bind_methods()
 {
-	// BIND_NODE_PATH(GameNode, EntityDrawer, discover_drawer);
+	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
+
 	ADD_OBJECT_PROP(GameNode, LevelNode, level_node);
 
 	ClassDB::bind_method(D_METHOD("is_paused"), &GameNode::is_paused);
@@ -200,6 +206,7 @@ void GameNode::_notification(int p_notification)
 			_process(get_process_delta_time());
 		} break;
 		case NOTIFICATION_READY: {
+			print_line("GameNode ready");
 			set_process(true);
 		} break;
 	}

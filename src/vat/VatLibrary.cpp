@@ -10,8 +10,15 @@ void VatLibrary::_ready() {
 		multi_mesh->set_layer_mask_value(1, true);
 		multi_mesh->set_layer_mask_value(5, true);
 		multi_mesh->set_layer_mask_value(6, true);
+		multi_mesh->_mutex = &_mutex;
 		add_child(multi_mesh);
 		vec_multi_mesh.push_back(multi_mesh);
+	}
+}
+
+void VatLibrary::swap_transforms() {
+	for (auto &mmesh : vec_multi_mesh) {
+		mmesh->swap_transforms();
 	}
 }
 

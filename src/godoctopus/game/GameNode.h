@@ -12,6 +12,8 @@
 #include "octopus/systems/input/Input.hh"
 #include "octopus/utils/Grid.hh"
 
+#include "vat/VatLibrary.h"
+
 #include "flecs.h"
 #include "godot_tools.h"
 #include "octopus_types.h"
@@ -48,6 +50,7 @@ public:
 	// All nodes
 	void init_nodes();
 
+	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_PARAM(LevelNode*, level_node);
 public:
 	double get_avg_engine_times();

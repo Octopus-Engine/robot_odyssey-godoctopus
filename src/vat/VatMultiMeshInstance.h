@@ -6,6 +6,7 @@
 #include "godot_tools.h"
 
 #include "smart_list/smart_list.h"
+#include <mutex>
 
 namespace godot {
 
@@ -19,6 +20,7 @@ public:
 	/// @brief expected duration of a timestep
 	SET_GET_PARAM_DEF(double, time_step, 0.01);
 
+public:
 	void _ready();
 	void _process(double delta);
 
@@ -36,8 +38,14 @@ public:
 	void swap_transforms();
 
 	// helpers
-	void set_instance_translation(int instance_id, Vector3 translation);
+	void set_instance_translation(int instance_id, Vector3 const &translation);
+	void set_instance_new_position(int instance_id, Vector3 const &new_position);
 	void snap_rotation(int instance_id, Vector3 direction);
+
+
+	std::mutex *_mutex = nullptr;
+	void lock() { if(_mutex) { _mutex->lock(); } }
+	void unlock() { if(_mutex) { _mutex->unlock(); } }
 protected:
 	static void _bind_methods();
 	void _notification(int p_notification);

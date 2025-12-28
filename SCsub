@@ -187,6 +187,8 @@ octopus2_sources = [
 
 godoctopus2_sources = [
     "./src/godoctopus/game/GameNode.cpp",
+    "./src/godoctopus/game/levels/AttackMoveDemoNode.cpp",
+    "./src/godoctopus/display/vat/VatLibraryHandle.cpp",
     "./src/vat/VatLibrary.cpp",
     "./src/vat/VatMultiMeshInstance.cpp",
 ]

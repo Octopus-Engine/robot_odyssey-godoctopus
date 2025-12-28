@@ -12,5 +12,5 @@ typedef std::variant<octopus::NoOpCommand, octopus::MoveCommand, octopus::Attack
 typedef octopus::DefaultStepManager custom_step_manager;
 typedef octopus::CommandQueue<custom_variant> custom_queue;
 
-#define WORLD_SCALE 8.
+#define WORLD_SCALE 1.
 #define TICK_RATE 50

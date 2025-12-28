@@ -23,9 +23,11 @@ public:
 		ADD_SIMPLE_PROP(VatAnimationTrack, VECTOR3, forward);
 		ADD_SIMPLE_PROP(VatAnimationTrack, INT, walking_anim);
 		ADD_SIMPLE_PROP(VatAnimationTrack, INT, idle_anim);
+		ADD_SIMPLE_PROP(VatAnimationTrack, INT, windup_anim);
 		ADD_SIMPLE_PROP(VatAnimationTrack, FLOAT, base_move_speed);
 		ADD_SIMPLE_PROP(VatAnimationTrack, FLOAT, turn_speed);
 		ADD_SIMPLE_PROP(VatAnimationTrack, FLOAT, z_offset);
+		ADD_SIMPLE_PROP(VatAnimationTrack, FLOAT, scale);
 	}
 
 	SET_GET_PARAM(Ref<Mesh>, mesh);
@@ -34,9 +36,11 @@ public:
 	SET_GET_PARAM(Vector3, forward);
 	SET_GET_PARAM_DEF(int, walking_anim, 0);
 	SET_GET_PARAM_DEF(int, idle_anim, 0);
+	SET_GET_PARAM_DEF(int, windup_anim, 0);
 	SET_GET_PARAM_DEF(float, base_move_speed, 3.0);
 	SET_GET_PARAM_DEF(float, turn_speed, 3.0);
 	SET_GET_PARAM_DEF(float, z_offset, 0.);
+	SET_GET_PARAM_DEF(float, scale, 1.);
 };
 
 }

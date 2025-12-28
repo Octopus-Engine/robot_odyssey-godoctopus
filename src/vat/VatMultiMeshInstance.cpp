@@ -27,6 +27,7 @@ void VatMultiMeshInstance::_ready() {
 }
 
 void VatMultiMeshInstance::_process(double delta) {
+	lock();
 	total_elapsed += delta;
 	elapsed_time += delta;
 	auto mesh = get_multimesh();
@@ -65,6 +66,7 @@ void VatMultiMeshInstance::_process(double delta) {
 		});
 		mesh->set_visible_instance_count(instance_id);
 	}
+	unlock();
 }
 
 int VatMultiMeshInstance::add_instance() {
@@ -76,6 +78,9 @@ int VatMultiMeshInstance::add_instance() {
 	if (id >= get_multimesh()->get_instance_count()) {
 		get_multimesh()->set_instance_count(id+1);
 	}
+	// setup scale from tracks
+	old_transform[id].scale_basis(Vector3(track->get_scale(), track->get_scale(), track->get_scale()));
+	new_transform[id].scale_basis(Vector3(track->get_scale(), track->get_scale(), track->get_scale()));
 	return id;
 }
 
@@ -88,6 +93,7 @@ void VatMultiMeshInstance::free_instance(int instance_id) {
 // Updates the current instance_id with the provided track_number (0..number_of_animation_tracks - 1)
 void VatMultiMeshInstance::update_instance_track(int instance_id, int track_number, bool one_shot) {
 	data[instance_id].track_number = track_number;
+	data[instance_id].track_speed = 1.;
 
 	Vector2i current_track = track->get_ref_tracks()[data[instance_id].track_number];
 	int num_frames = current_track.y - current_track.x;
@@ -135,12 +141,14 @@ void VatMultiMeshInstance::swap_transforms() {
 	elapsed_time = 0.;
 	std::swap(new_transform, old_transform);
 }
+void VatMultiMeshInstance::set_instance_new_position(int instance_id, Vector3 const &new_position) {
+	set_instance_translation(instance_id, new_position - old_transform[instance_id].origin);
+}
 
-void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 translation) {
+void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 const &translation) {
 	new_transform[instance_id] = old_transform[instance_id];
 	new_transform[instance_id].origin += translation;
-	float sq = translation.length_squared();
-	if (sq > 0.01) {
+	if (translation != Vector3()) {
 		// compute rotation
 		Vector3 forward = old_transform[instance_id].xform(track->get_forward()) - old_transform[instance_id].origin;
 		float delta_angle = translation.signed_angle_to(-1.*forward, Vector3(0,1,0));
@@ -151,10 +159,12 @@ void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 tra
 	}
 	int walk = track->get_walking_anim();
 	int idle = track->get_idle_anim();
-	if (sq > 0.01) {
+	if (translation != Vector3()) {
 		data[instance_id].track_number = walk;
+		data[instance_id].track_speed = track->get_base_move_speed();
 	} else if (data[instance_id].track_number == walk || data[instance_id].track_number == idle) {
 		data[instance_id].track_number = idle;
+		data[instance_id].track_speed = 1.;
 	}
 }
 
