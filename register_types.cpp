@@ -7,6 +7,7 @@
 #include "vat/VatLibrary.h"
 #include "vat/VatMultiMeshInstance.h"
 #include "vat/VatAnimationTrack.h"
+#include "godoctopus/game/GameNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -14,9 +15,13 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   }
 
   // REGISTER CLASSES HERE LATER
+
+  // VAT
 	ClassDB::register_class<godot::VatLibrary>();
 	ClassDB::register_class<godot::VatMultiMeshInstance>();
 	ClassDB::register_class<godot::VatAnimationTrack>();
+	// Godoctopus
+  ClassDB::register_class<godot::GameNode>();
 }
 
 void uninitialize_godoctopus2_module(ModuleInitializationLevel p_level) {
