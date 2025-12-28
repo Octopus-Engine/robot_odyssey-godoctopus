@@ -26,15 +26,26 @@ void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) 
 			handle.instance_id = instance_id;
 		});
 
-	ecs.system<VatLibraryHandle const>()
-		.with(flecs::Disabled)
-		.kind(ecs.entity(DisplaySyncPhase))
+	ecs.observer<VatLibraryHandle const>()
+		.event(flecs::OnRemove)
 		.each([library](flecs::entity e, VatLibraryHandle const &handle) {
 			if (handle.instance_id < 0) {
 				return;
 			}
 			godot::VatMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
 			mmesh->free_instance(handle.instance_id);
+		});
+
+	ecs.system<VatLibraryHandle>()
+		.with(flecs::Disabled)
+		.kind(ecs.entity(DisplaySyncPhase))
+		.each([library](flecs::entity e, VatLibraryHandle &handle) {
+			if (handle.instance_id < 0) {
+				return;
+			}
+			godot::VatMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+			mmesh->free_instance(handle.instance_id);
+			handle.instance_id = -1;
 	});
 
 	// Update phase
