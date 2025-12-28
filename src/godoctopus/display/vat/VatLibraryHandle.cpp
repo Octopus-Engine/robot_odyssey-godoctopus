@@ -6,7 +6,6 @@
 #include "octopus_types.h"
 
 void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) {
-	print_line("declare_vat_library_systems");
 
 	// no instance id to enable reload
 	ecs.component<VatLibraryHandle>()
@@ -15,7 +14,6 @@ void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) 
 	ecs.observer<octopus::Position const, VatLibraryHandle>()
 		.event(flecs::OnSet)
 		.each([library](flecs::entity e, octopus::Position const &pos, VatLibraryHandle & handle) {
-			print_line("setting up vat item");
 			if (handle.instance_id >= 0) {
 				return;
 			}
@@ -26,20 +24,17 @@ void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) 
 			transform.set_origin(WORLD_SCALE * Vector3(pos.pos.x.to_double(), 0., pos.pos.y.to_double()));
 			mmesh->set_instance_transform(instance_id, transform);
 			handle.instance_id = instance_id;
-			print_line("instance id: ", instance_id);
 		});
 
 	ecs.system<VatLibraryHandle const>()
 		.with(flecs::Disabled)
 		.kind(ecs.entity(DisplaySyncPhase))
 		.each([library](flecs::entity e, VatLibraryHandle const &handle) {
-			print_line("removing up vat item");
 			if (handle.instance_id < 0) {
 				return;
 			}
 			godot::VatMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
 			mmesh->free_instance(handle.instance_id);
-			print_line("instance id: ", handle.instance_id);
 	});
 
 	// Update phase

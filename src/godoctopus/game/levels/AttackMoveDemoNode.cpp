@@ -23,7 +23,7 @@ namespace godot {
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	flecs::world &ecs = game.get_world().ecs;
 
-	auto e1 = ecs.entity("e1")
+	auto e1 = ecs.entity()
 		.add<custom_queue>()
 		.set<octopus::Move>({5./TICK_RATE})
 		.set<octopus::Position>({{10,20}, {0,0}, octopus::Fixed::One(), octopus::Fixed::Zero(), false})
@@ -35,7 +35,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<VatLibraryHandle>({2})
 	;
 
-	auto e2 = ecs.entity("e2")
+	auto e2 = ecs.entity()
 		.add<custom_queue>()
 		.add<octopus::Move>()
 		.set<octopus::HitPoint>({10})
@@ -46,7 +46,18 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<VatLibraryHandle>({1})
 	;
 
-	ecs.entity("e3")
+	ecs.entity()
+		.add<custom_queue>()
+		.add<octopus::Move>()
+		.set<octopus::HitPoint>({10})
+		.set<octopus::Team>({0})
+		.add<octopus::Destroyable>()
+		.add<octopus::PositionInTree>()
+		.set<octopus::Position>({{12,5}, {0,0}, octopus::Fixed::One(), octopus::Fixed::Zero(), false})
+		.set<VatLibraryHandle>({1})
+	;
+
+	ecs.entity()
 		.add<custom_queue>()
 		.add<octopus::Move>()
 		.set<octopus::HitPoint>({10})
@@ -57,7 +68,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<VatLibraryHandle>({0})
 	;
 
-	ecs.entity("e4")
+	ecs.entity()
 		.add<custom_queue>()
 		.add<octopus::Move>()
 		.set<octopus::HitPoint>({10})
@@ -68,7 +79,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<VatLibraryHandle>({1})
 	;
 
-	ecs.entity("e5")
+	ecs.entity()
 		.add<custom_queue>()
 		.add<octopus::Move>()
 		.set<octopus::HitPoint>({10})
