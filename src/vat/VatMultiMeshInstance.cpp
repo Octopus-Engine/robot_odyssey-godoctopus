@@ -70,6 +70,7 @@ void VatMultiMeshInstance::_process(double delta) {
 }
 
 int VatMultiMeshInstance::add_instance() {
+	lock();
 	size_t id = data.new_instance(VatInstanceData()).handle();
 	if (id >= old_transform.size()) {
 		old_transform.resize(id+1);
@@ -78,9 +79,13 @@ int VatMultiMeshInstance::add_instance() {
 	if (id >= get_multimesh()->get_instance_count()) {
 		get_multimesh()->set_instance_count(id+1);
 	}
+	// reset transform
+	old_transform[id] = Transform3D();
+	new_transform[id] = Transform3D();
 	// setup scale from tracks
 	old_transform[id].scale_basis(Vector3(track->get_scale(), track->get_scale(), track->get_scale()));
 	new_transform[id].scale_basis(Vector3(track->get_scale(), track->get_scale(), track->get_scale()));
+	unlock();
 	return id;
 }
 
