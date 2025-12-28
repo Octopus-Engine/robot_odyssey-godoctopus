@@ -2,3 +2,7 @@
 	path = smart_list
 	url = git@github.com:SimonPiCarter/smart_list.git
 	branch = main
+[submodule "src/octopus2"]
+	path = src/octopus2
+	url = git@github.com:SimonPiCarter/octopus2.git
+	branch = main
