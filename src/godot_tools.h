@@ -20,6 +20,10 @@ private:\
 	ClassDB::bind_method(D_METHOD("get_"#var_name), &class_name::get_##var_name);\
 	ClassDB::add_property(#class_name, PropertyInfo(Variant::NODE_PATH, #var_name, PROPERTY_HINT_NODE_PATH_VALID_TYPES, #type), "set_ref_"#var_name, "get_ref_"#var_name);
 
+#define BIND_PROP(class_name, type, var_name ) \
+	ClassDB::bind_method(D_METHOD("set_"#var_name, #var_name), &class_name::set_##var_name);\
+	ClassDB::bind_method(D_METHOD("get_"#var_name), &class_name::get_##var_name);
+
 #define ADD_SIMPLE_PROP(class_name, type, var_name ) \
 	ClassDB::bind_method(D_METHOD("set_"#var_name, #var_name), &class_name::set_##var_name);\
 	ClassDB::bind_method(D_METHOD("get_"#var_name), &class_name::get_##var_name);\

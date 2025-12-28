@@ -121,7 +121,7 @@ void GameNode::_bind_methods()
 {
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
 
-	ADD_OBJECT_PROP(GameNode, LevelNode, level_node);
+	BIND_PROP(GameNode, LevelNode, level_node);
 
 	ClassDB::bind_method(D_METHOD("is_paused"), &GameNode::is_paused);
 	ClassDB::bind_method(D_METHOD("set_paused", "paused"), &GameNode::set_paused);
