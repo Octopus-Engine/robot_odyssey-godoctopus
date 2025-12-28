@@ -152,7 +152,7 @@ void VatMultiMeshInstance::set_instance_translation(int instance_id, Vector3 con
 		// compute rotation
 		Vector3 forward = old_transform[instance_id].xform(track->get_forward()) - old_transform[instance_id].origin;
 		float delta_angle = translation.signed_angle_to(-1.*forward, Vector3(0,1,0));
-		if (abs(delta_angle) > 0.01) {
+		if (std::abs(delta_angle) > 0.01) {
 			float max_angle = track->get_turn_speed() * time_step;
 			new_transform[instance_id] = new_transform[instance_id].rotated_local(Vector3(0,1,0), -std::clamp(delta_angle, -max_angle, max_angle));
 		}
@@ -173,7 +173,7 @@ void VatMultiMeshInstance::snap_rotation(int instance_id, Vector3 direction) {
 	// compute rotation
 	Vector3 forward = old_transform[instance_id].xform(track->get_forward()) - old_transform[instance_id].origin;
 	float delta_angle = direction.signed_angle_to(-1.*forward, Vector3(0,1,0));
-	new_transform[instance_id] = new_transform[instance_id].rotated_local(Vector3(0,1,0), delta_angle);
+	new_transform[instance_id] = new_transform[instance_id].rotated_local(Vector3(0,1,0), -delta_angle);
 }
 
 void VatMultiMeshInstance::_bind_methods() {
