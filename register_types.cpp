@@ -4,6 +4,7 @@
 // #include <godot_cpp/core/class_db.hpp>
 // #include <godot_cpp/godot.hpp>
 
+#include "vat/SmartMultiMeshInstance.h"
 #include "vat/VatLibrary.h"
 #include "vat/VatMultiMeshInstance.h"
 #include "vat/VatAnimationTrack.h"
@@ -18,6 +19,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   // REGISTER CLASSES HERE LATER
 
   // VAT
+	ClassDB::register_class<godot::SmartMultiMeshInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
 	ClassDB::register_class<godot::VatMultiMeshInstance>();
 	ClassDB::register_class<godot::VatAnimationTrack>();
