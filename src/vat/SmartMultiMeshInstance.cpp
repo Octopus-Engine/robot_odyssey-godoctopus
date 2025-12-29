@@ -23,9 +23,7 @@ void SmartMultiMeshInstance::_process(double delta) {
 		int instance_id = 0;
 		data.for_each([this, &mesh, &instance_id] (MultiMeshData &d, size_t i) {
 			// transform
-			Transform3D transform;
-			transform.basis = old_transform[i].basis.lerp(new_transform[i].basis, elapsed_time / time_step);
-			transform.origin = old_transform[i].origin.lerp(new_transform[i].origin, elapsed_time / time_step);
+			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], elapsed_time / time_step);
 			mesh->set_instance_transform(instance_id, transform);
 			// color info
 			mesh->set_instance_color(instance_id, d.color);
@@ -46,6 +44,9 @@ int SmartMultiMeshInstance::add_instance() {
 	if (id >= get_multimesh()->get_instance_count()) {
 		get_multimesh()->set_instance_count(id+1);
 	}
+	// reset transform
+	old_transform[id] = Transform3D();
+	new_transform[id] = Transform3D();
 	return id;
 }
 

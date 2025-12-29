@@ -12,6 +12,7 @@
 #include "octopus/systems/input/Input.hh"
 #include "octopus/utils/Grid.hh"
 
+#include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
 
 #include "flecs.h"
@@ -50,6 +51,7 @@ public:
 	// All nodes
 	void init_nodes();
 
+	SET_GET_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_PARAM(LevelNode*, level_node);
 public:

@@ -4,6 +4,7 @@
 // #include <godot_cpp/core/class_db.hpp>
 // #include <godot_cpp/godot.hpp>
 
+#include "vat/SmartMMeshLibrary.h"
 #include "vat/SmartMultiMeshInstance.h"
 #include "vat/VatLibrary.h"
 #include "vat/VatMultiMeshInstance.h"
@@ -19,6 +20,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   // REGISTER CLASSES HERE LATER
 
   // VAT
+	ClassDB::register_class<godot::SmartMMeshLibrary>();
 	ClassDB::register_class<godot::SmartMultiMeshInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
 	ClassDB::register_class<godot::VatMultiMeshInstance>();
