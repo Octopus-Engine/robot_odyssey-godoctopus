@@ -8,6 +8,7 @@
 #include "octopus/components/basic/position/Move.hh"
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/player/Team.hh"
+#include "octopus/components/basic/timestamp/TimeStamp.hh"
 #include "octopus/components/step/StepContainer.hh"
 
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
@@ -31,8 +32,13 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomProj const>()
 			.event(flecs::OnAdd)
-			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomProj const& ) {
-				e.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,1.});
+			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomProj const &) {
+				e.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,
+					1.5, // up
+					0.25, // end_up
+					octopus::get_time_stamp(e.world()),
+					octopus::get_time_stamp(e.world()) + 20
+				});
 			});
 
 	std::vector<flecs::entity> attackers;
@@ -46,7 +52,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<octopus::Destroyable>()
 			.set<octopus::BasicProjectileAttack<CustomProj>>({20./TICK_RATE})
 			.set<octopus::AttackCommand>({flecs::entity()})
-			.set<octopus::Attack>({{TICK_RATE/2, TICK_RATE, 5, 5}})
+			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 5, 5}})
 			.set<VatLibraryHandle>({2})
 		;
 		attackers.push_back(e1);
