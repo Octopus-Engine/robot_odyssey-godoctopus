@@ -14,6 +14,9 @@ struct SmartMMeshLibraryHandle {
 	octopus::Fixed a = 1.;
 	octopus::Fixed scale = 1.;
 	octopus::Fixed up = 1.;
+	octopus::Fixed end_up = octopus::Fixed::One();
+	int64_t timestamp_start = 0;
+	int64_t timestamp_end = 0;
 	int32_t instance_id = -1;
 };
 
