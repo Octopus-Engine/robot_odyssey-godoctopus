@@ -1,6 +1,7 @@
 #include "AttackMoveDemoNode.h"
 
 #include "octopus/commands/basic/move/AttackCommand.hh"
+#include "octopus/commands/basic/move/AttackCommandSystem.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
 #include "octopus/components/basic/attack/Attack.hh"
@@ -21,8 +22,18 @@
 
 namespace godot {
 
+struct CustomProj {};
+
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	flecs::world &ecs = game.get_world().ecs;
+
+	octopus::set_up_basic_projectile_systems<CustomProj>(ecs);
+
+	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomProj const>()
+			.event(flecs::OnAdd)
+			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomProj const& ) {
+				e.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,1.});
+			});
 
 	std::vector<flecs::entity> attackers;
 	for(size_t i = 0 ; i < 50 ; ++ i) {
@@ -33,11 +44,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<octopus::PositionInTree>()
 			.set<octopus::Team>({1})
 			.add<octopus::Destroyable>()
-			.set<octopus::BasicProjectileAttack>({{20./TICK_RATE},
-					[](flecs::entity projectile){
-						projectile.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,1.});
-					}
-				})
+			.set<octopus::BasicProjectileAttack<CustomProj>>({20./TICK_RATE})
 			.set<octopus::AttackCommand>({flecs::entity()})
 			.set<octopus::Attack>({{TICK_RATE/2, TICK_RATE, 5, 5}})
 			.set<VatLibraryHandle>({2})
