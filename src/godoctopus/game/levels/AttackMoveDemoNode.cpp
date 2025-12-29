@@ -55,11 +55,11 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		});
 
 	std::vector<flecs::entity> attackers;
-	for(size_t i = 0 ; i < 50 ; ++ i) {
+	for(size_t i = 0 ; i < 500 ; ++ i) {
 		auto e1 = ecs.entity()
 			.add<custom_queue>()
 			.set<octopus::Move>({5./TICK_RATE})
-			.set<octopus::Position>({{10+0.01*i,40+0.01*i}, {0,0}, octopus::Fixed::One()})
+			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
 			.add<octopus::PositionInTree>()
 			.set<octopus::Team>({1})
 			.add<octopus::Destroyable>()
@@ -82,7 +82,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<VatLibraryHandle>({1})
 	;
 
-	for(size_t i = 0 ; i < 100 ; ++ i) {
+	for(size_t i = 0 ; i < 1000 ; ++ i) {
 		ecs.entity()
 			.add<custom_queue>()
 			.add<octopus::Move>()
@@ -130,7 +130,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	for(auto & e1 : attackers)
 	{
-		octopus::AttackCommand atk_l {e2, {10,0}};
+		octopus::AttackCommand atk_l {flecs::entity(), {50,50}, true};
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
