@@ -26,6 +26,8 @@ namespace godot {
 struct CustomProj {};
 
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
+	init_nodes();
+
 	flecs::world &ecs = game.get_world().ecs;
 
 	octopus::set_up_basic_projectile_systems<CustomProj>(ecs);
@@ -40,6 +42,17 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 					octopus::get_time_stamp(e.world()) + 20
 				});
 			});
+
+	// pop damage
+	ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, SmartMMeshLibraryHandle const>()
+		.kind(ecs.entity(EndUpdatePhase))
+		.with<CustomProj>()
+		.each([this](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
+				octopus::Position const &pos, SmartMMeshLibraryHandle const &handle) {
+			if (_particules) {
+				_particules->add_instance(WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()));
+			}
+		});
 
 	std::vector<flecs::entity> attackers;
 	for(size_t i = 0 ; i < 50 ; ++ i) {
