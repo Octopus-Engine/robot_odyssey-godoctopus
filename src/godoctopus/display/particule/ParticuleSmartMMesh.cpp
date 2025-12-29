@@ -12,6 +12,10 @@ void ParticuleSmartMMesh::_process(double delta) {
 	if (!mesh.is_valid()) {
 		return;
 	}
+	if (mesh->get_instance_count() < data.size() * count) {
+		mesh->set_instance_count(data.size() * count);
+	}
+
 	elapsed += delta;
 	int instance_id = 0;
 	data.for_each([this, &instance_id, &mesh, &delta](ParticuleData &d, size_t idx) {
@@ -52,9 +56,6 @@ void ParticuleSmartMMesh::add_instance(Vector3 const &pos) {
 		particule_data.time_offset.push_back(elapsed + rng->randf_range(0., 0.5));
 	}
 	data.new_instance(std::move(particule_data));
-	if (get_multimesh().is_valid()) {
-		get_multimesh()->set_instance_count(std::max<int>(get_multimesh()->get_instance_count(), data.size() * count));
-	}
 }
 
 
