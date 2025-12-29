@@ -9,6 +9,7 @@
 #include "octopus/components/basic/player/Team.hh"
 #include "octopus/components/step/StepContainer.hh"
 
+#include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 
 #include "octopus_types.h"
@@ -32,6 +33,11 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<octopus::PositionInTree>()
 			.set<octopus::Team>({1})
 			.add<octopus::Destroyable>()
+			.set<octopus::BasicProjectileAttack>({{20./TICK_RATE},
+					[](flecs::entity projectile){
+						projectile.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,1.});
+					}
+				})
 			.set<octopus::AttackCommand>({flecs::entity()})
 			.set<octopus::Attack>({{TICK_RATE/2, TICK_RATE, 5, 5}})
 			.set<VatLibraryHandle>({2})
