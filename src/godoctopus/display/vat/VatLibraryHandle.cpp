@@ -7,6 +7,7 @@
 
 #include "DisplayVatHelpers.h"
 
+
 void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) {
 
 	// no instance id to enable reload
@@ -14,7 +15,11 @@ void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) 
 		.member("multi_mesh_id", &VatLibraryHandle::multi_mesh_id)
 	;
 
-	declare_displayer_instance_handling_systems<godot::VatLibrary, godot::VatMultiMeshInstance, VatLibraryHandle>(ecs,library);
+	declare_displayer_instance_handling_systems<godot::VatLibrary, godot::VatMultiMeshInstance, VatLibraryHandle>(
+		ecs,
+		library,
+		[](godot::VatMultiMeshInstance* mmesh, VatLibraryHandle const &handle) {
+		});
 
 	// Update phase
 

@@ -60,6 +60,9 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	if (_smart_mmesh_library) {
 		declare_smart_mmesh_library_systems(ecs, _smart_mmesh_library);
 	}
+	if (_vat_library && _picker_node) {
+		declare_pickable_systems(ecs, _vat_library, _picker_node);
+	}
 
 	advanced_components_support<custom_step_manager,NoOpCommand,MoveCommand,AttackCommand,CastCommand,SetRallyPointCommand>(ecs);
 
@@ -109,6 +112,7 @@ void GameNode::init_nodes()
 {
 	INIT_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
 	INIT_NODE_PATH(VatLibrary, vat_library);
+	INIT_NODE_PATH(PickerNode, picker_node);
 }
 
 double GameNode::get_avg_engine_times()
@@ -126,6 +130,7 @@ void GameNode::_bind_methods()
 {
 	BIND_NODE_PATH(GameNode, SmartMMeshLibrary, smart_mmesh_library);
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
+	BIND_NODE_PATH(GameNode, PickerNode, picker_node);
 
 	BIND_PROP(GameNode, LevelNode, level_node);
 

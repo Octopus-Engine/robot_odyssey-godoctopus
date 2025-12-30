@@ -13,6 +13,7 @@
 
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
+#include "godoctopus/pickable/Pickable.h"
 
 #include "octopus_types.h"
 
@@ -67,20 +68,10 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.set<octopus::AttackCommand>({flecs::entity()})
 			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 5, 5}})
 			.set<VatLibraryHandle>({2})
+			.add<Pickable>()
 		;
 		attackers.push_back(e1);
 	}
-
-	auto e2 = ecs.entity()
-		.add<custom_queue>()
-		.add<octopus::Move>()
-		.set<octopus::HitPoint>({10})
-		.set<octopus::Team>({0})
-		.add<octopus::Destroyable>()
-		.add<octopus::PositionInTree>()
-		.set<octopus::Position>({{13,5}, {0,0}, octopus::Fixed::One()})
-		.set<VatLibraryHandle>({1})
-	;
 
 	for(size_t i = 0 ; i < 1000 ; ++ i) {
 		ecs.entity()
@@ -92,41 +83,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<octopus::PositionInTree>()
 			.set<octopus::Position>({{12+0.1*i,5+0.1*i}, {0,0}, octopus::Fixed::One()})
 			.set<VatLibraryHandle>({1})
+			.add<Pickable>()
 		;
 	}
-
-	ecs.entity()
-		.add<custom_queue>()
-		.add<octopus::Move>()
-		.set<octopus::HitPoint>({10})
-		.set<octopus::Team>({1})
-		.add<octopus::Destroyable>()
-		.add<octopus::PositionInTree>()
-		.set<octopus::Position>({{7,5}, {0,0}, octopus::Fixed::One()})
-		.set<VatLibraryHandle>({0})
-	;
-
-	ecs.entity()
-		.add<custom_queue>()
-		.add<octopus::Move>()
-		.set<octopus::HitPoint>({10})
-		.set<octopus::Team>({0})
-		.add<octopus::Destroyable>()
-		.add<octopus::PositionInTree>()
-		.set<octopus::Position>({{10,3}, {0,0}, octopus::Fixed::One()})
-		.set<VatLibraryHandle>({1})
-	;
-
-	ecs.entity()
-		.add<custom_queue>()
-		.add<octopus::Move>()
-		.set<octopus::HitPoint>({10})
-		.set<octopus::Team>({0})
-		.add<octopus::Destroyable>()
-		.add<octopus::PositionInTree>()
-		.set<octopus::Position>({{7,0}, {0,0}, octopus::Fixed::One()})
-		.set<VatLibraryHandle>({1})
-	;
 
 	for(auto & e1 : attackers)
 	{

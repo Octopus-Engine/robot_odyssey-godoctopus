@@ -14,6 +14,7 @@
 
 #include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
+#include "godoctopus/pickable/Pickable.h"
 
 #include "flecs.h"
 #include "godot_tools.h"
@@ -53,6 +54,7 @@ public:
 
 	SET_GET_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
+	SET_GET_NODE_PATH(PickerNode, picker_node);
 	SET_GET_PARAM(LevelNode*, level_node);
 public:
 	double get_avg_engine_times();

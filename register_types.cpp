@@ -12,6 +12,7 @@
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
+#include "godoctopus/pickable/Pickable.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -21,6 +22,8 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   // REGISTER CLASSES HERE LATER
 
   // VAT
+	ClassDB::register_class<godot::EntityGroup>();
+	ClassDB::register_class<godot::PickerNode>();
 	ClassDB::register_class<godot::SmartMMeshLibrary>();
 	ClassDB::register_class<godot::SmartMultiMeshInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
