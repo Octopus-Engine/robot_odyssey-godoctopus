@@ -10,7 +10,7 @@ static Color color_from_idx(int idx_p)
 	int r = idx_p % 256;
 	int g = (idx_p/ 256 ) % 256;
 	int b = (idx_p/ (256*256) ) % 256;
-	return Color(r/255.,g/255.,b/255., 1.);
+	return Color::from_rgba8(r,g,b);
 }
 
 static int idx_from_color(Color const &color_p)
@@ -18,9 +18,9 @@ static int idx_from_color(Color const &color_p)
 	if (color_p.a <= 0.01) {
 		return -1;
 	}
-	int r = int(color_p.r * 255);
-	int g = int(color_p.g * 255);
-	int b = int(color_p.b * 255);
+	int r = color_p.get_r8();
+	int g = color_p.get_g8();
+	int b = color_p.get_b8();
 	if(r != 255 || g != 255 || b != 255) {
 		return r + g *256 + b *256*256;
 	}
@@ -32,9 +32,9 @@ static Color safe_color(int x, int y, Ref<Image> const &image_p)
 	if(x >= 0 && x < image_p->get_width()
 	&& y >= 0 && y < image_p->get_height())
 	{
-		return image_p->get_pixel(x, y).srgb_to_linear();
+		return image_p->get_pixel(x, y);
 	}
-	return Color(1.f,1.f,1.f,1.f);
+	return Color(1.f,1.f,1.f,0.f);
 }
 
 namespace godot {

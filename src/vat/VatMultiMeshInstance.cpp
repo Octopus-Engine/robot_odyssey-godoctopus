@@ -116,7 +116,7 @@ void VatMultiMeshInstance::update_instance_track(int instance_id, int track_numb
 }
 
 void VatMultiMeshInstance::set_pickable_color(int instance_id, Color color) {
-	data[instance_id].pickable_color = color;
+	data[instance_id].pickable_color = color.srgb_to_linear();
 }
 
 void VatMultiMeshInstance::set_speed(int instance_id, float speed) {
