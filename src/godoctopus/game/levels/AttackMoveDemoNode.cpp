@@ -61,43 +61,43 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<custom_queue>()
 			.set<octopus::Move>({5./TICK_RATE})
 			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
-			.set<octopus::HitPoint>({10})
+			.set<octopus::HitPoint>({50})
 			.add<octopus::PositionInTree>()
 			.set<octopus::Team>({1})
 			.add<octopus::Destroyable>()
 			.set<octopus::BasicProjectileAttack<CustomProj>>({20./TICK_RATE})
 			.set<octopus::AttackCommand>({flecs::entity()})
-			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 5, 5}})
+			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 5}})
 			.set<VatLibraryHandle>({2})
 			.add<Pickable>()
 		;
-		attackers.push_back(e1);
+
+		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
+		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
+		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
 
-	size_t n = 1000;
+	size_t n = 500;
 	for(size_t i = 0 ; i < n/10 ; ++ i) {
 		for(size_t j = 0 ; j < 10 ; ++ j) {
-			auto e = ecs.entity()
+			auto e1 = ecs.entity()
 				.add<custom_queue>()
 				.set<octopus::Move>({3./TICK_RATE})
-				.set<octopus::HitPoint>({10})
+				.set<octopus::HitPoint>({150})
 				.set<octopus::Team>({0})
 				.add<octopus::Destroyable>()
 				.add<octopus::PositionInTree>()
 				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}, octopus::Fixed::One()})
 				.set<octopus::AttackCommand>({flecs::entity()})
-				.set<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 10, 1}})
+				.set<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
 				.set<VatLibraryHandle>({3})
 				.add<Pickable>()
 			;
-		}
-	}
 
-	for(auto & e1 : attackers)
-	{
-		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
-		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
-		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
+			octopus::AttackCommand atk_l {flecs::entity(), {50,100}, true};
+			e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
+			e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
+		}
 	}
 }
 
