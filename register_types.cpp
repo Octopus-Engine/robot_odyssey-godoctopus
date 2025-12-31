@@ -9,6 +9,7 @@
 #include "vat/VatLibrary.h"
 #include "vat/VatMultiMeshInstance.h"
 #include "vat/VatAnimationTrack.h"
+#include "godoctopus/command/CommandNode.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
@@ -22,14 +23,15 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
   // REGISTER CLASSES HERE LATER
 
   // VAT
-	ClassDB::register_class<godot::EntityGroup>();
-	ClassDB::register_class<godot::PickerNode>();
 	ClassDB::register_class<godot::SmartMMeshLibrary>();
 	ClassDB::register_class<godot::SmartMultiMeshInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
 	ClassDB::register_class<godot::VatMultiMeshInstance>();
 	ClassDB::register_class<godot::VatAnimationTrack>();
 	// Godoctopus
+	ClassDB::register_class<godot::EntityGroup>();
+	ClassDB::register_class<godot::PickerNode>();
+	ClassDB::register_class<godot::CommandNode>();
   ClassDB::register_class<godot::ParticuleSmartMMesh>();
   ClassDB::register_class<godot::GameNode>();
 

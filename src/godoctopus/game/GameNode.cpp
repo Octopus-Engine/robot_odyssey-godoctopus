@@ -89,6 +89,8 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	_over = false;
 	delete _loop_thread;
 	_loop_thread = new std::thread(&GameNode::loop, this);
+
+	emit_signal("init_done");
 }
 
 void GameNode::init_from_level(Dictionary const &meta_data)
@@ -149,6 +151,10 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("init_load", "file_name", "meta_data"), &GameNode::init_load);
 	ClassDB::bind_method(D_METHOD("init_from_level", "meta_data"), &GameNode::init_from_level);
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
+
+    ADD_SIGNAL(MethodInfo("init_done"));
+
+	ADD_GROUP("GameNode", "GameNode_");
 }
 
 void GameNode::loop()
