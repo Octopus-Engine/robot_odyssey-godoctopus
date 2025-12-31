@@ -40,6 +40,7 @@ public:
 class GameNode : public Node {
 	GDCLASS(GameNode, Node)
 public:
+	~GameNode();
 
 	void set_paused(bool paused) { _paused = paused; }
 	bool is_paused() const { return _paused; }

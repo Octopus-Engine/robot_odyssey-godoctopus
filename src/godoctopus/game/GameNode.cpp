@@ -14,6 +14,14 @@
 namespace godot
 {
 
+GameNode::~GameNode() {
+	_over = true;
+	if (_loop_thread) {
+		_loop_thread->join();
+	}
+	delete _loop_thread;
+}
+
 void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictionary const &, GameNode&)> const &setup)
 {
 	using namespace octopus;
