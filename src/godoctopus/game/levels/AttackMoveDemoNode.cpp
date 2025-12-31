@@ -61,6 +61,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.add<custom_queue>()
 			.set<octopus::Move>({5./TICK_RATE})
 			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
+			.set<octopus::HitPoint>({10})
 			.add<octopus::PositionInTree>()
 			.set<octopus::Team>({1})
 			.add<octopus::Destroyable>()
@@ -73,23 +74,28 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		attackers.push_back(e1);
 	}
 
-	for(size_t i = 0 ; i < 1000 ; ++ i) {
-		ecs.entity()
-			.add<custom_queue>()
-			.add<octopus::Move>()
-			.set<octopus::HitPoint>({10})
-			.set<octopus::Team>({0})
-			.add<octopus::Destroyable>()
-			.add<octopus::PositionInTree>()
-			.set<octopus::Position>({{12+0.1*i,5+0.1*i}, {0,0}, octopus::Fixed::One()})
-			.set<VatLibraryHandle>({1})
-			.add<Pickable>()
-		;
+	size_t n = 1000;
+	for(size_t i = 0 ; i < n/10 ; ++ i) {
+		for(size_t j = 0 ; j < 10 ; ++ j) {
+			auto e = ecs.entity()
+				.add<custom_queue>()
+				.set<octopus::Move>({3./TICK_RATE})
+				.set<octopus::HitPoint>({10})
+				.set<octopus::Team>({0})
+				.add<octopus::Destroyable>()
+				.add<octopus::PositionInTree>()
+				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}, octopus::Fixed::One()})
+				.set<octopus::AttackCommand>({flecs::entity()})
+				.set<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 10, 1}})
+				.set<VatLibraryHandle>({3})
+				.add<Pickable>()
+			;
+		}
 	}
 
 	for(auto & e1 : attackers)
 	{
-		octopus::AttackCommand atk_l {flecs::entity(), {50,50}, true};
+		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
