@@ -193,6 +193,7 @@ godoctopus2_sources = [
     "./src/godoctopus/display/vat/VatLibraryHandle.cpp",
     "./src/godoctopus/display/particule/ParticuleSmartMMesh.cpp",
     "./src/godoctopus/pickable/Pickable.cpp",
+    "./src/godoctopus/pickable/PickerNode.cpp",
     "./src/vat/SmartMMeshLibrary.cpp",
     "./src/vat/SmartMultiMeshInstance.cpp",
     "./src/vat/VatLibrary.cpp",

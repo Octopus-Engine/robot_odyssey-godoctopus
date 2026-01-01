@@ -13,16 +13,16 @@
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
-#include "godoctopus/pickable/Pickable.h"
+#include "godoctopus/pickable/PickerNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
-  if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
-	return;
-  }
+	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
+		return;
+	}
 
-  // REGISTER CLASSES HERE LATER
+	// REGISTER CLASSES HERE LATER
 
-  // VAT
+	// VAT
 	ClassDB::register_class<godot::SmartMMeshLibrary>();
 	ClassDB::register_class<godot::SmartMultiMeshInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
@@ -32,16 +32,16 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::EntityGroup>();
 	ClassDB::register_class<godot::PickerNode>();
 	ClassDB::register_class<godot::CommandNode>();
-  ClassDB::register_class<godot::ParticuleSmartMMesh>();
-  ClassDB::register_class<godot::GameNode>();
+	ClassDB::register_class<godot::ParticuleSmartMMesh>();
+	ClassDB::register_class<godot::GameNode>();
 
-  // Demo Nodes
-  ClassDB::register_class<godot::AttackMoveDemoNode>();
+	// Demo Nodes
+	ClassDB::register_class<godot::AttackMoveDemoNode>();
 }
 
 void uninitialize_godoctopus2_module(ModuleInitializationLevel p_level) {
-  if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
-	return;
-  }
-  // DO NOTHING
+	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
+		return;
+	}
+	// DO NOTHING
 }
