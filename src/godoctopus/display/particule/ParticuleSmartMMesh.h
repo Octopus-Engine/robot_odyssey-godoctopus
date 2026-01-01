@@ -10,6 +10,7 @@
 namespace godot {
 
 struct ParticuleData {
+	Color color;
 	std::vector<Vector3> position;
 	std::vector<Vector3> direction;
 	std::vector<double> time_offset;
@@ -36,12 +37,12 @@ public:
 		ADD_SIMPLE_PROP(ParticuleSmartMMesh, FLOAT, scatter);
 		ADD_SIMPLE_PROP(ParticuleSmartMMesh, INT, count);
 
-		ClassDB::bind_method(D_METHOD("add_instance", "pos"), &ParticuleSmartMMesh::add_instance);
+		ClassDB::bind_method(D_METHOD("add_instance", "pos", "color"), &ParticuleSmartMMesh::add_instance);
 	}
 	void _ready();
 	void _process(double delta);
 
-	void add_instance(Vector3 const &pos);
+	void add_instance(Vector3 const &pos, Color const &color);
 
 protected:
 	std::mutex _mutex;

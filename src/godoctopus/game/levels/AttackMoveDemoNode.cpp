@@ -69,7 +69,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.each([this](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
 				octopus::Position const &pos, SmartMMeshLibraryHandle const &handle) {
 			if (_particules) {
-				_particules->add_instance(WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()));
+				_particules->add_instance(WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()), Color(22./256, 90./256, 76./256,1.));
 			}
 		});
 

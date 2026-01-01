@@ -30,6 +30,8 @@ void ParticuleSmartMMesh::_process(double delta) {
 				d.position[i] += d.direction[i] * speed_curve->sample_baked(lifetime) * delta;
 				transform.origin = d.position[i];
 				mesh->set_instance_transform(instance_id, transform);
+				mesh->set_instance_color(instance_id, d.color);
+				mesh->set_instance_custom_data(instance_id, d.color);
 
 				++instance_id;
 				// one instance is enough to keep this data
@@ -44,9 +46,9 @@ void ParticuleSmartMMesh::_process(double delta) {
 	mesh->set_visible_instance_count(instance_id);
 }
 
-void ParticuleSmartMMesh::add_instance(Vector3 const &pos) {
+void ParticuleSmartMMesh::add_instance(Vector3 const &pos, Color const &color) {
 	std::lock_guard<std::mutex> lock(_mutex);
-	ParticuleData particule_data;
+	ParticuleData particule_data {color.srgb_to_linear()};
 	particule_data.position.reserve(count);
 	particule_data.direction.reserve(count);
 	particule_data.time_offset.reserve(count);
