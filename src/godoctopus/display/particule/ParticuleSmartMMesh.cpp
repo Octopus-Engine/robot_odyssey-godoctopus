@@ -12,8 +12,12 @@ void ParticuleSmartMMesh::_process(double delta) {
 	if (!mesh.is_valid()) {
 		return;
 	}
-	if (mesh->get_instance_count() < data.size() * count) {
-		mesh->set_instance_count(data.size() * count);
+	int size = 0;
+	data.for_each_const([&size](auto const &d) {
+		size += (int)d.position.size();
+	});
+	if (mesh->get_instance_count() < size) {
+		mesh->set_instance_count(size);
 	}
 
 	elapsed += delta;
@@ -26,7 +30,7 @@ void ParticuleSmartMMesh::_process(double delta) {
 				lifetime /= time;
 
 				Transform3D transform;
-				transform.basis.scale(Vector3(1,1,1) * scale_curve->sample_baked(lifetime));
+				transform.basis.scale(d.scale * scale_curve->sample_baked(lifetime));
 				d.position[i] += d.direction[i] * speed_curve->sample_baked(lifetime) * delta;
 				transform.origin = d.position[i];
 				mesh->set_instance_transform(instance_id, transform);
@@ -47,12 +51,16 @@ void ParticuleSmartMMesh::_process(double delta) {
 }
 
 void ParticuleSmartMMesh::add_instance(Vector3 const &pos, Color const &color) {
+	add_instance_detailed(pos, color, count, Vector3(1,1,1));
+}
+
+void ParticuleSmartMMesh::add_instance_detailed(Vector3 const &pos, Color const &color, int c, Vector3 const &scale) {
 	std::lock_guard<std::mutex> lock(_mutex);
-	ParticuleData particule_data {color.srgb_to_linear()};
-	particule_data.position.reserve(count);
-	particule_data.direction.reserve(count);
-	particule_data.time_offset.reserve(count);
-	for (int i = 0 ; i < count ; ++ i) {
+	ParticuleData particule_data {color.srgb_to_linear(), scale};
+	particule_data.position.reserve(c);
+	particule_data.direction.reserve(c);
+	particule_data.time_offset.reserve(c);
+	for (int i = 0 ; i < c ; ++ i) {
 		particule_data.position.push_back(pos + scatter * Vector3(rng->randf_range(-1., 1.), rng->randf_range(-1., 1.), rng->randf_range(-1., 1.)));
 		particule_data.direction.push_back(Vector3(rng->randf_range(-0.5, 0.5), rng->randf_range(-0.5, 0.5), rng->randf_range(-0.5, 0.5)));
 		particule_data.time_offset.push_back(elapsed + rng->randf_range(0., 0.5));

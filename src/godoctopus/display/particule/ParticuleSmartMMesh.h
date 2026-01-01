@@ -11,6 +11,7 @@ namespace godot {
 
 struct ParticuleData {
 	Color color;
+	Vector3 scale = Vector3(1,1,1);
 	std::vector<Vector3> position;
 	std::vector<Vector3> direction;
 	std::vector<double> time_offset;
@@ -43,6 +44,7 @@ public:
 	void _process(double delta);
 
 	void add_instance(Vector3 const &pos, Color const &color);
+	void add_instance_detailed(Vector3 const &pos, Color const &color, int c, Vector3 const &scale);
 
 protected:
 	std::mutex _mutex;
