@@ -58,7 +58,12 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 		.with<CustomBasicProjectile>()
 		.each([particules](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
 				octopus::Position const &pos, SmartMMeshLibraryHandle const &handle) {
-			particules->add_instance(WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()), Color(22./256, 90./256, 76./256,1.));
+			particules->add_instance_detailed(
+				WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()),
+				Color(handle.r.to_double(),handle.g.to_double(),handle.b.to_double(),1.),
+				4,
+				Vector3(0.5,0.5,0.5)
+			);
 		});
 
 }

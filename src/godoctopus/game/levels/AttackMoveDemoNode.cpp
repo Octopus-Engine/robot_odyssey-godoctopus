@@ -87,7 +87,18 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 
 	if (_particules) {
 		declare_basic_projectile_systems(ecs, _particules);
-	}
+
+		ecs.observer<octopus::Destroyable const, octopus::Position const, ProjectileTrajectory const>()
+			.event<octopus::Destroyed>()
+			.each([this](flecs::entity e, octopus::Destroyable const&, octopus::Position const &pos, ProjectileTrajectory const &proj) {
+				_particules->add_instance_detailed(
+					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.target_y.to_double()+0.25, pos.pos.y.to_double()),
+					Color(1.,1.,1.,1.),
+					8,
+					Vector3(1.5,1.5,1.5)
+				);
+			});
+		}
 }
 
 }
