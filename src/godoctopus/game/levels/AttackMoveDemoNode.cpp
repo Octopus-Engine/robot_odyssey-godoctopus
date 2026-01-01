@@ -30,12 +30,6 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
-
-	if (_particules) {
-		declare_basic_projectile_systems(ecs, _particules);
-	}
-
 	std::vector<flecs::entity> attackers;
 	for(size_t i = 0 ; i < 500 ; ++ i) {
 		auto e1 = ecs.entity()
@@ -85,7 +79,15 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 }
 
 void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &game) {
+	init_nodes();
 
+	flecs::world &ecs = game.get_world().ecs;
+
+	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
+
+	if (_particules) {
+		declare_basic_projectile_systems(ecs, _particules);
+	}
 }
 
 }
