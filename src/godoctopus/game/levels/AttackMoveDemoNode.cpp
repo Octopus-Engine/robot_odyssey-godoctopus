@@ -25,20 +25,38 @@
 namespace godot {
 
 struct CustomProj {};
+struct ProjTrajectory {
+	octopus::Fixed origin_y;
+	octopus::Fixed target_y;
+};
 
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	init_nodes();
 
 	flecs::world &ecs = game.get_world().ecs;
 
+	ecs.component<CustomProj>();
+	ecs.component<ProjTrajectory>()
+		.member("origin_y", &ProjTrajectory::origin_y)
+		.member("target_y", &ProjTrajectory::target_y)
+	;
+
 	octopus::set_up_basic_projectile_systems<CustomProj>(ecs);
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomProj const>()
 			.event(flecs::OnAdd)
 			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomProj const &) {
+				octopus::Fixed up = 1.5;
+				octopus::Fixed end_up = 0.25;
+				if (e && e.try_get<ProjTrajectory>()) {
+					up = e.try_get<ProjTrajectory>()->origin_y;
+				}
+				if (proj.target && proj.target.try_get<ProjTrajectory>()) {
+					end_up = proj.target.try_get<ProjTrajectory>()->target_y;
+				}
 				e.set<SmartMMeshLibraryHandle>({0,22./256, 90./256, 76./256,1.,0.2,
-					1.5, // up
-					0.25, // end_up
+					up, // up
+					end_up, // end_up
 					octopus::get_time_stamp(e.world()),
 					octopus::get_time_stamp(e.world()) + 20
 				});
@@ -70,6 +88,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 5}})
 			.set<VatLibraryHandle>({2})
 			.add<Pickable>()
+			.set<ProjTrajectory>({1.5,1})
 		;
 
 		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
@@ -92,6 +111,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 				.set<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
 				.set<VatLibraryHandle>({3})
 				.add<Pickable>()
+				.set<ProjTrajectory>({1.5,1})
 			;
 
 			octopus::AttackCommand atk_l {flecs::entity(), {50,100}, true};
