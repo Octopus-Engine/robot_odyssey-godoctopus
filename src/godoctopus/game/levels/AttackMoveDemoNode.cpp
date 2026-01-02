@@ -1,7 +1,6 @@
 #include "AttackMoveDemoNode.h"
 
 #include "octopus/commands/basic/move/AttackCommand.hh"
-#include "octopus/commands/basic/move/AttackCommandSystem.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
 #include "octopus/components/basic/attack/Attack.hh"
@@ -60,12 +59,12 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	ecs.prefab("earbot")
 		.auto_override<custom_queue>()
 		.set_auto_override<octopus::Move>({5./TICK_RATE})
-		.set_auto_override<octopus::HitPoint>({50})
+		.set_auto_override<octopus::HitPoint>({75})
 		.auto_override<octopus::Destroyable>()
 		.auto_override<octopus::PositionInTree>()
-		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1}})
+		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1, 0.2}})
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE/2, 10, 6}})
+		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE/2, 10, 7}})
 		.set_auto_override<VatLibraryHandle>({0})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({0.5})
@@ -104,11 +103,9 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
+	declare_basic_projectile_systems(ecs, _particules);
 
 	if (_particules) {
-		declare_basic_projectile_systems(ecs, _particules);
-
 		ecs.observer<octopus::Destroyable const, octopus::Position const, ProjectileTrajectory const>()
 			.event<octopus::Destroyed>()
 			.each([this](flecs::entity e, octopus::Destroyable const&, octopus::Position const &pos, ProjectileTrajectory const &proj) {
