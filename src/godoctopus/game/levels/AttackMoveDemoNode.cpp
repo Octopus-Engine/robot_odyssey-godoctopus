@@ -30,22 +30,52 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	std::vector<flecs::entity> attackers;
-	for(size_t i = 0 ; i < 500 ; ++ i) {
+	ecs.prefab("rambot")
+		.auto_override<custom_queue>()
+		.set_auto_override<octopus::Move>({3./TICK_RATE})
+		.set_auto_override<octopus::HitPoint>({150})
+		.auto_override<octopus::Destroyable>()
+		.auto_override<octopus::PositionInTree>()
+		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
+		.set_auto_override<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
+		.set_auto_override<VatLibraryHandle>({3})
+		.auto_override<Pickable>()
+		.set_auto_override<ProjectileTrajectory>({1})
+	;
+
+	ecs.prefab("tallbot")
+		.auto_override<custom_queue>()
+		.set_auto_override<octopus::Move>({5./TICK_RATE})
+		.set_auto_override<octopus::HitPoint>({75})
+		.auto_override<octopus::Destroyable>()
+		.auto_override<octopus::PositionInTree>()
+		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {22,90,76,1.5}})
+		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
+		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 7}})
+		.set_auto_override<VatLibraryHandle>({2})
+		.auto_override<Pickable>()
+		.set_auto_override<ProjectileTrajectory>({1})
+	;
+
+	ecs.prefab("earbot")
+		.auto_override<custom_queue>()
+		.set_auto_override<octopus::Move>({5./TICK_RATE})
+		.set_auto_override<octopus::HitPoint>({50})
+		.auto_override<octopus::Destroyable>()
+		.auto_override<octopus::PositionInTree>()
+		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1}})
+		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
+		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE/2, 10, 6}})
+		.set_auto_override<VatLibraryHandle>({0})
+		.auto_override<Pickable>()
+		.set_auto_override<ProjectileTrajectory>({0.5})
+	;
+
+	for(size_t i = 0 ; i < 10 ; ++ i) {
 		auto e1 = ecs.entity()
-			.add<custom_queue>()
-			.set<octopus::Move>({5./TICK_RATE})
-			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
-			.set<octopus::HitPoint>({50})
-			.add<octopus::PositionInTree>()
+			.is_a(ecs.prefab("tallbot"))
 			.set<octopus::Team>({1})
-			.add<octopus::Destroyable>()
-			.set<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE})
-			.set<octopus::AttackCommand>({flecs::entity()})
-			.set<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 5}})
-			.set<VatLibraryHandle>({2})
-			.add<Pickable>()
-			.set<ProjectileTrajectory>({1.5,1})
+			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
 		;
 
 		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
@@ -53,22 +83,13 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
 
-	size_t n = 500;
+	size_t n = 10;
 	for(size_t i = 0 ; i < n/10 ; ++ i) {
 		for(size_t j = 0 ; j < 10 ; ++ j) {
 			auto e1 = ecs.entity()
-				.add<custom_queue>()
-				.set<octopus::Move>({3./TICK_RATE})
-				.set<octopus::HitPoint>({150})
+				.is_a(ecs.prefab("earbot"))
 				.set<octopus::Team>({0})
-				.add<octopus::Destroyable>()
-				.add<octopus::PositionInTree>()
 				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}, octopus::Fixed::One()})
-				.set<octopus::AttackCommand>({flecs::entity()})
-				.set<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
-				.set<VatLibraryHandle>({3})
-				.add<Pickable>()
-				.set<ProjectileTrajectory>({1.5,1})
 			;
 
 			octopus::AttackCommand atk_l {flecs::entity(), {50,100}, true};
