@@ -10,40 +10,28 @@
 
 #include "octopus_types.h"
 #include <iostream>
+
 void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules) {
 
-	ecs.component<CustomBasicProjectile>();
-	ecs.component<CustomBasicProjectileInfo>()
-		.member("r", &CustomBasicProjectileInfo::r)
-		.member("g", &CustomBasicProjectileInfo::g)
-		.member("b", &CustomBasicProjectileInfo::b)
+	ecs.component<CustomBasicProjectile>()
+		.member("r", &CustomBasicProjectile::r)
+		.member("g", &CustomBasicProjectile::g)
+		.member("b", &CustomBasicProjectile::b)
+		.member("origin_y", &CustomBasicProjectile::origin_y)
 	;
 	ecs.component<ProjectileTrajectory>()
-		.member("origin_y", &ProjectileTrajectory::origin_y)
 		.member("target_y", &ProjectileTrajectory::target_y)
-	;
-	ecs.component<octopus::BasicProjectileAttack<CustomBasicProjectile>>()
-		.member("speed", &octopus::BasicProjectileAttack<CustomBasicProjectile>::speed)
 	;
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const>()
-			.event(flecs::OnAdd)
-			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &) {
-				octopus::Fixed up = 1.5;
+			.event(flecs::OnSet)
+			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &info) {
+				octopus::Fixed up = info.origin_y;
 				octopus::Fixed end_up = 0.25;
-				if (e && e.try_get<ProjectileTrajectory>()) {
-					up = e.try_get<ProjectileTrajectory>()->origin_y;
-				}
 				if (proj.target && proj.target.try_get<ProjectileTrajectory>()) {
 					end_up = proj.target.try_get<ProjectileTrajectory>()->target_y;
 				}
-				float r=22./256, g=90./256, b=76./256;
-				auto info = e.try_get<CustomBasicProjectileInfo>();
-				if (e && info) {
-					r = info->r / 256.;
-					g = info->g / 256.;
-					b = info->b / 256.;
-				}
+				float r=info.r/255., g=info.g/255., b=info.b/255.;
 				e.set<SmartMMeshLibraryHandle>({0, r, g, b, 1., 0.2,
 					up, // up
 					end_up, // end_up
