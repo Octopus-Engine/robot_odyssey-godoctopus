@@ -35,7 +35,7 @@ class HealthBarNode : public Node {
 	SET_GET_PARAM(Ref<Texture2D>, texture);
 	SET_GET_PARAM(int, display_mode);
 public:
-
+	~HealthBarNode();
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
 	static void _bind_methods() {

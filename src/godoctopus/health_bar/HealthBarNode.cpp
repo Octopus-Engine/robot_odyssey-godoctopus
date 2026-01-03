@@ -8,6 +8,12 @@
 
 namespace godot {
 
+HealthBarNode::~HealthBarNode() {
+	bars.for_each_const([&](HealthBarData const &bar) {
+		RenderingServer::get_singleton()->free(bar.rid);
+	});
+}
+
 int HealthBarNode::add_health_bar() {
 	std::lock_guard<std::mutex> lock(mutex);
 	RID rid = RenderingServer::get_singleton()->canvas_item_create();
