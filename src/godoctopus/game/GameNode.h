@@ -14,6 +14,7 @@
 
 #include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
+#include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/pickable/Pickable.h"
 
 #include "flecs.h"
@@ -57,6 +58,7 @@ public:
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);
 	SET_GET_PARAM(LevelNode*, level_node);
+	SET_GET_PARAM(TypedArray<Ref<UnitPrefab>>, unit_prefabs);
 public:
 	double get_avg_engine_times();
 

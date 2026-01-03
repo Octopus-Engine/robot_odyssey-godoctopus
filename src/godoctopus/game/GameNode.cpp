@@ -7,9 +7,17 @@
 #include "octopus/serialization/commands/CommandSupport.hh"
 #include "octopus/systems/Systems.hh"
 #include "octopus/world/path/PathFindingCache.hh"
+#include "octopus/commands/queue/CommandQueue.hh"
+#include "octopus/components/basic/attack/Attack.hh"
+#include "octopus/components/basic/hitpoint/HitPoint.hh"
+#include "octopus/components/basic/hitpoint/HitPointMax.hh"
+#include "octopus/components/basic/position/Move.hh"
+#include "octopus/components/basic/position/Position.hh"
 
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
+#include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/projectile/CustomBasicProjectile.h"
 
 namespace godot
 {
@@ -21,6 +29,39 @@ GameNode::~GameNode() {
 	}
 	delete _loop_thread;
 }
+
+static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
+
+	auto prefab = ecs.prefab(unit_prefab->get_prefab_name().utf8().get_data())
+		.auto_override<custom_queue>()
+		.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE})
+		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
+		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
+		.auto_override<octopus::Destroyable>()
+		.set_auto_override<octopus::Position>({
+			octopus::Vector(), octopus::Vector(), octopus::Fixed::One(), unit_prefab->get_ray_x10()/10.
+		})
+		.auto_override<octopus::PositionInTree>()
+		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
+		.set_auto_override<octopus::Attack>({{
+			unit_prefab->get_windup_x10() * (TICK_RATE / 10),
+			unit_prefab->get_reload_x10() * (TICK_RATE / 10),
+			unit_prefab->get_damage_x10()/10.,
+			unit_prefab->get_range_x10()/10.}})
+		.set_auto_override<VatLibraryHandle>({unit_prefab->get_track_idx()})
+		.auto_override<Pickable>()
+		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
+		.set_auto_override<HealthBar>({
+			unit_prefab->get_health_bar_offset_y(),
+			unit_prefab->get_health_bar_width()})
+	;
+	if (unit_prefab->get_basic_projectile()) {
+		Color color = unit_prefab->get_projectile_color().srgb_to_linear();
+		prefab.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE,
+			{color.get_r8(),color.get_g8(),color.get_b8(), unit_prefab->get_projectile_origin(), unit_prefab->get_projectile_scale()}});
+	}
+}
+
 
 void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictionary const &, GameNode&)> const &setup)
 {
@@ -77,7 +118,9 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	//
 	// prefab
 	//
-	// declare_unit_prefab(ecs, _info_node);
+	for (Ref<UnitPrefab> unit_prefab : unit_prefabs) {
+		declare_unit_prefab(ecs, unit_prefab);
+	}
 
 	// load level
 	setup(meta_data, *this);
@@ -151,6 +194,12 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("init_load", "file_name", "meta_data"), &GameNode::init_load);
 	ClassDB::bind_method(D_METHOD("init_from_level", "meta_data"), &GameNode::init_from_level);
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
+
+	ClassDB::bind_method(D_METHOD("set_unit_prefabs", "unit_prefabs"), &GameNode::set_unit_prefabs);
+	ClassDB::bind_method(D_METHOD("get_unit_prefabs"), &GameNode::get_unit_prefabs);
+	String arrayType = vformat("%s/%s:%s", Variant::OBJECT, PROPERTY_HINT_RESOURCE_TYPE, "UnitPrefab");
+	ClassDB::add_property("GameNode", PropertyInfo(Variant::ARRAY, "unit_prefabs", PROPERTY_HINT_TYPE_STRING, arrayType, PROPERTY_HINT_ARRAY_TYPE),
+		"set_unit_prefabs", "get_unit_prefabs");
 
     ADD_SIGNAL(MethodInfo("init_done"));
 
