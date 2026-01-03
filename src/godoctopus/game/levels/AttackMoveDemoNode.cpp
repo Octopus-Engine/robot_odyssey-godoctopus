@@ -78,9 +78,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<HealthBar>({2., 32.})
 	;
 
-	for(size_t i = 0 ; i < 10 ; ++ i) {
+	for(size_t i = 0 ; i < count1 ; ++ i) {
 		auto e1 = ecs.entity()
-			.is_a(ecs.prefab("tallbot"))
+			.is_a(ecs.prefab(unit1.utf8().get_data()))
 			.set<octopus::Team>({1})
 			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
 		;
@@ -90,11 +90,11 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
 
-	size_t n = 10;
+	size_t n = count2;
 	for(size_t i = 0 ; i < n/10 ; ++ i) {
 		for(size_t j = 0 ; j < 10 ; ++ j) {
 			auto e1 = ecs.entity()
-				.is_a(ecs.prefab("earbot"))
+				.is_a(ecs.prefab(unit2.utf8().get_data()))
 				.set<octopus::Team>({0})
 				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}, octopus::Fixed::One()})
 			;

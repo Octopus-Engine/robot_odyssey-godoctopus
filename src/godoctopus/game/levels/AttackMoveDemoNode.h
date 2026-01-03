@@ -10,6 +10,10 @@ class AttackMoveDemoNode : public LevelNode {
 	GDCLASS(AttackMoveDemoNode, LevelNode)
 
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
+	SET_GET_PARAM_DEF(String, unit1, "earbot");
+	SET_GET_PARAM_DEF(String, unit2, "tallbot");
+	SET_GET_PARAM_DEF(int, count1, 10);
+	SET_GET_PARAM_DEF(int, count2, 10);
 
 public:
 	void setup(Dictionary const &meta_data, GameNode &game) override;
@@ -19,6 +23,10 @@ public:
 	// Use this to add properties to your class
 	static void _bind_methods() {
 		BIND_NODE_PATH(AttackMoveDemoNode, ParticuleSmartMMesh, particules);
+		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit1);
+		ADD_SIMPLE_PROP(AttackMoveDemoNode, INT, count1);
+		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit2);
+		ADD_SIMPLE_PROP(AttackMoveDemoNode, INT, count2);
 	}
 
 	void init_nodes() {
