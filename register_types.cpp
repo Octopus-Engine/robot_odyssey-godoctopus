@@ -13,6 +13,7 @@
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
+#include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
@@ -34,6 +35,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::CommandNode>();
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
 	ClassDB::register_class<godot::GameNode>();
+	ClassDB::register_class<godot::HealthBarNode>();
 
 	// Demo Nodes
 	ClassDB::register_class<godot::AttackMoveDemoNode>();
