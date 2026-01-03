@@ -4,6 +4,7 @@
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
 #include "octopus/components/basic/attack/Attack.hh"
+#include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/position/Move.hh"
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/player/Team.hh"
@@ -14,6 +15,7 @@
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
+#include "godoctopus/health_bar/HealthBarNode.h"
 
 #include "octopus_types.h"
 
@@ -33,6 +35,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.auto_override<custom_queue>()
 		.set_auto_override<octopus::Move>({3./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({150})
+		.set_auto_override<octopus::HitPointMax>({150})
 		.auto_override<octopus::Destroyable>()
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
@@ -40,12 +43,14 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<VatLibraryHandle>({3})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({1})
+		.set_auto_override<HealthBar>({2., 48.})
 	;
 
 	ecs.prefab("tallbot")
 		.auto_override<custom_queue>()
 		.set_auto_override<octopus::Move>({5./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({75})
+		.set_auto_override<octopus::HitPointMax>({75})
 		.auto_override<octopus::Destroyable>()
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {22,90,76,1.5}})
@@ -54,12 +59,14 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<VatLibraryHandle>({2})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({1})
+		.set_auto_override<HealthBar>({2., 32.})
 	;
 
 	ecs.prefab("earbot")
 		.auto_override<custom_queue>()
 		.set_auto_override<octopus::Move>({5./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({75})
+		.set_auto_override<octopus::HitPointMax>({75})
 		.auto_override<octopus::Destroyable>()
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1, 0.2}})
@@ -68,6 +75,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<VatLibraryHandle>({0})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({0.5})
+		.set_auto_override<HealthBar>({2., 32.})
 	;
 
 	for(size_t i = 0 ; i < 10 ; ++ i) {
