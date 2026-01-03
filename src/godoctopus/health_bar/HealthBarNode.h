@@ -33,6 +33,7 @@ class HealthBarNode : public Node {
 	SET_GET_NODE_PATH(Control, health_bar_control_container);
 	SET_GET_PARAM(Ref<ShaderMaterial>, bar_material);
 	SET_GET_PARAM(Ref<Texture2D>, texture);
+	SET_GET_PARAM(int, display_mode);
 public:
 
 	// Will be called by Godot when the class is registered
@@ -49,6 +50,10 @@ public:
 		ClassDB::bind_method(D_METHOD("set_bar_position", "idx", "pos"), &HealthBarNode::set_bar_position);
 		ClassDB::bind_method(D_METHOD("set_bar_ratio", "idx", "ratio"), &HealthBarNode::set_bar_ratio);
 		ClassDB::bind_method(D_METHOD("setup"), &HealthBarNode::setup);
+
+		ClassDB::bind_method(D_METHOD("set_display_mode"), &HealthBarNode::set_display_mode);
+		ClassDB::bind_method(D_METHOD("get_display_mode"), &HealthBarNode::get_display_mode);
+		ADD_PROPERTY(PropertyInfo(Variant::INT, "display_mode", PROPERTY_HINT_ENUM, "Always,Damaged,Never"), "set_display_mode", "get_display_mode");
 	}
 	// All nodes
 	void init_nodes() {

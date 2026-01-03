@@ -42,6 +42,14 @@ void HealthBarNode::_process(double delta) {
 
 	bars.for_each_const([&](HealthBarData const &bar) {
 		RenderingServer::get_singleton()->canvas_item_clear(bar.rid);
+		// Never
+		if (display_mode == 2) {
+			return;
+		}
+		// Damaged only
+		if (display_mode == 1 && bar.ratio > 0.99) {
+			return;
+		}
 		RenderingServer::get_singleton()->canvas_item_set_transform(bar.rid, Transform2D().translated(
 			_camera->unproject_position(bar.pos) + Vector2(-csize.x*bar.width/2, 0)
 		));
