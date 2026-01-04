@@ -78,7 +78,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<HealthBar>({2., 32.})
 	;
 
-	for(size_t i = 0 ; i < count1 ; ++ i) {
+	for(int i = 0 ; i < count1 ; ++ i) {
 		auto e1 = ecs.entity()
 			.is_a(ecs.prefab(unit1.utf8().get_data()))
 			.set<octopus::Team>({1})
@@ -90,9 +90,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
 	}
 
-	size_t n = count2;
-	for(size_t i = 0 ; i < n/10 ; ++ i) {
-		for(size_t j = 0 ; j < 10 ; ++ j) {
+	int n = count2;
+	for(int i = 0 ; i < n/10 ; ++ i) {
+		for(int j = 0 ; j < 10 ; ++ j) {
 			auto e1 = ecs.entity()
 				.is_a(ecs.prefab(unit2.utf8().get_data()))
 				.set<octopus::Team>({0})

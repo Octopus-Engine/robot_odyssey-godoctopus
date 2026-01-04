@@ -96,10 +96,10 @@ void HealthBarNode::setup() {
 			}
 			std	::lock_guard<std::mutex> lock(this->mutex);
 			// sync
-			HealthBarData &data = bars[hp_bar.idx_bar];
-			data.pos = WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), hp_bar.offset, real_t(octopus::to_double(pos.pos.y)));
-			data.width = hp_bar.width;
-			data.ratio = hp.qty.to_double()/hp_max.qty.to_double();
+			HealthBarData &hp_data = bars[hp_bar.idx_bar];
+			hp_data.pos = WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), hp_bar.offset, real_t(octopus::to_double(pos.pos.y)));
+			hp_data.width = hp_bar.width;
+			hp_data.ratio = hp.qty.to_double()/hp_max.qty.to_double();
 		});
 
 
