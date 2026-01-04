@@ -38,9 +38,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
 		.auto_override<octopus::Destroyable>()
-		.set_auto_override<octopus::Position>({
-			octopus::Vector(), octopus::Vector(), octopus::Fixed::One(), unit_prefab->get_ray_x10()/10.
-		})
+		.set<octopus::Collision>({unit_prefab->get_ray_x10()/10.})
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 		.set_auto_override<octopus::Attack>({{

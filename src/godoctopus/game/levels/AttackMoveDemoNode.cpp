@@ -37,6 +37,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<octopus::HitPoint>({150})
 		.set_auto_override<octopus::HitPointMax>({150})
 		.auto_override<octopus::Destroyable>()
+		.set<octopus::Collision>({3*octopus::Fixed::One()/4})
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 		.set_auto_override<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
@@ -53,6 +54,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<octopus::HitPointMax>({75})
 		.auto_override<octopus::Destroyable>()
 		.auto_override<octopus::PositionInTree>()
+		.set<octopus::Collision>({octopus::Fixed::One()/2})
 		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {22,90,76,1.5}})
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 7}})
@@ -68,6 +70,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set_auto_override<octopus::HitPoint>({75})
 		.set_auto_override<octopus::HitPointMax>({75})
 		.auto_override<octopus::Destroyable>()
+		.set<octopus::Collision>({octopus::Fixed::One()/2})
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1, 0.2}})
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
@@ -82,7 +85,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		auto e1 = ecs.entity()
 			.is_a(ecs.prefab(unit1.utf8().get_data()))
 			.set<octopus::Team>({1})
-			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}, octopus::Fixed::One(), 0.5})
+			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}})
 		;
 
 		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
@@ -96,7 +99,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			auto e1 = ecs.entity()
 				.is_a(ecs.prefab(unit2.utf8().get_data()))
 				.set<octopus::Team>({0})
-				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}, octopus::Fixed::One()})
+				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}})
 			;
 
 			octopus::AttackCommand atk_l {flecs::entity(), {50,100}, true};
