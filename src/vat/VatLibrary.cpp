@@ -3,7 +3,7 @@
 namespace godot {
 
 void VatLibrary::_ready() {
-	for (Ref<VatAnimationTrack> const &track : tracks) {
+	for (Ref<VatAnimationTrack> track : tracks) {
 		VatMultiMeshInstance * multi_mesh = memnew(VatMultiMeshInstance);
 		multi_mesh->set_time_step(time_step);
 		multi_mesh->set_track(track);
