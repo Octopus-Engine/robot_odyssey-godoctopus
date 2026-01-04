@@ -36,7 +36,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, track_idx);
 		// Topo
 		ClassDB::add_property_group("UnitPrefab", "Topology");
-		ADD_SIMPLE_PROP(UnitPrefab, INT, ray_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, ray_x100);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, speed_x10);
 		// Cost
 		ClassDB::add_property_group("UnitPrefab", "Cost");
@@ -66,7 +66,7 @@ public:
 	SET_GET_PARAM(Ref<VatAnimationTrack>, track);
 	SET_GET_PARAM_DEF(int, track_idx, 0);
 	// Topo
-	SET_GET_PARAM_DEF(int, ray_x10, 10);
+	SET_GET_PARAM_DEF(int, ray_x100, 10);
 	SET_GET_PARAM_DEF(int, speed_x10, 30);
 	// Cost
 	SET_GET_PARAM_DEF(int, cost_basic_x10, 10);

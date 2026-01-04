@@ -38,7 +38,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
 		.auto_override<octopus::Destroyable>()
-		.set<octopus::Collision>({unit_prefab->get_ray_x10()/10.})
+		.set<octopus::Collision>({unit_prefab->get_ray_x100()/100.})
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 		.set_auto_override<octopus::Attack>({{
@@ -54,7 +54,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			unit_prefab->get_health_bar_width()})
 	;
 	if (unit_prefab->get_basic_projectile()) {
-		Color color = unit_prefab->get_projectile_color().srgb_to_linear();
+		Color const &color = unit_prefab->get_projectile_color();
 		prefab.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE,
 			{color.get_r8(),color.get_g8(),color.get_b8(), unit_prefab->get_projectile_origin(), unit_prefab->get_projectile_scale()}});
 	}
