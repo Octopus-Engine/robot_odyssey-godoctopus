@@ -124,7 +124,8 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.target_y.to_double()+0.25, pos.pos.y.to_double()),
 					Color(1.,1.,1.,1.),
 					8,
-					Vector3(1.5,1.5,1.5)
+					Vector3(1.5,1.5,1.5),
+					-1
 				);
 			});
 		}

@@ -49,7 +49,8 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					4,
 					info.scale.to_double()*Vector3(1.,1.,1.),
 					Vector3(direction.x.to_double(), (end_up-up).to_double(),direction.y.to_double()),
-					20.
+					20.,
+					-1
 				);
 			});
 
@@ -64,7 +65,8 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()),
 					Color(handle.r.to_double(), handle.g.to_double(),handle.b.to_double(),1.),
 					4,
-					Vector3(0.5,0.5,0.5)
+					Vector3(0.5,0.5,0.5),
+					-1
 				);
 			});
 	}
