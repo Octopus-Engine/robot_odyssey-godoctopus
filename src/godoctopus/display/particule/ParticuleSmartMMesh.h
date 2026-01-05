@@ -16,6 +16,7 @@ struct ParticuleData {
 	std::vector<Vector3> position;
 	std::vector<Vector3> direction;
 	std::vector<double> time_offset;
+	std::vector<double> lifetime;
 };
 
 class ParticuleSmartResource : public Resource {
@@ -67,7 +68,11 @@ public:
 	void add_instance(Vector3 const &pos, Color const &color);
 	void add_instance_custom(Vector3 const &pos, Color const &color, int resource);
 	void add_instance_detailed(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, int resource);
+	// conical spread
 	void add_instance_coned(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, Vector3 const &direction, float angle_spread, int resource);
+	// spherical load
+	// need 2 effect resurce (one for a loading sphere and one for the incoming particules)
+	void add_instance_load(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, int resource_load, int resource_incoming);
 
 protected:
 	std::mutex _mutex;

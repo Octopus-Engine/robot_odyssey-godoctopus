@@ -34,9 +34,10 @@ void ParticuleSmartMMesh::_process(double delta) {
 		bool do_not_free = false;
 		auto current_resource = get_resource_or_default(this, d.resource);
 		for (size_t i = 0; i < d.position.size() ; ++ i) {
-			if (d.time_offset[i] <= elapsed && d.time_offset[i]+current_resource->get_time() >= elapsed) {
+			double time = i < d.lifetime.size() ? d.lifetime[i] : current_resource->get_time();
+			if (d.time_offset[i] <= elapsed && d.time_offset[i]+time >= elapsed) {
 				double lifetime = elapsed - d.time_offset[i];
-				lifetime /= current_resource->get_time();
+				lifetime /= time;
 
 				Transform3D transform;
 				transform.basis.scale(d.scale * current_resource->get_scale_curve()->sample_baked(lifetime));
@@ -102,6 +103,26 @@ void ParticuleSmartMMesh::add_instance_coned(Vector3 const &pos, Color const &co
 	}
 	data.new_instance(std::move(particule_data));
 }
+
+void ParticuleSmartMMesh::add_instance_load(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, int resource_load, int resource_incoming) {
+	// loading sphere
+	add_instance_detailed(pos, color, 1, scale, resource_load);
+	// incoming particules
+	std::lock_guard<std::mutex> lock(_mutex);
+	ParticuleData particule_data {color.srgb_to_linear(), scale, resource_incoming};
+	auto resource_ref = get_resource_or_default(this, resource_incoming);
+	particule_data.position.reserve(c);
+	particule_data.direction.reserve(c);
+	particule_data.time_offset.reserve(c);
+	for (int i = 0 ; i < c ; ++ i) {
+		particule_data.position.push_back(pos + resource_ref->get_scatter() * Vector3(rng->randf_range(-1., 1.), rng->randf_range(-1., 1.), rng->randf_range(-1., 1.)));
+		Vector3 dir = particule_data.position.back().direction_to(pos);
+		particule_data.direction.push_back(dir.normalized());
+		particule_data.time_offset.push_back(elapsed + rng->randf_range(0., resource_ref->get_time_spread()));
+	}
+	data.new_instance(std::move(particule_data));
+}
+
 
 void ParticuleSmartMMesh::_notification(int p_notification)
 {
