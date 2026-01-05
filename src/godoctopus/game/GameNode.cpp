@@ -54,6 +54,36 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		prefab.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE,
 			{color.get_r8(),color.get_g8(),color.get_b8(), unit_prefab->get_projectile_origin(), unit_prefab->get_projectile_scale()}});
 	}
+
+	if (unit_prefab->get_attack_particle()) {
+		std::cout<<"adding particle"<<std::endl;
+		prefab.set<AttackParticle>({
+			unit_prefab->get_attack_particle_effect(),
+			unit_prefab->get_attack_particle_origin().x,
+			unit_prefab->get_attack_particle_origin().y,
+			unit_prefab->get_attack_particle_origin().z,
+			unit_prefab->get_attack_particle_color().get_r8(),
+			unit_prefab->get_attack_particle_color().get_g8(),
+			unit_prefab->get_attack_particle_color().get_b8(),
+			unit_prefab->get_attack_particle_count(),
+			unit_prefab->get_attack_particle_scale()
+		});
+	}
+
+	if (unit_prefab->get_windup_effect()) {
+		prefab.set<WindupEffect>({
+			unit_prefab->get_windup_effect_loading(),
+			unit_prefab->get_windup_effect_incoming(),
+			unit_prefab->get_windup_effect_origin().x,
+			unit_prefab->get_windup_effect_origin().y,
+			unit_prefab->get_windup_effect_origin().z,
+			unit_prefab->get_windup_effect_color().get_r8(),
+			unit_prefab->get_windup_effect_color().get_g8(),
+			unit_prefab->get_windup_effect_color().get_b8(),
+			unit_prefab->get_windup_effect_count(),
+			unit_prefab->get_windup_effect_scale()
+		});
+	}
 }
 
 
