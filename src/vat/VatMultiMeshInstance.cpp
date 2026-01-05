@@ -140,6 +140,14 @@ Transform3D VatMultiMeshInstance::get_old_instance_transform(int instance_id) co
 	return old_transform[instance_id];
 }
 
+Transform3D VatMultiMeshInstance::get_current_instance_transform(int instance_id) const {
+	Transform3D transform;
+	transform.basis = old_transform[instance_id].basis.lerp(new_transform[instance_id].basis, elapsed_time / time_step);
+	transform.origin = old_transform[instance_id].origin.lerp(new_transform[instance_id].origin, elapsed_time / time_step);
+	transform.origin.y = track->get_z_offset();
+	return transform;
+}
+
 void VatMultiMeshInstance::swap_transforms() {
 	elapsed_time = 0.;
 	std::swap(new_transform, old_transform);

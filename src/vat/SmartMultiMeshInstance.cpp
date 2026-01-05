@@ -76,6 +76,10 @@ Transform3D SmartMultiMeshInstance::get_old_instance_transform(int instance_id) 
 	return old_transform[instance_id];
 }
 
+Transform3D SmartMultiMeshInstance::get_current_instance_transform(int instance_id) const {
+	return old_transform[instance_id].interpolate_with(new_transform[instance_id], elapsed_time / time_step);
+}
+
 void SmartMultiMeshInstance::swap_transforms() {
 	elapsed_time = 0.;
 	std::swap(new_transform, old_transform);

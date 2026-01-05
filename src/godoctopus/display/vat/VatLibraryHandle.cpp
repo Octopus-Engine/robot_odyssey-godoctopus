@@ -7,6 +7,12 @@
 
 #include "DisplayVatHelpers.h"
 
+Vector3 get_transformed_position(Vector3 const &pos, godot::VatLibrary *library, VatLibraryHandle const &handle) {
+	std::lock_guard<std::mutex> lock(library->_mutex);
+	godot::VatMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+	Transform3D cur_transform = mmesh->get_current_instance_transform(handle.instance_id);
+	return cur_transform.xform(pos);
+}
 
 void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) {
 

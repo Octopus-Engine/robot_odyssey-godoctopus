@@ -29,6 +29,7 @@ public:
 	void set_instance_transform(int instance_id, Transform3D const &transform);
 	void set_new_instance_transform(int instance_id, Transform3D const &transform);
 	Transform3D get_old_instance_transform(int instance_id) const;
+	Transform3D get_current_instance_transform(int instance_id) const;
 	void swap_transforms();
 
 	// helpers
