@@ -56,7 +56,6 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	}
 
 	if (unit_prefab->get_attack_particle()) {
-		std::cout<<"adding particle"<<std::endl;
 		prefab.set<AttackParticle>({
 			unit_prefab->get_attack_particle_effect(),
 			unit_prefab->get_attack_particle_origin().x,
@@ -190,6 +189,12 @@ void GameNode::stop() {
 	if (_loop_thread) {
 		_loop_thread->join();
 	}
+	// To avoid dangling pointer we clean up all
+	_world.ecs.query<SmartMMeshLibraryHandle>().each(
+		[](flecs::entity e, SmartMMeshLibraryHandle &handle) {
+			handle.instance_id = -1;
+		}
+	);
 	delete _loop_thread;
 	_loop_thread = nullptr;
 }
