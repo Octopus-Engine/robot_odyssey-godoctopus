@@ -10,6 +10,7 @@ class AttackMoveDemoNode : public LevelNode {
 	GDCLASS(AttackMoveDemoNode, LevelNode)
 
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
+	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_PARAM_DEF(String, unit1, "earbot");
 	SET_GET_PARAM_DEF(String, unit2, "tallbot");
 	SET_GET_PARAM_DEF(int, count1, 10);
@@ -23,6 +24,7 @@ public:
 	// Use this to add properties to your class
 	static void _bind_methods() {
 		BIND_NODE_PATH(AttackMoveDemoNode, ParticuleSmartMMesh, particules);
+		BIND_NODE_PATH(AttackMoveDemoNode, VatLibrary, vat_library);
 		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit1);
 		ADD_SIMPLE_PROP(AttackMoveDemoNode, INT, count1);
 		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit2);
@@ -31,6 +33,7 @@ public:
 
 	void init_nodes() {
 		INIT_NODE_PATH(ParticuleSmartMMesh, particules);
+		INIT_NODE_PATH(VatLibrary, vat_library);
 	}
 };
 

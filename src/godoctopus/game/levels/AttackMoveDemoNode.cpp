@@ -72,9 +72,10 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.auto_override<octopus::Destroyable>()
 		.set<octopus::Collision>({octopus::Fixed::One()/2})
 		.auto_override<octopus::PositionInTree>()
-		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1, 0.2}})
+		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1.5, 0.2}})
+		.set<WindupEffect>({1, 2, 0, 4.5, 1, 251,185,84, 4, 0.5f})
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE/2, 10, 7}})
+		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE*2, 10, 7}})
 		.set_auto_override<VatLibraryHandle>({0})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({0.5})
@@ -85,7 +86,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		auto e1 = ecs.entity()
 			.is_a(ecs.prefab(unit1.utf8().get_data()))
 			.set<octopus::Team>({1})
-			.set<octopus::Position>({{50+0.01*i,100+0.01*i}, {0,0}})
+			.set<octopus::Position>({{20+0.01*i,40+0.01*i}, {0,0}})
 		;
 
 		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
@@ -115,6 +116,8 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 	flecs::world &ecs = game.get_world().ecs;
 
 	declare_basic_projectile_systems(ecs, _particules);
+	declare_attack_particule_systems(ecs, _vat_library, _particules);
+	declare_windup_projectile_systems(ecs, _vat_library, _particules);
 
 	if (_particules) {
 		ecs.observer<octopus::Destroyable const, octopus::Position const, ProjectileTrajectory const>()
