@@ -160,7 +160,6 @@ void GameNode::stop() {
 	if (_loop_thread) {
 		_loop_thread->join();
 	}
-	_world.reset();
 	delete _loop_thread;
 	_loop_thread = nullptr;
 }
