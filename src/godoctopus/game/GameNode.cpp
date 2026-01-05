@@ -23,11 +23,7 @@ namespace godot
 {
 
 GameNode::~GameNode() {
-	_over = true;
-	if (_loop_thread) {
-		_loop_thread->join();
-	}
-	delete _loop_thread;
+	stop();
 }
 
 static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
@@ -134,6 +130,14 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	emit_signal("init_done");
 }
 
+void GameNode::init_load(String file_name, Dictionary const &meta_data)
+{
+	init_nodes();
+	init_world(meta_data, [file_name](Dictionary const &, GameNode &game) {
+		// game.get_save_node()->load_from_file(file_name);
+	});
+}
+
 void GameNode::init_from_level(Dictionary const &meta_data)
 {
 	init_nodes();
@@ -151,12 +155,14 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 	}
 }
 
-void GameNode::init_load(String file_name, Dictionary const &meta_data)
-{
-	init_nodes();
-	init_world(meta_data, [file_name](Dictionary const &, GameNode &game) {
-		// game.get_save_node()->load_from_file(file_name);
-	});
+void GameNode::stop() {
+	_over = true;
+	if (_loop_thread) {
+		_loop_thread->join();
+	}
+	_world.reset();
+	delete _loop_thread;
+	_loop_thread = nullptr;
 }
 
 void GameNode::init_nodes()
@@ -191,6 +197,8 @@ void GameNode::_bind_methods()
 
 	ClassDB::bind_method(D_METHOD("init_load", "file_name", "meta_data"), &GameNode::init_load);
 	ClassDB::bind_method(D_METHOD("init_from_level", "meta_data"), &GameNode::init_from_level);
+	ClassDB::bind_method(D_METHOD("stop"), &GameNode::stop);
+
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
 
 	ClassDB::bind_method(D_METHOD("set_unit_prefabs", "unit_prefabs"), &GameNode::set_unit_prefabs);
@@ -280,6 +288,10 @@ void GameNode::_notification(int p_notification)
 		case NOTIFICATION_READY: {
 			print_line("GameNode ready");
 			set_process(true);
+		} break;
+		case NOTIFICATION_WM_CLOSE_REQUEST: {
+			print_line("GameNode close requested");
+			stop();
 		} break;
 	}
 }

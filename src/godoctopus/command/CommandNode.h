@@ -20,7 +20,7 @@ class CommandNode : public Node {
 	SET_GET_NODE_PATH(GameNode, game_node);
 public:
 
-    void attack_move_command(EntityGroup const *group, Vector3 const &world_target, bool queue);
+    void attack_move_command(Ref<EntityGroup> group, Vector3 const &world_target, bool queue);
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class

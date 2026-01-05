@@ -31,7 +31,7 @@ public:
 	void init_nodes() {}
 
 	TypedArray<bool> index_array_from_texture(Rect2 const &rect_p) const;
-	EntityGroup *group_from_texture(Rect2 const &rect_p) const;
+	Ref<EntityGroup> group_from_texture(Rect2 const &rect_p) const;
 
 	int add_entity(flecs::entity e);
 	void remove_entity(int id);

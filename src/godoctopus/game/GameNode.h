@@ -51,6 +51,8 @@ public:
 	void init_load(String file_name, Dictionary const &meta_data);
 	void init_from_level(Dictionary const &meta_data);
 
+	void stop();
+
 	// All nodes
 	void init_nodes();
 

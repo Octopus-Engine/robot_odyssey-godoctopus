@@ -2,7 +2,7 @@
 
 namespace godot {
 
-void CommandNode::attack_move_command(EntityGroup const *group, Vector3 const &world_target, bool queue)
+void CommandNode::attack_move_command(Ref<EntityGroup> group, Vector3 const &world_target, bool queue)
 {
     if(!_input_container) { return; }
 

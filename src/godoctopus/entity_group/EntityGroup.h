@@ -8,8 +8,8 @@
 
 namespace godot {
 
-class EntityGroup : public Object {
-	GDCLASS(EntityGroup, Object)
+class EntityGroup : public Resource {
+	GDCLASS(EntityGroup, Resource)
 public:
 	static void _bind_methods() {
 		ClassDB::bind_method(D_METHOD("size"), &EntityGroup::size);

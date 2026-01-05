@@ -71,8 +71,8 @@ TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const
 	return all_added_l;
 }
 
-EntityGroup *PickerNode::group_from_texture(Rect2 const &rect_p) const {
-	EntityGroup *group = memnew(EntityGroup);
+Ref<EntityGroup> PickerNode::group_from_texture(Rect2 const &rect_p) const {
+	Ref<EntityGroup> group(memnew(EntityGroup));
 	if(!texture.is_valid())
 	{
 		return group;
