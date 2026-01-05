@@ -68,6 +68,24 @@ void ParticuleSmartMMesh::add_instance_detailed(Vector3 const &pos, Color const 
 	data.new_instance(std::move(particule_data));
 }
 
+void ParticuleSmartMMesh::add_instance_coned(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, Vector3 const &direction, float angle_spread) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	ParticuleData particule_data {color.srgb_to_linear(), scale};
+	particule_data.position.reserve(c);
+	particule_data.direction.reserve(c);
+	particule_data.time_offset.reserve(c);
+	for (int i = 0 ; i < c ; ++ i) {
+		Vector3 dir = direction.normalized();
+		float rad_angle = Math::deg_to_rad(angle_spread);
+		dir = dir.rotated(Vector3(1,0,0), rng->randf_range(-rad_angle, rad_angle));
+		dir = dir.rotated(Vector3(0,1,0), rng->randf_range(-rad_angle, rad_angle));
+		dir = dir.rotated(Vector3(0,0,1), rng->randf_range(-rad_angle, rad_angle));
+		particule_data.position.push_back(pos + scatter * dir);
+		particule_data.direction.push_back(dir);
+		particule_data.time_offset.push_back(elapsed + rng->randf_range(0., 0.5));
+	}
+	data.new_instance(std::move(particule_data));
+}
 
 void ParticuleSmartMMesh::_notification(int p_notification)
 {

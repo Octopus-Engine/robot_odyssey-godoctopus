@@ -27,14 +27,15 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 
 	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
 
-	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const>()
+	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const, octopus::Position const>()
 			.event(flecs::OnSet)
-			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &info) {
+			.each([particules] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &info, octopus::Position const &pos) {
 				octopus::Fixed up = info.origin_y;
 				octopus::Fixed end_up = 0.25;
 				if (proj.target && proj.target.try_get<ProjectileTrajectory>()) {
 					end_up = proj.target.try_get<ProjectileTrajectory>()->target_y;
 				}
+				octopus::Vector direction = proj.pos_target - pos.pos;
 				float r=info.r/255., g=info.g/255., b=info.b/255.;
 				e.set<SmartMMeshLibraryHandle>({0, r, g, b, 1., info.scale,
 					up, // up
@@ -42,6 +43,14 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					octopus::get_time_stamp(e.world()),
 					octopus::get_time_stamp(e.world()) + 20
 				});
+				particules->add_instance_coned(
+					WORLD_SCALE * Vector3(pos.pos.x.to_double(), up.to_double(), pos.pos.y.to_double()),
+					Color(r, g, b,1.),
+					4,
+					info.scale.to_double()*Vector3(1.,1.,1.),
+					Vector3(direction.x.to_double(), (end_up-up).to_double(),direction.y.to_double()),
+					20.
+				);
 			});
 
 	if (particules) {
@@ -53,7 +62,7 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					octopus::Position const &pos, SmartMMeshLibraryHandle const &handle) {
 				particules->add_instance_detailed(
 					WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()),
-					Color(handle.r.to_double(),handle.g.to_double(),handle.b.to_double(),1.),
+					Color(handle.r.to_double(), handle.g.to_double(),handle.b.to_double(),1.),
 					4,
 					Vector3(0.5,0.5,0.5)
 				);

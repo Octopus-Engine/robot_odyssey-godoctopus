@@ -39,12 +39,14 @@ public:
 		ADD_SIMPLE_PROP(ParticuleSmartMMesh, INT, count);
 
 		ClassDB::bind_method(D_METHOD("add_instance", "pos", "color"), &ParticuleSmartMMesh::add_instance);
+		ClassDB::bind_method(D_METHOD("add_instance_coned", "pos", "color", "count", "scale", "direction", "angle_spread"), &ParticuleSmartMMesh::add_instance_coned);
 	}
 	void _ready();
 	void _process(double delta);
 
 	void add_instance(Vector3 const &pos, Color const &color);
 	void add_instance_detailed(Vector3 const &pos, Color const &color, int c, Vector3 const &scale);
+	void add_instance_coned(Vector3 const &pos, Color const &color, int c, Vector3 const &scale, Vector3 const &direction, float angle_spread);
 
 protected:
 	std::mutex _mutex;
