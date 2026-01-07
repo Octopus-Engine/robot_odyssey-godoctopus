@@ -10,12 +10,14 @@
 #include "octopus/components/basic/player/Team.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
 #include "octopus/components/step/StepContainer.hh"
+#include "octopus/world/player/PlayerInfo.hh"
 
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 #include "octopus_types.h"
 
@@ -30,6 +32,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	init_nodes();
 
 	flecs::world &ecs = game.get_world().ecs;
+
+	ecs.entity().set<octopus::PlayerInfo>({0, 0});
+	ecs.entity().set<octopus::PlayerInfo>({1, 1});
 
 	ecs.prefab("rambot")
 		.auto_override<custom_queue>()
@@ -86,6 +91,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		auto e1 = ecs.entity()
 			.is_a(ecs.prefab(unit1.utf8().get_data()))
 			.set<octopus::Team>({1})
+			.set<octopus::PlayerAppartenance>({1})
 			.set<octopus::Position>({{20+0.01*i,40+0.01*i}, {0,0}})
 		;
 
@@ -100,6 +106,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			auto e1 = ecs.entity()
 				.is_a(ecs.prefab(unit2.utf8().get_data()))
 				.set<octopus::Team>({0})
+				.set<octopus::PlayerAppartenance>({0})
 				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}})
 			;
 
@@ -118,6 +125,7 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 	declare_basic_projectile_systems(ecs, _particules);
 	declare_attack_particule_systems(ecs, _vat_library, _particules);
 	declare_windup_projectile_systems(ecs, _vat_library, _particules);
+	declare_triggers(ecs, game.get_world().position_context);
 
 	if (_particules) {
 		ecs.observer<octopus::Destroyable const, octopus::Position const, ProjectileTrajectory const>()

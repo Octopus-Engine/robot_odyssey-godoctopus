@@ -18,9 +18,20 @@
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
+#include "godoctopus/components/types/Types.h"
 
 namespace godot
 {
+
+struct PrefabDeclarer {
+	flecs::world &ecs;
+
+	template<typename BotType>
+	void operator()() const {
+		ecs.prefab(BotType::naming())
+			.template add<BotType>();
+	}
+};
 
 GameNode::~GameNode() {
 	stop();
@@ -141,6 +152,8 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	//
 	// prefab
 	//
+	// Add unit type component
+	for_each_bot_type(PrefabDeclarer{ecs});
 	for (Ref<UnitPrefab> unit_prefab : unit_prefabs) {
 		declare_unit_prefab(ecs, unit_prefab);
 	}
