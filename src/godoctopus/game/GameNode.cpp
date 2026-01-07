@@ -19,6 +19,7 @@
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/components/rune_load/RuneLoad.h"
 
 namespace godot
 {
@@ -29,7 +30,9 @@ struct PrefabDeclarer {
 	template<typename BotType>
 	void operator()() const {
 		ecs.prefab(BotType::naming())
-			.template add<BotType>();
+			.template add<BotType>()
+			.template auto_override<RuneLoad<DefaultRune>>()
+		;
 	}
 };
 
