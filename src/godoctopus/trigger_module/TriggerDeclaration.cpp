@@ -192,12 +192,24 @@ typename std::enable_if<!Level, void>::type mod_rune(flecs::entity e, bool add, 
 }
 
 template<bool Level, typename RuneType, typename... ComponentType>
+struct ModRune {
+	flecs::entity e;
+	bool add;
+	std::string const &type;
+	int level;
+
+	template<typename BotType>
+	void operator()() const {
+		if(type == BotType::naming()) {
+			mod_rune<Level, RuneType, BotType, ComponentType...>(e, add, level);
+		}
+	}
+};
+
+template<bool Level, typename RuneType, typename... ComponentType>
 void mod_rune_type(flecs::entity e, bool add, std::string const &type, int level=0)
 {
-	if(type == HealBot::naming())
-	{
-		mod_rune<Level, RuneType, HealBot, ComponentType...>(e, add, level);
-	}
+	for_each_bot_type(ModRune<Level, RuneType, ComponentType...>{e, add, type, level});
 }
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, int level)
