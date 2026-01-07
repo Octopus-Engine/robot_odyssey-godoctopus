@@ -1,0 +1,125 @@
+#include "ActionNode.h"
+
+#include <cmath>
+
+#include "octopus/components/basic/position/Position.hh"
+#include "octopus/commands/basic/move/AttackCommand.hh"
+#include "octopus/world/step/StepEntityManager.hh"
+#include "godoctopus/trigger_module/TriggerDeclaration.h"
+
+namespace godot {
+
+// Will be called by Godot when the class is registered
+// Use this to add properties to your class
+void ActionNode::_bind_methods() {
+	BIND_NODE_PATH(ActionNode, GameNode, game_node);
+
+	BIND_ENUM_CONSTANT(ACTION_SPAWN_UNITS);
+	BIND_ENUM_CONSTANT(ACTION_BUFF_UNITS);
+	BIND_ENUM_CONSTANT(ACTION_ADD_RESOURCES);
+
+	ClassDB::bind_method(D_METHOD("setup"), &ActionNode::setup);
+	ClassDB::bind_method(D_METHOD("spaw_units", "prefab", "position", "team", "count"), &ActionNode::spaw_units);
+	ClassDB::bind_method(D_METHOD("spaw_units_attack_move", "prefab", "position", "team", "count", "target"), &ActionNode::spaw_units_attack_move);
+	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "add"), &ActionNode::mod_rune);
+}
+
+void ActionNode::setup() {
+	if(!_game_node) {
+		return;
+	}
+	flecs::world& ecs = _game_node->get_world().ecs;
+	flecs::query<octopus::PlayerInfo> query_player = ecs.query<octopus::PlayerInfo>();
+	// flecs::query<RuneLoad<DefaultRune>> query_rune = ecs.query<RuneLoad<DefaultRune>>();
+
+	ecs.system<>()
+		.kind(ecs.entity(InputPhase))
+		.run([this, ecs, query_player](flecs::iter&) {
+			// handle actions
+			std::lock_guard<std::mutex> lock(_mutex);
+			for (auto action : _actions) {
+				if (std::holds_alternative<SpawnUnitsAction>(action)) {
+					SpawnUnitsAction const &spawn_action = std::get<SpawnUnitsAction>(action);
+					std::string type = spawn_action.prefab.utf8().get_data();
+					int number = spawn_action.count;
+					double x = spawn_action.position.x;
+					double y = spawn_action.position.y;
+
+					int ray = 1;
+					int start_circle = 0;
+					int cur_circle = 3;
+					for(int i = 0 ; i < number ; ++ i)
+					{
+						if(i >= start_circle + cur_circle)
+						{
+							ray += 2;
+							start_circle = i;
+							cur_circle = 3*ray;
+						}
+						octopus::Position pos_l;
+						pos_l.pos.x = x + std::cos(2*3.14*i/cur_circle) * ray;
+						pos_l.pos.y = y + std::sin(2*3.14*i/cur_circle) * ray;
+
+						octopus::EntityCreationStep step_l;
+						step_l.set_up_function = [ecs, pos_l, type, spawn_action](flecs::entity new_ent, flecs::world const &world_p) {
+							octopus::Logger::getDebug() << "producing"<<std::endl;
+							custom_queue queue_l;
+
+							if(spawn_action.attack_move)
+							{
+								octopus::AttackCommand atk_l {flecs::entity(), {spawn_action.attack_move_target.x, spawn_action.attack_move_target.y}, true};
+								queue_l._queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
+							}
+
+							new_ent.set<octopus::Position>(pos_l)
+								.is_a(ecs.prefab(type.c_str()))
+								.set<octopus::Team>({(uint16_t)spawn_action.team})
+								.set<octopus::PlayerAppartenance>({(uint32_t)spawn_action.team})
+								.set<custom_queue>(queue_l)
+							;
+						};
+
+						octopus::Logger::getDebug() << "adding ent creation"<<std::endl;
+						ecs.try_get_mut<octopus::StepEntityManager>()->get_last_layer().push_back(step_l);
+					}
+				}
+				else if (std::holds_alternative<ModRuneAction>(action)) {
+					ModRuneAction const &mod_rune_action = std::get<ModRuneAction>(action);
+					std::string unit_type = mod_rune_action.unit_type.utf8().get_data();
+					std::string rune_type = mod_rune_action.rune_type.utf8().get_data();
+					int player_idx = mod_rune_action.player_idx;
+					bool add = mod_rune_action.add;
+
+					// get player info
+					flecs::entity player = query_player.find([&player_idx](octopus::PlayerInfo& p) {
+						return p.idx == player_idx;
+					});
+
+					octopus::Logger::getDebug() << "Modding rune "<< (add ? "add" : "remove") <<" for player "<<player_idx<<std::endl;
+					mod_rune_based_on_names(player, unit_type, rune_type, add, 0);
+				}
+			}
+			_actions.clear();
+		});
+}
+
+void ActionNode::init_nodes() {
+	INIT_NODE_PATH(GameNode, game_node);
+	if(_game_node) {
+		_game_node->connect("init_done", callable_mp(this, &ActionNode::setup));
+	}
+}
+
+void ActionNode::_notification(int p_notification)
+{
+	switch (p_notification) {
+		case NOTIFICATION_PROCESS: {
+			// _process(get_process_delta_time());
+		} break;
+		case NOTIFICATION_READY: {
+			init_nodes();
+		} break;
+	}
+}
+
+}
