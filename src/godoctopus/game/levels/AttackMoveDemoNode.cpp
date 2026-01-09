@@ -12,6 +12,7 @@
 #include "octopus/components/step/StepContainer.hh"
 #include "octopus/world/player/PlayerInfo.hh"
 
+#include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/pickable/Pickable.h"
@@ -50,23 +51,6 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({1})
 		.set_auto_override<HealthBar>({2., 48.})
-	;
-
-	ecs.prefab("tallbot")
-		.auto_override<custom_queue>()
-		.set_auto_override<octopus::Move>({5./TICK_RATE})
-		.set_auto_override<octopus::HitPoint>({75})
-		.set_auto_override<octopus::HitPointMax>({75})
-		.auto_override<octopus::Destroyable>()
-		.auto_override<octopus::PositionInTree>()
-		.set<octopus::Collision>({octopus::Fixed::One()/2})
-		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {22,90,76,1.5}})
-		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE, 15, 7}})
-		.set_auto_override<VatLibraryHandle>({2})
-		.auto_override<Pickable>()
-		.set_auto_override<ProjectileTrajectory>({1})
-		.set_auto_override<HealthBar>({2., 32.})
 	;
 
 	ecs.prefab("earbot")
@@ -125,21 +109,8 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 	declare_basic_projectile_systems(ecs, _particules);
 	declare_attack_particule_systems(ecs, _vat_library, _particules);
 	declare_windup_projectile_systems(ecs, _vat_library, _particules);
+	declare_death_particle_systems(ecs, _particules);
 	declare_triggers(ecs, game.get_world().position_context);
-
-	if (_particules) {
-		ecs.observer<octopus::Destroyable const, octopus::Position const, ProjectileTrajectory const>()
-			.event<octopus::Destroyed>()
-			.each([this](flecs::entity e, octopus::Destroyable const&, octopus::Position const &pos, ProjectileTrajectory const &proj) {
-				_particules->add_instance_detailed(
-					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.target_y.to_double()+0.25, pos.pos.y.to_double()),
-					Color(1.,1.,1.,1.),
-					8,
-					Vector3(1.5,1.5,1.5),
-					-1
-				);
-			});
-		}
 }
 
 }

@@ -64,6 +64,12 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_offset_y);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_width);
+		ClassDB::add_property_group("UnitPrefab", "DeathParticle");
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, death_particles);
+		ADD_SIMPLE_PROP(UnitPrefab, COLOR, death_particles_color);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, death_particles_count);
+		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, death_particles_scale);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, death_particles_effect_id);
 	}
 
 	// General
@@ -108,6 +114,12 @@ public:
 	SET_GET_PARAM_DEF(int, hitpoint, 75);
 	SET_GET_PARAM_DEF(float, health_bar_offset_y, 2.0);
 	SET_GET_PARAM_DEF(float, health_bar_width, 32.);
+	// Death particle
+	SET_GET_PARAM_DEF(bool, death_particles, false);
+	SET_GET_PARAM_DEF(Color, death_particles_color, Color(1,1,1,1));
+	SET_GET_PARAM_DEF(int, death_particles_count, 8);
+	SET_GET_PARAM_DEF(float, death_particles_scale, 1.5);
+	SET_GET_PARAM_DEF(int, death_particles_effect_id, -1);
 };
 
 }

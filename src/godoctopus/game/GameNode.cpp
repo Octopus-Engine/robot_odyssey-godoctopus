@@ -14,6 +14,7 @@
 #include "octopus/components/basic/position/Move.hh"
 #include "octopus/components/basic/position/Position.hh"
 
+#include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
@@ -63,6 +64,18 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			unit_prefab->get_health_bar_offset_y(),
 			unit_prefab->get_health_bar_width()})
 	;
+
+	if (unit_prefab->get_death_particles()) {
+		prefab.set_auto_override<DeathParticle>({
+			unit_prefab->get_death_particles_color().get_r8(),
+			unit_prefab->get_death_particles_color().get_g8(),
+			unit_prefab->get_death_particles_color().get_b8(),
+			unit_prefab->get_death_particles_count(),
+			unit_prefab->get_death_particles_scale(),
+			unit_prefab->get_death_particles_effect_id()
+		});
+	}
+
 	if (unit_prefab->get_basic_projectile()) {
 		Color const &color = unit_prefab->get_projectile_color();
 		prefab.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE,
@@ -151,6 +164,18 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	}
 
 	advanced_components_support<custom_step_manager,NoOpCommand,MoveCommand,AttackCommand,CastCommand,SetRallyPointCommand>(ecs);
+
+	// update entity counts
+	ecs.system<>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
+			_entity_count.store(0);
+			_particle_count.store(0);
+		});
+	ecs.system<VatLibraryHandle>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
+		    while (it.next()) { _entity_count.fetch_add(it.count()); }
+		});
+	ecs.system<SmartMMeshLibraryHandle>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
+		    while (it.next()) { _particle_count.fetch_add(it.count()); }
+		});
 
 	//
 	// prefab
@@ -250,6 +275,8 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("stop"), &GameNode::stop);
 
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
+	ClassDB::bind_method(D_METHOD("get_entity_count"), &GameNode::get_entity_count);
+	ClassDB::bind_method(D_METHOD("get_particle_count"), &GameNode::get_particle_count);
 
 	ClassDB::bind_method(D_METHOD("set_unit_prefabs", "unit_prefabs"), &GameNode::set_unit_prefabs);
 	ClassDB::bind_method(D_METHOD("get_unit_prefabs"), &GameNode::get_unit_prefabs);

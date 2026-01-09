@@ -186,6 +186,7 @@ octopus2_sources = [
 ]
 
 godoctopus2_sources = [
+    "./src/godoctopus/death/DeathParticle.cpp",
     "./src/godoctopus/trigger_module/TriggerDeclaration.cpp",
     "./src/godoctopus/action/ActionNode.cpp",
     "./src/godoctopus/command/CommandNode.cpp",
