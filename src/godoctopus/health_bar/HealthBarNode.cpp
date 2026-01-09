@@ -16,11 +16,7 @@ HealthBarNode::~HealthBarNode() {
 
 int HealthBarNode::add_health_bar() {
 	std::lock_guard<std::mutex> lock(mutex);
-	RID rid = RenderingServer::get_singleton()->canvas_item_create();
-	RenderingServer::get_singleton()->canvas_item_set_material(rid, bar_material->get_rid());
-	RenderingServer::get_singleton()->canvas_item_add_texture_rect(rid, Rect2(0,0,48,48), texture->get_rid(), true);
-	RenderingServer::get_singleton()->canvas_item_set_parent(rid, _health_bar_control_container->get_canvas_item());
-	return bars.new_instance({rid}).handle();
+	return bars.new_instance(HealthBarData{}).handle();
 }
 
 void HealthBarNode::free_health_bar(int idx) {
@@ -46,8 +42,15 @@ void HealthBarNode::_process(double delta) {
 	Vector2 s = Vector2(ratio, std::min(2., std::max(1.,ratio)));
 	Vector2 csize = Vector2(1.*s.x,3*s.y);
 
-	bars.for_each_const([&](HealthBarData const &bar) {
-		RenderingServer::get_singleton()->canvas_item_clear(bar.rid);
+	bars.for_each([&](HealthBarData &bar) {
+		if (bar.rid.is_null()) {
+			RID rid = RenderingServer::get_singleton()->canvas_item_create();
+			RenderingServer::get_singleton()->canvas_item_set_material(rid, bar_material->get_rid());
+			RenderingServer::get_singleton()->canvas_item_set_parent(rid, _health_bar_control_container->get_canvas_item());
+			bar.rid = rid;
+		} else {
+			RenderingServer::get_singleton()->canvas_item_clear(bar.rid);
+		}
 		// Never
 		if (display_mode == 2) {
 			return;
@@ -60,7 +63,7 @@ void HealthBarNode::_process(double delta) {
 			_camera->unproject_position(bar.pos) + Vector2(-csize.x*bar.width/2, 0)
 		));
 		RenderingServer::get_singleton()->canvas_item_add_texture_rect(bar.rid, Rect2(0,0,csize.x*bar.width,csize.y), texture->get_rid(), true);
-		RenderingServer::get_singleton()->canvas_item_set_instance_shader_parameter(bar.rid, "ratio", bar.ratio);
+		RenderingServer::get_singleton()->canvas_item_set_modulate(bar.rid, Color(bar.ratio,1,1,1));
 	});
 	// need to redraw
 	_health_bar_control_container->queue_redraw();
