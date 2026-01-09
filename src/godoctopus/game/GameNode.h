@@ -14,6 +14,7 @@
 
 #include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
+#include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/pickable/Pickable.h"
 
@@ -57,6 +58,7 @@ public:
 	void init_nodes();
 
 	SET_GET_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
+	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);
 	SET_GET_PARAM(LevelNode*, level_node);
@@ -64,7 +66,7 @@ public:
 public:
 	double get_avg_engine_times();
 	int get_entity_count() const { return _entity_count.load(); }
-	int get_particle_count() const { return _particle_count.load(); }
+	int get_particle_count() const;
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class

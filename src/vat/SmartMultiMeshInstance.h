@@ -24,6 +24,10 @@ public:
 	int add_instance();
 	void free_instance(int instance_id);
 
+	int size() const {
+		return data.size();
+	}
+
 	void set_color(int instance_id, Color color);
 	void set_outline_color(int instance_id, Color color);
 	void set_instance_transform(int instance_id, Transform3D const &transform);

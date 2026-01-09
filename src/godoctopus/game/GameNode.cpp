@@ -168,13 +168,9 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	// update entity counts
 	ecs.system<>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
 			_entity_count.store(0);
-			_particle_count.store(0);
 		});
 	ecs.system<VatLibraryHandle>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
 		    while (it.next()) { _entity_count.fetch_add(it.count()); }
-		});
-	ecs.system<SmartMMeshLibraryHandle>().kind(ecs.entity(DisplaySyncPhase)).run([this](flecs::iter &it) {
-		    while (it.next()) { _particle_count.fetch_add(it.count()); }
 		});
 
 	//
@@ -243,6 +239,7 @@ void GameNode::stop() {
 void GameNode::init_nodes()
 {
 	INIT_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
+	INIT_NODE_PATH(ParticuleSmartMMesh, particules);
 	INIT_NODE_PATH(VatLibrary, vat_library);
 	INIT_NODE_PATH(PickerNode, picker_node);
 }
@@ -258,9 +255,17 @@ double GameNode::get_avg_engine_times()
 	return avg_l;
 }
 
+int GameNode::get_particle_count() const {
+	if (_particules) {
+		return _particules->get_multimesh()->get_instance_count();
+	}
+	return 0;
+}
+
 void GameNode::_bind_methods()
 {
 	BIND_NODE_PATH(GameNode, SmartMMeshLibrary, smart_mmesh_library);
+	BIND_NODE_PATH(GameNode, ParticuleSmartMMesh, particules);
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
 	BIND_NODE_PATH(GameNode, PickerNode, picker_node);
 
