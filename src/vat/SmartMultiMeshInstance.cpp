@@ -19,8 +19,16 @@ void SmartMultiMeshInstance::_process(double delta) {
 	lock();
 	elapsed_time += delta;
 	auto mesh = get_multimesh();
+	if (data.size() >= get_multimesh()->get_instance_count()) {
+		mesh->set_instance_count(2*data.size());
+	}
 	if (mesh.is_valid() && time_step > 0.) {
 		int instance_id = 0;
+		data.for_each([this, &mesh, &instance_id] (MultiMeshData &d, size_t i) {
+			++instance_id;
+		});
+		mesh->set_visible_instance_count(instance_id);
+		instance_id = 0;
 		data.for_each([this, &mesh, &instance_id] (MultiMeshData &d, size_t i) {
 			// transform
 			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], elapsed_time / time_step);
@@ -30,7 +38,6 @@ void SmartMultiMeshInstance::_process(double delta) {
 			mesh->set_instance_custom_data(instance_id, d.outline_color);
 			++instance_id;
 		});
-		mesh->set_visible_instance_count(instance_id);
 	}
 	unlock();
 }
@@ -40,9 +47,6 @@ int SmartMultiMeshInstance::add_instance() {
 	if (id >= old_transform.size()) {
 		old_transform.resize(id+1);
 		new_transform.resize(id+1);
-	}
-	if (id >= get_multimesh()->get_instance_count()) {
-		get_multimesh()->set_instance_count(id+1);
 	}
 	// reset transform
 	old_transform[id] = Transform3D();

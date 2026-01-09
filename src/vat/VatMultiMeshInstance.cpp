@@ -31,8 +31,16 @@ void VatMultiMeshInstance::_process(double delta) {
 	total_elapsed += delta;
 	elapsed_time += delta;
 	auto mesh = get_multimesh();
+	if (data.size() >= get_multimesh()->get_instance_count()) {
+		mesh->set_instance_count(2*data.size());
+	}
 	if (mesh.is_valid() && time_step > 0.) {
 		int instance_id = 0;
+		data.for_each([&instance_id] (VatInstanceData &d) {
+			++instance_id;
+		});
+		mesh->set_visible_instance_count(instance_id);
+		instance_id = 0;
 		data.for_each([this, &mesh, &instance_id] (VatInstanceData &d, size_t i) {
 			// reset animation
 			if (d.end_time >= 0. && total_elapsed >= d.end_time) {
@@ -40,9 +48,7 @@ void VatMultiMeshInstance::_process(double delta) {
 				d.end_time = -1.;
 			}
 			// transform
-			Transform3D transform;
-			transform.basis = old_transform[i].basis.lerp(new_transform[i].basis, elapsed_time / time_step);
-			transform.origin = old_transform[i].origin.lerp(new_transform[i].origin, elapsed_time / time_step);
+			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], std::clamp(0., 1., elapsed_time / time_step));
 			transform.origin.y = track->get_z_offset();
 			mesh->set_instance_transform(instance_id, transform);
 			// color info
@@ -64,7 +70,6 @@ void VatMultiMeshInstance::_process(double delta) {
 			mesh->set_instance_custom_data(instance_id, custom_data);
 			++instance_id;
 		});
-		mesh->set_visible_instance_count(instance_id);
 	}
 	unlock();
 }
@@ -74,9 +79,6 @@ int VatMultiMeshInstance::add_instance() {
 	if (id >= old_transform.size()) {
 		old_transform.resize(id+1);
 		new_transform.resize(id+1);
-	}
-	if (id >= get_multimesh()->get_instance_count()) {
-		get_multimesh()->set_instance_count(id+1);
 	}
 	// reset transform
 	old_transform[id] = Transform3D();
