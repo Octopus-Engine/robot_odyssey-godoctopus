@@ -67,6 +67,7 @@ public:
 	double get_avg_engine_times();
 	int get_entity_count() const { return _entity_count.load(); }
 	int get_particle_count() const;
+	int get_timestamp() const { return _timestamp.load(); }
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
@@ -109,7 +110,7 @@ private:
 	/// @brief list of last engine times
 	std::list<double> _last_engine_times;
 	std::atomic_int _entity_count = 0;
-	std::atomic_int _particle_count = 0;
+	std::atomic_int _timestamp = 0;
 };
 
 }

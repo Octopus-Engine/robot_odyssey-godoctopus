@@ -282,6 +282,7 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
 	ClassDB::bind_method(D_METHOD("get_entity_count"), &GameNode::get_entity_count);
 	ClassDB::bind_method(D_METHOD("get_particle_count"), &GameNode::get_particle_count);
+	ClassDB::bind_method(D_METHOD("get_timestamp"), &GameNode::get_timestamp);
 
 	ClassDB::bind_method(D_METHOD("set_unit_prefabs", "unit_prefabs"), &GameNode::set_unit_prefabs);
 	ClassDB::bind_method(D_METHOD("get_unit_prefabs"), &GameNode::get_unit_prefabs);
@@ -299,7 +300,7 @@ void GameNode::loop()
 	bool is_pipeline_pause = false;
 	size_t counter = 0;
 	size_t it_log = 100;
-	int started = 0;
+	_timestamp.store(octopus::get_time_stamp(_world.ecs));
 	while(!_over)
 	{
 		if(is_pipeline_pause != _paused)
@@ -316,7 +317,6 @@ void GameNode::loop()
 		}
 		if(_ticks >= 1)
 		{
-			++started;
 			TimeStats &stats_l = _world.time_stats;
 			stats_l = TimeStats();
 			const auto start{std::chrono::steady_clock::now()};
@@ -326,6 +326,7 @@ void GameNode::loop()
 				_world.ecs.progress();
 			}
 			--_ticks;
+			_timestamp.store(octopus::get_time_stamp(_world.ecs));
 
 			const auto end{std::chrono::steady_clock::now()};
 			const std::chrono::duration<double> elapsed_seconds{end - start};
