@@ -24,6 +24,7 @@ struct SpawnUnitsAction {
 	int count = 0;
 	bool attack_move = false;
 	Vector2 attack_move_target;
+	Ref<EntityGroup> group;
 };
 
 struct ModRuneAction {
@@ -52,16 +53,26 @@ public:
 
 	void spaw_units(String const &prefab, Vector2 const &position, int team, int count) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(SpawnUnitsAction{prefab, position, team, count});
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), current_group});
 	}
 	void spaw_units_attack_move(String const &prefab, Vector2 const &position, int team, int count, Vector2 const &attack_move_target) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target});
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target, current_group});
 	}
 
 	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, bool add) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, add});
+	}
+
+	void start_action_group(Ref<EntityGroup> group) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		current_group = group;
+	}
+
+	void reset_action_group() {
+		std::lock_guard<std::mutex> lock(_mutex);
+		current_group = Ref<EntityGroup>();
 	}
 
 	void setup();
@@ -72,6 +83,8 @@ protected:
 private:
 	std::mutex _mutex;
 	std::vector<Action> _actions;
+	// reference to the current group to be populated with all new spawned units
+	Ref<EntityGroup> current_group;
 };
 
 }
