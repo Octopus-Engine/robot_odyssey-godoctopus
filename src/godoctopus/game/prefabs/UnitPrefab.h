@@ -55,10 +55,11 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, ray_x100);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, speed_x10);
 		// Cost
-		ClassDB::add_property_group("UnitPrefab", "Cost");
+		ClassDB::add_property_group("UnitPrefab", "Production");
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_basic_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_advanced_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_pop_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, production_duration);
 		// Health bar
 		ClassDB::add_property_group("UnitPrefab", "Health");
 		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
@@ -106,10 +107,11 @@ public:
 	// Topo
 	SET_GET_PARAM_DEF(int, ray_x100, 10);
 	SET_GET_PARAM_DEF(int, speed_x10, 30);
-	// Cost
+	// Production
 	SET_GET_PARAM_DEF(int, cost_basic_x10, 10);
 	SET_GET_PARAM_DEF(int, cost_advanced_x10, 10);
 	SET_GET_PARAM_DEF(int, cost_pop_x10, 10);
+	SET_GET_PARAM_DEF(int, production_duration, 10);
 	// Health bar
 	SET_GET_PARAM_DEF(int, hitpoint, 75);
 	SET_GET_PARAM_DEF(float, health_bar_offset_y, 2.0);
