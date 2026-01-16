@@ -8,6 +8,7 @@
 #include "octopus/systems/Systems.hh"
 #include "octopus/world/path/PathFindingCache.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
+#include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
@@ -48,6 +49,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
+		.set_auto_override<octopus::Armor>({unit_prefab->get_armor()})
 		.auto_override<octopus::Destroyable>()
 		.set<octopus::Collision>({unit_prefab->get_ray_x100()/100.})
 		.auto_override<octopus::PositionInTree>()

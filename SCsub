@@ -156,6 +156,7 @@ octopus2_sources = [
     "./src/octopus2/src/octopus/src/octopus/utils/Vector.cc",
     "./src/octopus2/src/octopus/src/octopus/utils/aabb/aabb.cc",
     "./src/octopus2/src/octopus/src/octopus/utils/triangulation/Triangulation.cc",
+    "./src/octopus2/src/octopus/src/octopus/components/basic/armor/Armor.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/attack/Attack.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/flock/Flock.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/flock/FlockHandle.cc",

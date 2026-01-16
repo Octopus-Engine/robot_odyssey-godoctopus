@@ -63,6 +63,7 @@ public:
 		// Health bar
 		ClassDB::add_property_group("UnitPrefab", "Health");
 		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, armor);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_offset_y);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_width);
 		ClassDB::add_property_group("UnitPrefab", "DeathParticle");
@@ -114,6 +115,7 @@ public:
 	SET_GET_PARAM_DEF(int, production_duration, 10);
 	// Health bar
 	SET_GET_PARAM_DEF(int, hitpoint, 75);
+	SET_GET_PARAM_DEF(int, armor, 0);
 	SET_GET_PARAM_DEF(float, health_bar_offset_y, 2.0);
 	SET_GET_PARAM_DEF(float, health_bar_width, 32.);
 	// Death particle
