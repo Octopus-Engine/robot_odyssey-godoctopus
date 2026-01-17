@@ -193,6 +193,8 @@ godoctopus2_sources = [
     "./src/godoctopus/action/ActionNode.cpp",
     "./src/godoctopus/command/CommandNode.cpp",
     "./src/godoctopus/game/GameNode.cpp",
+    "./src/godoctopus/game/ability/ArmorbotBuff.cpp",
+    "./src/godoctopus/game/ability/EarbotSteam.cpp",
     "./src/godoctopus/game/levels/AttackMoveDemoNode.cpp",
     "./src/godoctopus/health_bar/HealthBarNode.cpp",
     "./src/godoctopus/display/vat/SmartMMeshLibraryHandle.cpp",

@@ -15,9 +15,11 @@
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
+#include "godoctopus/game/ability/ArmorbotBuff.h"
+#include "godoctopus/game/ability/EarbotSteam.h"
+#include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
-#include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 #include "octopus_types.h"
@@ -29,6 +31,24 @@
 
 namespace godot {
 
+void declare_prefab(flecs::world &ecs) {
+	// Add casting ability for earbots
+	ecs.prefab("earbot")
+		.auto_override<octopus::ResourceStock>()
+		.auto_override<octopus::Caster>()
+		.add<octopus::Caster>(ecs.component(EarbotSteam::NAME().c_str()));
+	ecs.prefab("earlarge_bot")
+		.auto_override<octopus::ResourceStock>()
+		.auto_override<octopus::Caster>()
+		.add<octopus::Caster>(ecs.component(EarbotSteam::NAME().c_str()));
+
+	// Add casting ability for armorbot
+	ecs.prefab("armorbot")
+		.auto_override<octopus::ResourceStock>()
+		.auto_override<octopus::Caster>()
+		.add<octopus::Caster>(ecs.component(ArmorbotAbility::NAME().c_str()));
+}
+
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	init_nodes();
 
@@ -37,21 +57,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	ecs.entity().set<octopus::PlayerInfo>({0, 0});
 	ecs.entity().set<octopus::PlayerInfo>({1, 1});
 
-	ecs.prefab("rambot")
-		.auto_override<custom_queue>()
-		.set_auto_override<octopus::Move>({3./TICK_RATE})
-		.set_auto_override<octopus::HitPoint>({150})
-		.set_auto_override<octopus::HitPointMax>({150})
-		.auto_override<octopus::Destroyable>()
-		.set<octopus::Collision>({3*octopus::Fixed::One()/4})
-		.auto_override<octopus::PositionInTree>()
-		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{TICK_RATE/4, int32_t(1.5*TICK_RATE), 25, 1}})
-		.set_auto_override<VatLibraryHandle>({3})
-		.auto_override<Pickable>()
-		.set_auto_override<ProjectileTrajectory>({1})
-		.set_auto_override<HealthBar>({2., 48.})
-	;
+	declare_prefab(ecs);
+	declare_earbot_steam_ability(ecs, game.get_step_context());
+	declare_armorbot_ability(ecs, game);
 
 	ecs.prefab("earbot")
 		.auto_override<custom_queue>()

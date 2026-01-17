@@ -20,7 +20,13 @@ class CommandNode : public Node {
 	SET_GET_NODE_PATH(GameNode, game_node);
 public:
 
+    void move_command(Ref<EntityGroup> group, Vector3 const &world_target, bool queue);
     void attack_move_command(Ref<EntityGroup> group, Vector3 const &world_target, bool queue);
+    void stop_command(Ref<EntityGroup> group);
+	/// @brief Select the first entity with the ability cast_name and make it perform the cast
+	void cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue);
+	/// @brief Make all entities in group perform the cast named cast_name
+	void all_cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue);
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
