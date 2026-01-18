@@ -14,10 +14,6 @@ namespace godot {
 void ActionNode::_bind_methods() {
 	BIND_NODE_PATH(ActionNode, GameNode, game_node);
 
-	BIND_ENUM_CONSTANT(ACTION_SPAWN_UNITS);
-	BIND_ENUM_CONSTANT(ACTION_BUFF_UNITS);
-	BIND_ENUM_CONSTANT(ACTION_ADD_RESOURCES);
-
 	ClassDB::bind_method(D_METHOD("setup"), &ActionNode::setup);
 	ClassDB::bind_method(D_METHOD("start_action_group", "entity_group"), &ActionNode::start_action_group);
 	ClassDB::bind_method(D_METHOD("reset_action_group"), &ActionNode::reset_action_group);
@@ -81,6 +77,7 @@ void ActionNode::setup() {
 							;
 							// update group if available
 							if (spawn_action.group.is_valid()) {
+								spawn_action.group->increase_populated();
 								spawn_action.group->get_entities().push_back(new_ent);
 							}
 						};

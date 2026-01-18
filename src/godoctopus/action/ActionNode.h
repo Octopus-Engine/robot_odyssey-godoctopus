@@ -41,11 +41,6 @@ class ActionNode : public Node {
 
 	SET_GET_NODE_PATH(GameNode, game_node);
 public:
-	enum ActionType {
-		ACTION_SPAWN_UNITS,
-		ACTION_BUFF_UNITS,
-		ACTION_ADD_RESOURCES,
-	};
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
@@ -54,10 +49,16 @@ public:
 	void spaw_units(String const &prefab, Vector2 const &position, int team, int count) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), current_group});
+		if (current_group.is_valid()) {
+			current_group->increase_expected_population(count);
+		}
 	}
 	void spaw_units_attack_move(String const &prefab, Vector2 const &position, int team, int count, Vector2 const &attack_move_target) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target, current_group});
+		if (current_group.is_valid()) {
+			current_group->increase_expected_population(count);
+		}
 	}
 
 	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, bool add) {
@@ -68,6 +69,9 @@ public:
 	void start_action_group(Ref<EntityGroup> group) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		current_group = group;
+		if (current_group.is_valid()) {
+			current_group->set_should_populate();
+		}
 	}
 
 	void reset_action_group() {
@@ -88,5 +92,3 @@ private:
 };
 
 }
-
-VARIANT_ENUM_CAST(godot::ActionNode::ActionType);
