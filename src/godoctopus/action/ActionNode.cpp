@@ -15,10 +15,10 @@ void ActionNode::_bind_methods() {
 	BIND_NODE_PATH(ActionNode, GameNode, game_node);
 
 	ClassDB::bind_method(D_METHOD("setup"), &ActionNode::setup);
-	ClassDB::bind_method(D_METHOD("start_action_group", "entity_group"), &ActionNode::start_action_group);
-	ClassDB::bind_method(D_METHOD("reset_action_group"), &ActionNode::reset_action_group);
-	ClassDB::bind_method(D_METHOD("spaw_units", "prefab", "position", "team", "count"), &ActionNode::spaw_units);
-	ClassDB::bind_method(D_METHOD("spaw_units_attack_move", "prefab", "position", "team", "count", "target"), &ActionNode::spaw_units_attack_move);
+	ClassDB::bind_method(D_METHOD("spawn_units", "prefab", "position", "team", "count"), &ActionNode::spawn_units);
+	ClassDB::bind_method(D_METHOD("spawn_units_attack_move", "prefab", "position", "team", "count", "target"), &ActionNode::spawn_units_attack_move);
+	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
+	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
 	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "add"), &ActionNode::mod_rune);
 }
 

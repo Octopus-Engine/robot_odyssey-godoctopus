@@ -46,37 +46,35 @@ public:
 	// Use this to add properties to your class
 	static void _bind_methods();
 
-	void spaw_units(String const &prefab, Vector2 const &position, int team, int count) {
+	void spawn_units(String const &prefab, Vector2 const &position, int team, int count) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), current_group});
-		if (current_group.is_valid()) {
-			current_group->increase_expected_population(count);
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2()});
+	}
+	void spawn_units_attack_move(String const &prefab, Vector2 const &position, int team, int count, Vector2 const &attack_move_target) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target});
+	}
+
+	void spawn_units_in_group(String const &prefab, Vector2 const &position, int team, int count, Ref<EntityGroup> group) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), group});
+		if (group.is_valid()) {
+			group->set_should_populate();
+			group->increase_expected_population(count);
 		}
 	}
-	void spaw_units_attack_move(String const &prefab, Vector2 const &position, int team, int count, Vector2 const &attack_move_target) {
+	void spawn_units_attack_move_in_group(String const &prefab, Vector2 const &position, int team, int count, Vector2 const &attack_move_target, Ref<EntityGroup> group) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target, current_group});
-		if (current_group.is_valid()) {
-			current_group->increase_expected_population(count);
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, true, attack_move_target, group});
+		if (group.is_valid()) {
+			group->set_should_populate();
+			group->increase_expected_population(count);
 		}
 	}
 
 	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, bool add) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, add});
-	}
-
-	void start_action_group(Ref<EntityGroup> group) {
-		std::lock_guard<std::mutex> lock(_mutex);
-		current_group = group;
-		if (current_group.is_valid()) {
-			current_group->set_should_populate();
-		}
-	}
-
-	void reset_action_group() {
-		std::lock_guard<std::mutex> lock(_mutex);
-		current_group = Ref<EntityGroup>();
 	}
 
 	void setup();
@@ -87,8 +85,6 @@ protected:
 private:
 	std::mutex _mutex;
 	std::vector<Action> _actions;
-	// reference to the current group to be populated with all new spawned units
-	Ref<EntityGroup> current_group;
 };
 
 }
