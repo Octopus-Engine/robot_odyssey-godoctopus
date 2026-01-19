@@ -17,6 +17,7 @@
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/PickerNode.h"
+#include "godoctopus/proximity/ProximityChecker.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -41,6 +42,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
 	ClassDB::register_class<godot::UnitPrefab>();
+	ClassDB::register_class<godot::ProximityChecker>();
 
 	// Demo Nodes
 	ClassDB::register_class<godot::AttackMoveDemoNode>();
