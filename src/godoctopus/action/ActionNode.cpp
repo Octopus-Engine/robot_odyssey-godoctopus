@@ -19,7 +19,7 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move", "prefab", "position", "team", "count", "target"), &ActionNode::spawn_units_attack_move);
 	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
-	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "add"), &ActionNode::mod_rune);
+	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "level", "add"), &ActionNode::mod_rune);
 }
 
 void ActionNode::setup() {
@@ -98,8 +98,8 @@ void ActionNode::setup() {
 						return p.idx == player_idx;
 					});
 
-					octopus::Logger::getDebug() << "Modding rune "<< (add ? "add" : "remove") <<" for player "<<player_idx<<std::endl;
-					mod_rune_based_on_names(player, unit_type, rune_type, add, 0);
+					octopus::Logger::getDebug() << "Modding rune "<< (add ? "add" : "remove") <<" for player: "<<player_idx<<", unit_type: "<<unit_type<<", rune_type: "<<rune_type<<std::endl;
+					mod_rune_based_on_names(player, unit_type, rune_type, add, mod_rune_action.level);
 				}
 			}
 			_actions.clear();

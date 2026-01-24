@@ -31,6 +31,7 @@ struct ModRuneAction {
 	String unit_type;
 	String rune_type;
 	int player_idx;
+	int level;
 	bool add = false;
 };
 
@@ -72,9 +73,9 @@ public:
 		}
 	}
 
-	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, bool add) {
+	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, int level, bool add) {
 		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, add});
+		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, level, add});
 	}
 
 	void setup();
