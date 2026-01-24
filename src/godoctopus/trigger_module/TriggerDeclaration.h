@@ -65,7 +65,7 @@ struct HitPointBuffRuneRegular : LeveledBuff<LeveledHitPointBuff<10, 5>, octopus
 struct ArmorBuffRuneRegular : LeveledBuff<LeveledArmorBuff<10, 5>, octopus::Armor> {};
 struct DamageBuffRuneRegular : LeveledBuff<LeveledDamageBuff<2, 1>, octopus::Attack> {};
 struct ReloadBuffRuneRegular : LeveledBuff<LeveledAttackSpeedBuff<5, 5>, octopus::Attack> {};
-struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<10, 5>, Special> {};
+struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<2, 1>, Special> {};
 struct AffinityBuffRuneRegular : LeveledBuff<LeveledAffinityBuff<2, 1>, Special> {};
 
 // Core buff runes

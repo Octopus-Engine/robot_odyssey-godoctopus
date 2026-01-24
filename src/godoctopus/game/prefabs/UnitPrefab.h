@@ -19,6 +19,10 @@ public:
 		ClassDB::add_property_group("UnitPrefab", "General");
 		// General
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, prefab_name);
+		ClassDB::add_property_group("UnitPrefab", "Rune");
+		// Rune
+		ADD_SIMPLE_PROP(UnitPrefab, INT, special_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, affinity_x10);
 		ClassDB::add_property_group("UnitPrefab", "Damage");
 		// Damage
 		ADD_SIMPLE_PROP(UnitPrefab, INT, damage_x10);
@@ -76,6 +80,9 @@ public:
 
 	// General
 	SET_GET_PARAM(String, prefab_name);
+	// Rune
+	SET_GET_PARAM_DEF(int, special_x10, 0);
+	SET_GET_PARAM_DEF(int, affinity_x10, 10);
 	// Damage
 	SET_GET_PARAM_DEF(int, damage_x10, 30);
 	SET_GET_PARAM_DEF(int, reload_x10, 10);

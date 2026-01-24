@@ -22,6 +22,7 @@
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/rune_load/RuneLoad.h"
+#include "godoctopus/components/special/Special.h"
 
 namespace godot
 {
@@ -50,6 +51,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::Armor>({unit_prefab->get_armor()})
+		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
 		.auto_override<octopus::Destroyable>()
 		.set<octopus::Collision>({unit_prefab->get_ray_x100()/100.})
 		.auto_override<octopus::PositionInTree>()

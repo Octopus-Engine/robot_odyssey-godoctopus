@@ -1,6 +1,7 @@
 #include "TriggerDeclaration.h"
 
 #include "octopus/systems/player/buff/PlayerBuffSystems.hh"
+#include "octopus/systems/phases/Phases.hh"
 
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
@@ -55,6 +56,43 @@ void declare_classic_buff(flecs::world &ecs)
 		.member("quantity", &BuffType::quantity);
 
 	declare_player_buff_systems_all_units<BuffType, ComponentType...>(ecs, true);
+}
+
+template<typename BuffType, typename... ComponentTypes>
+struct UpdateableBuffSystemDeclarer {
+	flecs::world &ecs;
+
+	template<typename BotType>
+	void operator()() const {
+		flecs::query query_units = ecs.query_builder<octopus::PlayerAppartenance const, ComponentTypes...>()
+			.template with<BotType>()
+			.build();
+
+		ecs.system<octopus::PlayerInfo const, octopus::PlayerBuff<BotType, BuffType, ComponentTypes...> >()
+			.kind(ecs.entity(ValidatePhase))
+			.each([query_units] (octopus::PlayerInfo const &player, octopus::PlayerBuff<BotType, BuffType, ComponentTypes...> &player_buff) {
+				query_units.each([&](flecs::entity e, octopus::PlayerAppartenance const &player_appartenance, ComponentTypes&... component)
+				{
+					if(player_appartenance.idx != player.idx) { return; }
+					player_buff.buff.update_value(e, component ...);
+				});
+			});
+	}
+};
+
+template<typename BuffType, typename... ComponentType>
+void declare_updatable_buff(flecs::world &ecs)
+{
+	// component declaration
+	ecs.component<BuffType>()
+		.member("old_special", &BuffType::old_special)
+		.member("init", &BuffType::init)
+		.member("quantity", &BuffType::quantity);
+
+	declare_player_buff_systems_all_units<BuffType, ComponentType...>(ecs, true);
+
+	// declare validate system that will update buff value during validate phase
+	for_each_bot_type(UpdateableBuffSystemDeclarer<BuffType, ComponentType...>{ecs});
 }
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
@@ -173,38 +211,39 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 	declare_classic_buff<SpecialBuffRuneRegular, Special>(ecs);
 	declare_classic_buff<AffinityBuffRuneRegular, Special>(ecs);
 	// cores
-	declare_classic_buff<HitPointBuffRuneCore, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_classic_buff<ArmorBuffRuneCore, octopus::Armor>(ecs);
-	declare_classic_buff<DamageBuffRuneCore, octopus::Attack>(ecs);
-	declare_classic_buff<ReloadBuffRuneCore, octopus::Attack>(ecs);
+	declare_updatable_buff<HitPointBuffRuneCore, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ArmorBuffRuneCore, octopus::Armor>(ecs);
+	declare_updatable_buff<DamageBuffRuneCore, octopus::Attack>(ecs);
+	declare_updatable_buff<ReloadBuffRuneCore, octopus::Attack>(ecs);
 	// specials
-	declare_classic_buff<HitPointBuffRuneSpecial, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_classic_buff<ArmorBuffRuneSpecial, octopus::Armor>(ecs);
-	declare_classic_buff<DamageBuffRuneSpecial, octopus::Attack>(ecs);
-	declare_classic_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
-
+	declare_updatable_buff<HitPointBuffRuneSpecial, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ArmorBuffRuneSpecial, octopus::Armor>(ecs);
+	declare_updatable_buff<DamageBuffRuneSpecial, octopus::Attack>(ecs);
+	declare_updatable_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
 }
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
 typename std::enable_if<Level, void>::type mod_rune(flecs::entity e, bool add, int level)
 {
+	e.world().defer_suspend();
+	e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
 	if(add) {
-		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({{level}});
+		RuneType rune;
+		rune.level = level;
+		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({std::move(rune)});
 	}
-	else {
-		e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
-	}
+	e.world().defer_resume();
 }
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
-typename std::enable_if<!Level, void>::type mod_rune(flecs::entity e, bool add, int)
+typename std::enable_if<!Level, void>::type mod_rune(flecs::entity e, bool add, int level)
 {
+	e.world().defer_suspend();
+	e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
 	if(add) {
-		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({});
+		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({{level}});
 	}
-	else {
-		e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
-	}
+	e.world().defer_resume();
 }
 
 template<bool Level, typename RuneType, typename... ComponentType>
@@ -252,7 +291,7 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageOnHit>>(e, add, type);
 	}
 	else if (rune_name == "AoeDamageOnHitLevel") {
-		mod_rune_type<true, octopus::BuffAddComponent<AoeDamageOnHitLevel>>(e, add, type, level);
+		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageOnHitLevel>>(e, add, type, level);
 	}
 	else if (rune_name == "AoeDamageConsumeRuneOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnHit>>(e, add, type);
@@ -294,31 +333,31 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 		mod_rune_type<false, octopus::BuffAddComponent<HasHighHpBonusDamageRune>>(e, add, type);
 	}
 	else if (rune_name == "HitPointBuffRune") {
-		mod_rune_type<false, HitPointBuffRune, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
+		mod_rune_type<true, HitPointBuffRune, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
 	else if (rune_name == "HitPointBuffRuneTier2") {
-		mod_rune_type<false, HitPointBuffRuneTier2, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
+		mod_rune_type<true, HitPointBuffRuneTier2, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
 	else if (rune_name == "HitPointBuffRuneTier3") {
-		mod_rune_type<false, HitPointBuffRuneTier3, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
+		mod_rune_type<true, HitPointBuffRuneTier3, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
 	else if (rune_name == "DamageBuffRune") {
-		mod_rune_type<false, DamageBuffRune, octopus::Attack>(e, add, type);
+		mod_rune_type<true, DamageBuffRune, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "DamageBuffRuneTier2") {
-		mod_rune_type<false, DamageBuffRuneTier2, octopus::Attack>(e, add, type);
+		mod_rune_type<true, DamageBuffRuneTier2, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "DamageBuffRuneTier3") {
-		mod_rune_type<false, DamageBuffRuneTier3, octopus::Attack>(e, add, type);
+		mod_rune_type<true, DamageBuffRuneTier3, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "AttackSpeedBuffRune") {
-		mod_rune_type<false, AttackSpeedBuffRune, octopus::Attack>(e, add, type);
+		mod_rune_type<true, AttackSpeedBuffRune, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "AttackSpeedBuffRuneTier2") {
-		mod_rune_type<false, AttackSpeedBuffRuneTier2, octopus::Attack>(e, add, type);
+		mod_rune_type<true, AttackSpeedBuffRuneTier2, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "AttackSpeedBuffRuneTier3") {
-		mod_rune_type<false, AttackSpeedBuffRuneTier3, octopus::Attack>(e, add, type);
+		mod_rune_type<true, AttackSpeedBuffRuneTier3, octopus::Attack>(e, add, type);
 	}
 	else if (rune_name == "HitPointBuffRuneRegular") {
 		mod_rune_type<true, HitPointBuffRuneRegular, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
