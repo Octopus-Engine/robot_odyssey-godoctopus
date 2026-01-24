@@ -19,3 +19,21 @@ struct HitPointBuff
 		hp_max.qty -= quantity;
 	}
 };
+
+template<int32_t base_quantity, int32_t level_gain>
+struct LeveledHitPointBuff
+{
+	int32_t quantity = base_quantity;
+
+	void apply(flecs::entity, octopus::Fixed const &level, octopus::HitPoint &hp, octopus::HitPointMax &hp_max) const
+	{
+		hp.qty += quantity + (level * level_gain);
+		hp_max.qty += quantity + (level * level_gain);;
+	}
+
+	void revert(flecs::entity, octopus::Fixed const &level, octopus::HitPoint &hp, octopus::HitPointMax &hp_max) const
+	{
+		hp.qty -= quantity + (level * level_gain);
+		hp_max.qty -= quantity + (level * level_gain);;
+	}
+};

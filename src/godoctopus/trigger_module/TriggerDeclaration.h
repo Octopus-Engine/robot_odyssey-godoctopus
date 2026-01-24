@@ -3,9 +3,12 @@
 #include "flecs.h"
 #include "octopus/world/position/PositionContext.hh"
 
+#include "godoctopus/trigger_module/buffs/ArmorBuff.h"
 #include "godoctopus/trigger_module/buffs/AttackSpeedBuff.h"
 #include "godoctopus/trigger_module/buffs/DamageBuff.h"
 #include "godoctopus/trigger_module/buffs/HitPointBuff.h"
+#include "godoctopus/trigger_module/buffs/SpecialBuff.h"
+#include "godoctopus/trigger_module/buffs/ScalingBuff.h"
 
 struct AddRuneLoadOnAttack { int32_t level = 0; };
 struct AddRuneLoadOnTargetOnAttack { int32_t level = 0; };
@@ -56,6 +59,26 @@ struct DamageBuffRuneTier3 : DamageBuff<20> { int32_t level = 0; };
 struct AttackSpeedBuffRune : AttackSpeedBuff<10> { int32_t level = 0; };
 struct AttackSpeedBuffRuneTier2 : AttackSpeedBuff<20> { int32_t level = 0; };
 struct AttackSpeedBuffRuneTier3 : AttackSpeedBuff<50> { int32_t level = 0; };
+
+// Regular buffs runes
+struct HitPointBuffRuneRegular : LeveledBuff<LeveledHitPointBuff<10, 5>, octopus::HitPoint, octopus::HitPointMax> {};
+struct ArmorBuffRuneRegular : LeveledBuff<LeveledArmorBuff<10, 5>, octopus::Armor> {};
+struct DamageBuffRuneRegular : LeveledBuff<LeveledDamageBuff<2, 1>, octopus::Attack> {};
+struct ReloadBuffRuneRegular : LeveledBuff<LeveledAttackSpeedBuff<5, 5>, octopus::Attack> {};
+struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<10, 5>, Special> {};
+struct AffinityBuffRuneRegular : LeveledBuff<LeveledAffinityBuff<2, 1>, Special> {};
+
+// Core buff runes
+struct HitPointBuffRuneCore : SpecialScaledBuff<LeveledHitPointBuff<20, 1>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
+struct ArmorBuffRuneCore : SpecialScaledBuff<LeveledArmorBuff<20, 1>, octopus::Armor> { int32_t level = 0; };
+struct DamageBuffRuneCore : SpecialScaledBuff<LeveledDamageBuff<5, 1>, octopus::Attack> { int32_t level = 0; };
+struct ReloadBuffRuneCore : SpecialScaledBuff<LeveledAttackSpeedBuff<10, 1>, octopus::Attack> { int32_t level = 0; };
+
+// Special buff runes
+struct HitPointBuffRuneSpecial : SpecialScaledBuff<LeveledHitPointBuff<50, 2>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
+struct ArmorBuffRuneSpecial : SpecialScaledBuff<LeveledArmorBuff<40, 2>, octopus::Armor> { int32_t level = 0; };
+struct DamageBuffRuneSpecial : SpecialScaledBuff<LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
+struct ReloadBuffRuneSpecial : SpecialScaledBuff<LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx);
 

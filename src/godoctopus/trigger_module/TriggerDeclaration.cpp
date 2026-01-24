@@ -163,17 +163,35 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 	declare_classic_buff<AttackSpeedBuffRune, octopus::Attack>(ecs);
 	declare_classic_buff<AttackSpeedBuffRuneTier2, octopus::Attack>(ecs);
 	declare_classic_buff<AttackSpeedBuffRuneTier3, octopus::Attack>(ecs);
+
+	// declare scaling buffs
+	// regulars
+	declare_classic_buff<HitPointBuffRuneRegular, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_classic_buff<ArmorBuffRuneRegular, octopus::Armor>(ecs);
+	declare_classic_buff<DamageBuffRuneRegular, octopus::Attack>(ecs);
+	declare_classic_buff<ReloadBuffRuneRegular, octopus::Attack>(ecs);
+	declare_classic_buff<SpecialBuffRuneRegular, Special>(ecs);
+	declare_classic_buff<AffinityBuffRuneRegular, Special>(ecs);
+	// cores
+	declare_classic_buff<HitPointBuffRuneCore, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_classic_buff<ArmorBuffRuneCore, octopus::Armor>(ecs);
+	declare_classic_buff<DamageBuffRuneCore, octopus::Attack>(ecs);
+	declare_classic_buff<ReloadBuffRuneCore, octopus::Attack>(ecs);
+	// specials
+	declare_classic_buff<HitPointBuffRuneSpecial, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_classic_buff<ArmorBuffRuneSpecial, octopus::Armor>(ecs);
+	declare_classic_buff<DamageBuffRuneSpecial, octopus::Attack>(ecs);
+	declare_classic_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
+
 }
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
 typename std::enable_if<Level, void>::type mod_rune(flecs::entity e, bool add, int level)
 {
-	if(add)
-	{
+	if(add) {
 		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({{level}});
 	}
-	else
-	{
+	else {
 		e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
 	}
 }
@@ -181,12 +199,10 @@ typename std::enable_if<Level, void>::type mod_rune(flecs::entity e, bool add, i
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
 typename std::enable_if<!Level, void>::type mod_rune(flecs::entity e, bool add, int)
 {
-	if(add)
-	{
+	if(add) {
 		e.set<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>({});
 	}
-	else
-	{
+	else {
 		e.remove<octopus::PlayerBuff<UnitType, RuneType, ComponentType...>>();
 	}
 }
@@ -214,184 +230,181 @@ void mod_rune_type(flecs::entity e, bool add, std::string const &type, int level
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, int level)
 {
-	if(rune_name == "AddRuneLoadOnAttack")
-	{
+	if(rune_name == "AddRuneLoadOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddRuneLoadOnAttack>>(e, add, type);
 	}
-	else if(rune_name == "AddRuneLoadOnTargetOnAttack")
-	{
+	else if(rune_name == "AddRuneLoadOnTargetOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddRuneLoadOnTargetOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "HealAndConsumeRuneLoadOnAttack")
-	{
+	else if (rune_name == "HealAndConsumeRuneLoadOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<HealAndConsumeRuneLoadOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "HealAndConsumeRuneLoadOnAttackTier2")
-	{
+	else if (rune_name == "HealAndConsumeRuneLoadOnAttackTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<HealAndConsumeRuneLoadOnAttackTier2>>(e, add, type);
 	}
-	else if (rune_name == "DoubleDamageRune")
-	{
+	else if (rune_name == "DoubleDamageRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<DoubleDamageRune>>(e, add, type);
 	}
-	else if (rune_name == "BonusDamageSelfDamage")
-	{
+	else if (rune_name == "BonusDamageSelfDamage") {
 		mod_rune_type<false, octopus::BuffAddComponent<BonusDamageSelfDamage>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageOnHit")
-	{
+	else if (rune_name == "AoeDamageOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageOnHitLevel")
-	{
+	else if (rune_name == "AoeDamageOnHitLevel") {
 		mod_rune_type<true, octopus::BuffAddComponent<AoeDamageOnHitLevel>>(e, add, type, level);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnHit")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnHitTier2")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnHitTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnHitTier2>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealOnHit")
-	{
+	else if (rune_name == "AoeHealOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealConsumeRuneOnHit")
-	{
+	else if (rune_name == "AoeHealConsumeRuneOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealConsumeRuneOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealConsumeRuneOnHitTier2")
-	{
+	else if (rune_name == "AoeHealConsumeRuneOnHitTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealConsumeRuneOnHitTier2>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealOnAttack")
-	{
+	else if (rune_name == "AoeHealOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnAttack")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnAttackTier2")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnAttackTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnAttackTier2>>(e, add, type);
 	}
-	else if (rune_name == "AoeRuneToEnnemiesOnHit")
-	{
+	else if (rune_name == "AoeRuneToEnnemiesOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeRuneToEnnemiesOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AoeRuneToAlliesOnHit")
-	{
+	else if (rune_name == "AoeRuneToAlliesOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeRuneToAlliesOnHit>>(e, add, type);
 	}
-	else if (rune_name == "AddRuneLoadOnHit")
-	{
+	else if (rune_name == "AddRuneLoadOnHit") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddRuneLoadOnHit>>(e, add, type);
 	}
-	else if (rune_name == "HasLowHpDoubleDamageRune")
-	{
+	else if (rune_name == "HasLowHpDoubleDamageRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<HasLowHpDoubleDamageRune>>(e, add, type);
 	}
-	else if (rune_name == "HasHighHpBonusDamageRune")
-	{
+	else if (rune_name == "HasHighHpBonusDamageRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<HasHighHpBonusDamageRune>>(e, add, type);
 	}
-	else if (rune_name == "HitPointBuffRune")
-	{
+	else if (rune_name == "HitPointBuffRune") {
 		mod_rune_type<false, HitPointBuffRune, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
-	else if (rune_name == "HitPointBuffRuneTier2")
-	{
+	else if (rune_name == "HitPointBuffRuneTier2") {
 		mod_rune_type<false, HitPointBuffRuneTier2, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
-	else if (rune_name == "HitPointBuffRuneTier3")
-	{
+	else if (rune_name == "HitPointBuffRuneTier3") {
 		mod_rune_type<false, HitPointBuffRuneTier3, octopus::HitPoint, octopus::HitPointMax>(e, add, type);
 	}
-	else if (rune_name == "DamageBuffRune")
-	{
+	else if (rune_name == "DamageBuffRune") {
 		mod_rune_type<false, DamageBuffRune, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "DamageBuffRuneTier2")
-	{
+	else if (rune_name == "DamageBuffRuneTier2") {
 		mod_rune_type<false, DamageBuffRuneTier2, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "DamageBuffRuneTier3")
-	{
+	else if (rune_name == "DamageBuffRuneTier3") {
 		mod_rune_type<false, DamageBuffRuneTier3, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "AttackSpeedBuffRune")
-	{
+	else if (rune_name == "AttackSpeedBuffRune") {
 		mod_rune_type<false, AttackSpeedBuffRune, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "AttackSpeedBuffRuneTier2")
-	{
+	else if (rune_name == "AttackSpeedBuffRuneTier2") {
 		mod_rune_type<false, AttackSpeedBuffRuneTier2, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "AttackSpeedBuffRuneTier3")
-	{
+	else if (rune_name == "AttackSpeedBuffRuneTier3") {
 		mod_rune_type<false, AttackSpeedBuffRuneTier3, octopus::Attack>(e, add, type);
 	}
-	else if (rune_name == "TargetHasHighHpBonusDamageRune")
-	{
+	else if (rune_name == "HitPointBuffRuneRegular") {
+		mod_rune_type<true, HitPointBuffRuneRegular, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ArmorBuffRuneRegular") {
+		mod_rune_type<true, ArmorBuffRuneRegular, octopus::Armor>(e, add, type, level);
+	}
+	else if (rune_name == "DamageBuffRuneRegular") {
+		mod_rune_type<true, DamageBuffRuneRegular, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "ReloadBuffRuneRegular") {
+		mod_rune_type<true, ReloadBuffRuneRegular, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "SpecialBuffRuneRegular") {
+		mod_rune_type<true, SpecialBuffRuneRegular, Special>(e, add, type, level);
+	}
+	else if (rune_name == "AffinityBuffRuneRegular") {
+		mod_rune_type<true, AffinityBuffRuneRegular, Special>(e, add, type, level);
+	}
+	else if (rune_name == "HitPointBuffRuneCore") {
+		mod_rune_type<true, HitPointBuffRuneCore, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ArmorBuffRuneCore") {
+		mod_rune_type<true, ArmorBuffRuneCore, octopus::Armor>(e, add, type, level);
+	}
+	else if (rune_name == "DamageBuffRuneCore") {
+		mod_rune_type<true, DamageBuffRuneCore, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "ReloadBuffRuneCore") {
+		mod_rune_type<true, ReloadBuffRuneCore, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "HitPointBuffRuneSpecial") {
+		mod_rune_type<true, HitPointBuffRuneSpecial, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ArmorBuffRuneSpecial") {
+		mod_rune_type<true, ArmorBuffRuneSpecial, octopus::Armor>(e, add, type, level);
+	}
+	else if (rune_name == "DamageBuffRuneSpecial") {
+		mod_rune_type<true, DamageBuffRuneSpecial, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "ReloadBuffRuneSpecial") {
+		mod_rune_type<true, ReloadBuffRuneSpecial, octopus::Attack>(e, add, type, level);
+	}
+	else if (rune_name == "TargetHasHighHpBonusDamageRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<TargetHasHighHpBonusDamageRune>>(e, add, type);
 	}
-	else if (rune_name == "TargetHasHighHpBonusDamageRuneTier2")
-	{
+	else if (rune_name == "TargetHasHighHpBonusDamageRuneTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<TargetHasHighHpBonusDamageRuneTier2>>(e, add, type);
 	}
-	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttack")
-	{
+	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<BonusDamageConsumeRuneOnTargetOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttackTier2")
-	{
+	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttackTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<BonusDamageConsumeRuneOnTargetOnAttackTier2>>(e, add, type);
 	}
-	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttackTier3")
-	{
+	else if (rune_name == "BonusDamageConsumeRuneOnTargetOnAttackTier3") {
 		mod_rune_type<false, octopus::BuffAddComponent<BonusDamageConsumeRuneOnTargetOnAttackTier3>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnTargetOnAttack")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnTargetOnAttack") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnTargetOnAttack>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnTargetOnAttackTier2")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnTargetOnAttackTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnTargetOnAttackTier2>>(e, add, type);
 	}
-	else if (rune_name == "LifestealRune")
-	{
+	else if (rune_name == "LifestealRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<LifestealRune>>(e, add, type);
 	}
-	else if (rune_name == "LifestealRuneConsumeRuneOnTarget")
-	{
+	else if (rune_name == "LifestealRuneConsumeRuneOnTarget") {
 		mod_rune_type<false, octopus::BuffAddComponent<LifestealRuneConsumeRuneOnTarget>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageOnDeath")
-	{
+	else if (rune_name == "AoeDamageOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageOnDeath>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealOnDeath")
-	{
+	else if (rune_name == "AoeHealOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealOnDeath>>(e, add, type);
 	}
-	else if (rune_name == "AoeDamageConsumeRuneOnDeath")
-	{
+	else if (rune_name == "AoeDamageConsumeRuneOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnDeath>>(e, add, type);
 	}
-	else if (rune_name == "AoeHealConsumeRuneOnDeath")
-	{
+	else if (rune_name == "AoeHealConsumeRuneOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeHealConsumeRuneOnDeath>>(e, add, type);
 	}
-	else if (rune_name == "AddAoeRuneLoadToEnemiesOnDeath")
-	{
+	else if (rune_name == "AddAoeRuneLoadToEnemiesOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddAoeRuneLoadToEnemiesOnDeath>>(e, add, type);
 	}
-	else if (rune_name == "AddAoeRuneLoadToAlliesOnDeath")
-	{
+	else if (rune_name == "AddAoeRuneLoadToAlliesOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddAoeRuneLoadToAlliesOnDeath>>(e, add, type);
 	}
 }
