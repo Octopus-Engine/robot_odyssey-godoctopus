@@ -16,6 +16,7 @@
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/info/InfoNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 #include "godoctopus/proximity/ProximityChecker.h"
 
@@ -41,6 +42,8 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
+	ClassDB::register_class<godot::InfoNode>();
+	ClassDB::register_class<godot::StatsInfo>();
 	ClassDB::register_class<godot::UnitPrefab>();
 	ClassDB::register_class<godot::ProximityChecker>();
 

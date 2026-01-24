@@ -198,6 +198,7 @@ godoctopus2_sources = [
     "./src/godoctopus/game/ability/EarbotSteam.cpp",
     "./src/godoctopus/game/levels/AttackMoveDemoNode.cpp",
     "./src/godoctopus/health_bar/HealthBarNode.cpp",
+    "./src/godoctopus/info/InfoNode.cpp",
     "./src/godoctopus/display/vat/SmartMMeshLibraryHandle.cpp",
     "./src/godoctopus/display/vat/VatLibraryHandle.cpp",
     "./src/godoctopus/display/particule/ParticuleSmartMMesh.cpp",
