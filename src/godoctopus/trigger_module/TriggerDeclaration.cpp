@@ -64,17 +64,30 @@ struct UpdateableBuffSystemDeclarer {
 
 	template<typename BotType>
 	void operator()() const {
-		flecs::query query_units = ecs.query_builder<octopus::PlayerAppartenance const, ComponentTypes...>()
+		flecs::query query_units = ecs.query_builder<octopus::PlayerAppartenance const, SpecialUpdate<BuffType>, ComponentTypes...>()
 			.template with<BotType>()
 			.build();
+
+		ecs.component<SpecialUpdate<BuffType>>()
+			.member("old_special", &SpecialUpdate<BuffType>::old_special)
+			.member("init", &SpecialUpdate<BuffType>::init);
+
+		// Lazy set up of component
+		ecs.system<octopus::PlayerAppartenance const, ComponentTypes...>()
+			.kind(ecs.entity(ValidatePhase))
+			.without<SpecialUpdate<BuffType>>()
+			.write<SpecialUpdate<BuffType>>()
+			.each([](flecs::entity e, octopus::PlayerAppartenance const &player_appartenance, ComponentTypes&... component) {
+				e.add<SpecialUpdate<BuffType>>();
+			});
 
 		ecs.system<octopus::PlayerInfo const, octopus::PlayerBuff<BotType, BuffType, ComponentTypes...> >()
 			.kind(ecs.entity(ValidatePhase))
 			.each([query_units] (octopus::PlayerInfo const &player, octopus::PlayerBuff<BotType, BuffType, ComponentTypes...> &player_buff) {
-				query_units.each([&](flecs::entity e, octopus::PlayerAppartenance const &player_appartenance, ComponentTypes&... component)
+				query_units.each([&](flecs::entity e, octopus::PlayerAppartenance const &player_appartenance, SpecialUpdate<BuffType> & spec_up, ComponentTypes&... component)
 				{
 					if(player_appartenance.idx != player.idx) { return; }
-					player_buff.buff.update_value(e, component ...);
+					player_buff.buff.update_value(e, spec_up, component ...);
 				});
 			});
 	}
@@ -85,8 +98,6 @@ void declare_updatable_buff(flecs::world &ecs)
 {
 	// component declaration
 	ecs.component<BuffType>()
-		.member("old_special", &BuffType::old_special)
-		.member("init", &BuffType::init)
 		.member("quantity", &BuffType::quantity);
 
 	declare_player_buff_systems_all_units<BuffType, ComponentType...>(ecs, true);

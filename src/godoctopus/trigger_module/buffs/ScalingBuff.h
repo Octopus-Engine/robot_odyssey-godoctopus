@@ -14,21 +14,24 @@ struct LeveledBuff : public BuffType {
 	int32_t level = 0;
 };
 
-template<typename BuffType, typename... Components>
+template<typename BuffType>
+struct SpecialUpdate {
+	octopus::Fixed old_special = 0;
+	bool init = false;
+};
+
+template<typename RuneType, typename BuffType, typename... Components>
 struct SpecialScaledBuff : public BuffType {
 	void apply(flecs::entity e, Components&... comps) const {}
 	void revert(flecs::entity e, Components&... comps) const {
-		BuffType::revert(e, old_special, comps...);
+		auto const &spec_up = e.get<SpecialUpdate<RuneType>>();
+		if (spec_up.init) BuffType::revert(e, spec_up.old_special, comps...);
 	}
 
-	void update_value(flecs::entity e, Components&... comps) {
-		if (init) BuffType::revert(e, old_special, comps...);
-		old_special = get_special_value(e);
-		init = true;
-		BuffType::apply(e, old_special, comps...);
+	void update_value(flecs::entity e, SpecialUpdate<RuneType> &special_update, Components&... comps) {
+		if (special_update.init) BuffType::revert(e, special_update.old_special, comps...);
+		special_update.old_special = get_special_value(e);
+		special_update.init = true;
+		BuffType::apply(e, special_update.old_special, comps...);
 	}
-
-	// used to update properly when special changes
-	octopus::Fixed old_special = 0;
-	bool init = false;
 };

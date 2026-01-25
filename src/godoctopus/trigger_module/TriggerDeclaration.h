@@ -69,16 +69,16 @@ struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<2, 1>, Special> {
 struct AffinityBuffRuneRegular : LeveledBuff<LeveledAffinityBuff<2, 1>, Special> {};
 
 // Core buff runes
-struct HitPointBuffRuneCore : SpecialScaledBuff<LeveledHitPointBuff<20, 1>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
-struct ArmorBuffRuneCore : SpecialScaledBuff<LeveledArmorBuff<20, 1>, octopus::Armor> { int32_t level = 0; };
-struct DamageBuffRuneCore : SpecialScaledBuff<LeveledDamageBuff<5, 1>, octopus::Attack> { int32_t level = 0; };
-struct ReloadBuffRuneCore : SpecialScaledBuff<LeveledAttackSpeedBuff<10, 1>, octopus::Attack> { int32_t level = 0; };
+struct HitPointBuffRuneCore : SpecialScaledBuff<HitPointBuffRuneCore, LeveledHitPointBuff<20, 1>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
+struct ArmorBuffRuneCore : SpecialScaledBuff<ArmorBuffRuneCore, LeveledArmorBuff<20, 1>, octopus::Armor> { int32_t level = 0; };
+struct DamageBuffRuneCore : SpecialScaledBuff<DamageBuffRuneCore, LeveledDamageBuff<5, 1>, octopus::Attack> { int32_t level = 0; };
+struct ReloadBuffRuneCore : SpecialScaledBuff<ReloadBuffRuneCore, LeveledAttackSpeedBuff<10, 1>, octopus::Attack> { int32_t level = 0; };
 
 // Special buff runes
-struct HitPointBuffRuneSpecial : SpecialScaledBuff<LeveledHitPointBuff<50, 2>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
-struct ArmorBuffRuneSpecial : SpecialScaledBuff<LeveledArmorBuff<40, 2>, octopus::Armor> { int32_t level = 0; };
-struct DamageBuffRuneSpecial : SpecialScaledBuff<LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
-struct ReloadBuffRuneSpecial : SpecialScaledBuff<LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
+struct HitPointBuffRuneSpecial : SpecialScaledBuff<HitPointBuffRuneSpecial, LeveledHitPointBuff<50, 2>, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
+struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledArmorBuff<40, 2>, octopus::Armor> { int32_t level = 0; };
+struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
+struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx);
 
