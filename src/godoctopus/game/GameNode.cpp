@@ -23,6 +23,7 @@
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/components/special/Special.h"
+#include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
 {
@@ -213,7 +214,13 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 	init_nodes();
 	if(!level_node)
 	{
-		print_line("Cannot init from level with no level");
+		print_line("Init with no level node set!");
+		init_world(meta_data, [](Dictionary const &meta_data_, GameNode &game) {
+			print_line("No level node to setup - basic setup");
+			game.get_world().ecs.entity().set<octopus::PlayerInfo>({0, 0});
+			game.get_world().ecs.entity().set<octopus::PlayerInfo>({1, 1});
+			declare_triggers(game.get_world().ecs, game.get_world().position_context);
+		});
 	}
 	else
 	{
