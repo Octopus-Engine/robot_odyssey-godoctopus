@@ -24,8 +24,9 @@ template<typename RuneType, typename BuffType, typename... Components>
 struct SpecialScaledBuff : public BuffType {
 	void apply(flecs::entity e, Components&... comps) const {}
 	void revert(flecs::entity e, Components&... comps) const {
-		auto const &spec_up = e.get<SpecialUpdate<RuneType>>();
+		auto &spec_up = e.get_mut<SpecialUpdate<RuneType>>();
 		if (spec_up.init) BuffType::revert(e, spec_up.old_special, comps...);
+		spec_up.init = false;
 	}
 
 	void update_value(flecs::entity e, SpecialUpdate<RuneType> &special_update, Components&... comps) {
