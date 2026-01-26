@@ -75,8 +75,8 @@ struct UpdateableBuffSystemDeclarer {
 		// Lazy set up of component
 		ecs.system<octopus::PlayerAppartenance const, ComponentTypes...>()
 			.kind(ecs.entity(ValidatePhase))
-			.without<SpecialUpdate<BuffType>>()
-			.write<SpecialUpdate<BuffType>>()
+			.template without<SpecialUpdate<BuffType>>()
+			.template write<SpecialUpdate<BuffType>>()
 			.each([](flecs::entity e, octopus::PlayerAppartenance const &player_appartenance, ComponentTypes&... component) {
 				e.add<SpecialUpdate<BuffType>>();
 			});

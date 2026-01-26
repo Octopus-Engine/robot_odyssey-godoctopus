@@ -22,18 +22,18 @@ void for_each_type(Callable&& callable) {
 template<typename Callable>
 void for_each_bot_type(Callable&& callable) {
 	for_each_type<Callable
-		// , ArmorBot
-		// , BackcanonBot
-		// , BladeBot
-		// , EarBot
-		// , EarlargeBot
+		, ArmorBot
+		, BackcanonBot
+		, BladeBot
+		, EarBot
+		, EarlargeBot
 		, GunBot
-		// , HealBot
-		// , High_eBot
-		// , RamBot
-		// , Smallround_eBot
-		// , TallBot
-		// , TankyBot
-		// , Tiny_eBot
+		, HealBot
+		, High_eBot
+		, RamBot
+		, Smallround_eBot
+		, TallBot
+		, TankyBot
+		, Tiny_eBot
 	>(std::move(callable));
 }
