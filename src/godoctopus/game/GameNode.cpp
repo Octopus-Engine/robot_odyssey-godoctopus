@@ -48,6 +48,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 
 	auto prefab = ecs.prefab(unit_prefab->get_prefab_name().utf8().get_data())
 		.auto_override<custom_queue>()
+		.auto_override<Selected>()
 		.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
@@ -162,7 +163,10 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 		declare_vat_library_systems(ecs, _vat_library);
 	}
 	if (_smart_mmesh_library) {
-		declare_smart_mmesh_library_systems(ecs, _smart_mmesh_library);
+		lock_smart_mmesh_library(ecs, _smart_mmesh_library);
+		declare_smart_mmesh_library_systems(ecs, _smart_mmesh_library, _vat_library);
+		declare_selection_smart_mesh_systems(ecs, _smart_mmesh_library, 1);
+		unlock_smart_mmesh_library(ecs, _smart_mmesh_library);
 	}
 	if (_vat_library && _picker_node) {
 		declare_pickable_systems(ecs, _vat_library, _picker_node);

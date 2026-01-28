@@ -4,7 +4,6 @@
 #include "octopus/components/basic/projectile/Projectile.hh"
 #include "vat/VatLibrary.h"
 
-#include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 
 struct CustomBasicProjectile {

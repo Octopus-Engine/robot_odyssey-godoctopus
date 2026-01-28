@@ -5,13 +5,13 @@
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/basic/position/Position.hh"
 
-template<typename Library, typename PosDisplayer, typename IndexContainer>
+template<typename Library, typename PosDisplayer, typename IndexContainer, typename... Data>
 void declare_displayer_instance_handling_systems(flecs::world &ecs, Library *lib,
-	std::function<void(PosDisplayer*, IndexContainer const &)> setup = [](PosDisplayer* mmesh, IndexContainer const &handle) {}) {
+	std::function<void(PosDisplayer*, IndexContainer const &, Data&...)> setup = [](PosDisplayer* mmesh, IndexContainer const &handle, Data&...) {}) {
 
-	ecs.observer<octopus::Position const, IndexContainer>()
+	ecs.observer<octopus::Position const, IndexContainer, Data...>()
 		.event(flecs::OnSet)
-		.each([lib, setup](flecs::entity e, octopus::Position const &pos, IndexContainer & handle) {
+		.each([lib, setup](flecs::entity e, octopus::Position const &pos, IndexContainer & handle, Data&... data) {
 			if (handle.instance_id >= 0) {
 				return;
 			}
@@ -23,7 +23,7 @@ void declare_displayer_instance_handling_systems(flecs::world &ecs, Library *lib
 			transform.set_origin(WORLD_SCALE * Vector3(pos.pos.x.to_double(), 0., pos.pos.y.to_double()));
 			mmesh->set_instance_transform(instance_id, transform);
 			handle.instance_id = instance_id;
-			setup(mmesh, handle);
+			setup(mmesh, handle, data...);
 			lib->_mutex.unlock();
 		});
 

@@ -111,12 +111,13 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					end_up = proj.target.try_get<ProjectileTrajectory>()->target_y;
 				}
 				float r=info.r/255., g=info.g/255., b=info.b/255.;
-				e.set<SmartMMeshLibraryHandle>({0, r, g, b, 1., info.scale,
+				e.set<ProjectileSmartMMesh>({r, g, b, 1., info.scale,
 					up, // up
 					end_up, // end_up
 					octopus::get_time_stamp(e.world()),
 					octopus::get_time_stamp(e.world()) + 20
 				});
+				e.set<SmartMMeshLibraryHandle>({0});
 				// octopus::Vector direction = proj.pos_target - pos.pos;
 				// particules->add_instance_coned(
 				// 	WORLD_SCALE * Vector3(pos.pos.x.to_double(), up.to_double(), pos.pos.y.to_double()),
@@ -131,14 +132,14 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 
 	if (particules) {
 		// pop damage
-		ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, SmartMMeshLibraryHandle const>()
+		ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, ProjectileSmartMMesh const>()
 			.kind(ecs.entity(EndUpdatePhase))
 			.with<CustomBasicProjectile>()
 			.each([particules](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
-					octopus::Position const &pos, SmartMMeshLibraryHandle const &handle) {
+					octopus::Position const &pos, ProjectileSmartMMesh const& proj) {
 				particules->add_instance_detailed(
-					WORLD_SCALE * Vector3(pos.pos.x.to_double(), handle.end_up.to_double(), pos.pos.y.to_double()),
-					Color(handle.r.to_double(), handle.g.to_double(),handle.b.to_double(),1.),
+					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.end_up.to_double(), pos.pos.y.to_double()),
+					Color(proj.r.to_double(), proj.g.to_double(),proj.b.to_double(),1.),
 					4,
 					Vector3(0.5,0.5,0.5),
 					-1
