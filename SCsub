@@ -193,6 +193,7 @@ godoctopus2_sources = [
     "./src/godoctopus/action/ActionNode.cpp",
     "./src/godoctopus/command/CommandNode.cpp",
     "./src/godoctopus/components/special/Special.cpp",
+    "./src/godoctopus/entity_group/SelectionGroup.cpp",
     "./src/godoctopus/game/GameNode.cpp",
     "./src/godoctopus/game/ability/ArmorbotBuff.cpp",
     "./src/godoctopus/game/ability/EarbotSteam.cpp",
