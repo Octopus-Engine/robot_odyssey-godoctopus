@@ -163,10 +163,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 		declare_vat_library_systems(ecs, _vat_library);
 	}
 	if (_smart_mmesh_library) {
-		lock_smart_mmesh_library(ecs, _smart_mmesh_library);
-		declare_smart_mmesh_library_systems(ecs, _smart_mmesh_library, _vat_library);
-		declare_selection_smart_mesh_systems(ecs, _smart_mmesh_library, 1);
-		unlock_smart_mmesh_library(ecs, _smart_mmesh_library);
+		declare_smart_mmesh_library_systems(ecs, _smart_mmesh_library, _vat_library, 1);
 	}
 	if (_vat_library && _picker_node) {
 		declare_pickable_systems(ecs, _vat_library, _picker_node);

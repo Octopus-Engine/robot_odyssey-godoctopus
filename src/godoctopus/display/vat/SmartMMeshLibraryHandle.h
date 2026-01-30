@@ -39,8 +39,4 @@ struct Selected {
 	bool selected = false;
 };
 
-void lock_smart_mmesh_library(flecs::world &ecs, godot::SmartMMeshLibrary *library);
-void unlock_smart_mmesh_library(flecs::world &ecs, godot::SmartMMeshLibrary *library);
-void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library);
-
-void declare_selection_smart_mesh_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, int32_t multi_mesh_id);
+void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library, int32_t selection_multi_mesh_id);

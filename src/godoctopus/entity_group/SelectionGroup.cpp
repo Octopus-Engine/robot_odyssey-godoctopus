@@ -24,6 +24,9 @@ void SelectionGroup::_notification(int p_notification) {
 }
 
 static void update_selected(flecs::entity &e, bool selected) {
+	if (!e.is_valid() || !e.is_alive() || !e.enabled()) {
+		return;
+	}
 	auto sel = e.try_get_mut<Selected>();
 	if (sel) {
 		sel->selected = selected;
@@ -31,6 +34,9 @@ static void update_selected(flecs::entity &e, bool selected) {
 }
 
 static void insert_if_not_present(std::vector<flecs::entity> &entities, flecs::entity const &e) {
+	if (!e.is_valid() || !e.is_alive() || !e.enabled()) {
+		return;
+	}
 	if (std::find(entities.begin(), entities.end(), e) == entities.end()) {
 		entities.push_back(e);
 	}

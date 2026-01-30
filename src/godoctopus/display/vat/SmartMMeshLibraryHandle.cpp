@@ -8,25 +8,7 @@
 
 #include "DisplayVatHelpers.h"
 
-void lock_smart_mmesh_library(flecs::world &ecs, godot::SmartMMeshLibrary *library) {
-	// lock mutex
-	ecs.system<>()
-		.kind(ecs.entity(DisplaySyncPhase))
-		.run([library](flecs::iter&) {
-			library->_mutex.lock();
-			library->swap_transforms();
-		});
-}
-void unlock_smart_mmesh_library(flecs::world &ecs, godot::SmartMMeshLibrary *library) {
-
-	// clear up mutex
-	ecs.system<>()
-		.kind(ecs.entity(DisplaySyncPhase))
-		.run([library](flecs::iter&) {
-			library->_mutex.unlock();
-		});
-}
-void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library) {
+void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library, int32_t selection_multi_mesh_id) {
 
 	// no instance id to enable reload
 	ecs.component<SmartMMeshLibraryHandle>()
@@ -68,7 +50,52 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 
 	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SmartMMeshLibraryHandle, RelativePosition>(ecs,library);
 
+	// selection handling
+	using SelectionSmartMeshHandle = SmartMMeshLibraryHandleT<Selected>;
+	// no instance id to enable reload
+	ecs.component<SelectionSmartMeshHandle>()
+		.member("multi_mesh_id", &SelectionSmartMeshHandle::multi_mesh_id)
+	;
+
+	ecs.component<Selected>()
+		.member("selected", &Selected::selected)
+	;
+
+	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle>(ecs, library);
+
 	// Update phase
+
+	// update based on selection status (before locking mutex)
+	ecs.system<Selected const>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.with<SelectionSmartMeshHandle>()
+		.write<SelectionSmartMeshHandle>()
+		.each([ecs](flecs::entity e, Selected const &selected) {
+			if (!selected.selected) {
+				ecs.defer_suspend();
+				e.remove<SelectionSmartMeshHandle>();
+				ecs.defer_resume();
+			}
+		});
+	ecs.system<Selected const>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.without<SelectionSmartMeshHandle>()
+		.write<SelectionSmartMeshHandle>()
+		.each([ecs, selection_multi_mesh_id](flecs::entity e, Selected const &selected) {
+			if (selected.selected) {
+				ecs.defer_suspend();
+				e.set<SelectionSmartMeshHandle>({selection_multi_mesh_id});
+				ecs.defer_resume();
+			}
+		});
+
+	// lock mutex
+	ecs.system<>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.run([library](flecs::iter&) {
+			library->_mutex.lock();
+			library->swap_transforms();
+		});
 
 
 	// update all positions
@@ -103,41 +130,7 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 			});
 	}
 
-}
-
-void declare_selection_smart_mesh_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, int32_t multi_mesh_id) {
-	using SelectionSmartMeshHandle = SmartMMeshLibraryHandleT<Selected>;
-
-	// no instance id to enable reload
-	ecs.component<SelectionSmartMeshHandle>()
-		.member("multi_mesh_id", &SelectionSmartMeshHandle::multi_mesh_id)
-	;
-
-	ecs.component<Selected>()
-		.member("selected", &Selected::selected)
-	;
-
-	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle>(ecs, library);
-
-	// update based on selection status
-	ecs.system<Selected const>()
-		.with<SelectionSmartMeshHandle>()
-		.write<SelectionSmartMeshHandle>()
-		.each([](flecs::entity e, Selected const &selected) {
-			if (!selected.selected) {
-				e.remove<SelectionSmartMeshHandle>();
-			}
-		});
-	ecs.system<Selected const>()
-		.without<SelectionSmartMeshHandle>()
-		.write<SelectionSmartMeshHandle>()
-		.each([multi_mesh_id](flecs::entity e, Selected const &selected) {
-			if (selected.selected) {
-				e.set<SelectionSmartMeshHandle>({multi_mesh_id});
-			}
-		});
-
-	// update all positions
+	// update all positions for selection
 	ecs.system<octopus::Position const, SelectionSmartMeshHandle const>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.multi_threaded()
@@ -146,4 +139,12 @@ void declare_selection_smart_mesh_systems(flecs::world &ecs, godot::SmartMMeshLi
 			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
 			mmesh->set_instance_new_position(handle.instance_id, WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), 0., real_t(octopus::to_double(pos.pos.y))));
 		});
+
+	// clear up mutex
+	ecs.system<>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.run([library](flecs::iter&) {
+			library->_mutex.unlock();
+		});
+
 }
