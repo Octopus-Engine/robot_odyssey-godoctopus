@@ -12,8 +12,10 @@
 
 struct AddRuneLoadOnAttack { int32_t level = 0; };
 struct AddRuneLoadOnTargetOnAttack { int32_t level = 0; };
+struct HealAndConsumeRuneLoadOnHit { int32_t level = 0; };
 struct HealAndConsumeRuneLoadOnAttack { int32_t level = 0; };
-struct DoubleDamageRune { int32_t level = 0; };
+struct BonusDamageConsumeRuneOnAttack { int32_t level = 0; };
+struct BonusDamageRune { int32_t level = 0; };
 struct BonusDamageSelfDamage { int32_t level = 0; };
 struct AoeDamageOnHit { int32_t level = 0; };
 struct AoeDamageOnHitLevel { int32_t level = 0;};
@@ -21,6 +23,7 @@ struct AoeDamageConsumeRuneOnHit { int32_t level = 0; };
 struct AoeHealOnHit { int32_t level = 0; };
 struct AoeHealConsumeRuneOnHit { int32_t level = 0; };
 struct AoeHealOnAttack { int32_t level = 0; };
+struct AoeDamageSpecial { int32_t level = 0; };
 struct AoeDamageConsumeRuneOnAttack { int32_t level = 0; };
 struct AoeRuneToEnnemiesOnHit { int32_t level = 0; };
 struct AoeRuneToAlliesOnHit { int32_t level = 0; };
@@ -33,6 +36,8 @@ struct BonusDamageConsumeRuneOnTargetOnAttack { int32_t level = 0; };
 struct BonusDamageConsumeRuneOnTargetOnAttackTier2 { int32_t level = 0; };
 struct BonusDamageConsumeRuneOnTargetOnAttackTier3 { int32_t level = 0; };
 struct LifestealRune { int32_t level = 0; };
+struct LifestealRuneCore { int32_t level = 0; };
+struct LifestealRuneSpecial { int32_t level = 0; };
 struct LifestealRuneConsumeRuneOnTarget { int32_t level = 0; };
 struct AoeDamageOnDeath { int32_t level = 0; };
 struct AoeHealOnDeath { int32_t level = 0; };
@@ -64,7 +69,7 @@ struct AttackSpeedBuffRuneTier3 : AttackSpeedBuff<50> { int32_t level = 0; };
 struct HitPointBuffRuneRegular : LeveledBuff<LeveledHitPointBuff<10, 5>, octopus::HitPoint, octopus::HitPointMax> {};
 struct ArmorBuffRuneRegular : LeveledBuff<LeveledArmorBuff<10, 5>, octopus::Armor> {};
 struct DamageBuffRuneRegular : LeveledBuff<LeveledDamageBuff<2, 1>, octopus::Attack> {};
-struct ReloadBuffRuneRegular : LeveledBuff<LeveledAttackSpeedBuff<5, 5>, octopus::Attack> {};
+struct ReloadBuffRuneRegular : LeveledBuff<LeveledAttackSpeedBuff<5, 1>, octopus::Attack> {};
 struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<2, 1>, Special> {};
 struct AffinityBuffRuneRegular : LeveledBuff<LeveledAffinityBuff<2, 1>, Special> {};
 

@@ -1,5 +1,7 @@
 #pragma once
 
+#include "godoctopus/components/special/Special.h"
+
 template<int32_t percent, int32_t percent_upgrade>
 struct FactorDamageEvent
 {
@@ -10,6 +12,20 @@ struct FactorDamageEvent
 		if(hp && atk)
 		{
 			hp->qty -= atk->cst.damage * (percent + percent_upgrade * level)/100;
+		}
+	}
+};
+
+template<int32_t percent, int32_t percent_upgrade>
+struct FactorDamageEventSpecialScaled
+{
+	static void apply(flecs::entity attacker, flecs::entity target, int32_t)
+	{
+		octopus::HitPoint * hp = target.try_get_mut<octopus::HitPoint>();
+		octopus::Attack const *atk = attacker.try_get<octopus::Attack>();
+		if(hp && atk)
+		{
+			hp->qty -= atk->cst.damage * (percent + percent_upgrade * get_special_value(attacker))/100;
 		}
 	}
 };
