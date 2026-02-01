@@ -153,7 +153,7 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 
 	declare_attack_trigger_target_condition_system<TargetHasHighHpBonusDamageRune, trigger_module::DamageDealt, HitPointOverPercentCondition<75>, FactorDamageEvent<50, 10>>(ecs);
 	declare_attack_trigger_target_condition_system<TargetHasHighHpBonusDamageRuneTier2, trigger_module::DamageDealt, HitPointOverPercentCondition<75>, FactorDamageEvent<100, 20>>(ecs);
-	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, FactorDamageEvent<100, 20>>(ecs);
+	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, FactorDamageEvent<30, 3>>(ecs);
 	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttackTier2, trigger_module::DamageDealt, RuneCondition<2, DefaultRune>, FactorDamageEvent<200, 50>>(ecs);
 	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttackTier3, trigger_module::DamageDealt, RuneCondition<3, DefaultRune>, FactorDamageEvent<300, 100>>(ecs);
 

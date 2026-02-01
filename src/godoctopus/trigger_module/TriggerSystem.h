@@ -47,7 +47,7 @@ void declare_attack_trigger_target_condition_system(flecs::world &ecs)
 	ecs.observer<Rune const, octopus::AttackTrigger const>()
 		.template event<Trigger>()
 		.each([](flecs::entity e, const Rune& rune, octopus::AttackTrigger const &trigger) {
-			if(Condition::check(e))
+			if(Condition::check(trigger.target))
 			{
 				Event::apply(e, trigger.target, rune.level);
 			}
