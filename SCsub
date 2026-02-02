@@ -206,6 +206,7 @@ godoctopus2_sources = [
     "./src/godoctopus/pickable/Pickable.cpp",
     "./src/godoctopus/pickable/PickerNode.cpp",
     "./src/godoctopus/projectile/CustomBasicProjectile.cpp",
+    "./src/godoctopus/projectile/HeavyfireBotProjectile.cpp",
     "./src/godoctopus/proximity/ProximityChecker.cpp",
     "./src/vat/SmartMMeshLibrary.cpp",
     "./src/vat/SmartMultiMeshInstance.cpp",

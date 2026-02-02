@@ -20,8 +20,8 @@
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
+#include "godoctopus/projectile/HeavyfireBotProjectile.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
-
 #include "octopus_types.h"
 
 /////////////////////////////////////////////////
@@ -47,6 +47,10 @@ void declare_prefab(flecs::world &ecs) {
 		.auto_override<octopus::ResourceStock>()
 		.auto_override<octopus::Caster>()
 		.add<octopus::Caster>(ecs.component(ArmorbotAbility::NAME().c_str()));
+
+	ecs.prefab("heavyfire_bot")
+		.add<octopus::NoInstantDamage>()
+	;
 }
 
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
@@ -60,24 +64,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	declare_prefab(ecs);
 	declare_earbot_steam_ability(ecs, game.get_step_context());
 	declare_armorbot_ability(ecs, game);
-
-	ecs.prefab("earbot")
-		.auto_override<custom_queue>()
-		.set_auto_override<octopus::Move>({5./TICK_RATE})
-		.set_auto_override<octopus::HitPoint>({75})
-		.set_auto_override<octopus::HitPointMax>({75})
-		.auto_override<octopus::Destroyable>()
-		.set<octopus::Collision>({octopus::Fixed::One()/2})
-		.auto_override<octopus::PositionInTree>()
-		.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE, {251,185,84,1.5, 0.2}})
-		.set<WindupEffect>({1, 2, 0, 4.5, 1, 251,185,84, 4, 0.5f})
-		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{TICK_RATE/4, TICK_RATE*2, 10, 7}})
-		.set_auto_override<VatLibraryHandle>({0})
-		.auto_override<Pickable>()
-		.set_auto_override<ProjectileTrajectory>({0.5})
-		.set_auto_override<HealthBar>({2., 32.})
-	;
+	declare_heavyfire_bot_projectile_systems(ecs, game.get_world().position_context, game.get_step_context().step_manager);
 
 	for(int i = 0 ; i < count1 ; ++ i) {
 		auto e1 = ecs.entity()

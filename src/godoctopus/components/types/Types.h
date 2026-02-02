@@ -13,6 +13,7 @@ struct Smallround_eBot { static constexpr char const * const naming() { return "
 struct TallBot { static constexpr char const * const naming() { return "tallbot"; } };
 struct TankyBot { static constexpr char const * const naming() { return "tankybot"; } };
 struct Tiny_eBot { static constexpr char const * const naming() { return "tiny_ebot"; } };
+struct HeavyfireBot { static constexpr char const * const naming() { return "heavyfire_bot"; } };
 
 template<typename Callable, typename... Ts>
 void for_each_type(Callable&& callable) {
@@ -35,5 +36,6 @@ void for_each_bot_type(Callable&& callable) {
 		, TallBot
 		, TankyBot
 		, Tiny_eBot
+		, HeavyfireBot
 	>(std::move(callable));
 }

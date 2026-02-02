@@ -83,10 +83,17 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	}
 
 	if (unit_prefab->get_basic_projectile()) {
-		Color const &color = unit_prefab->get_projectile_color();
-		prefab.set_auto_override<octopus::BasicProjectileAttack<CustomBasicProjectile>>({20./TICK_RATE,
-			{color.get_r8(),color.get_g8(),color.get_b8(), unit_prefab->get_projectile_origin(), unit_prefab->get_projectile_scale()}});
+		prefab.set<octopus::BasicProjectileAttack>({20./TICK_RATE});
 	}
+	// always register custom projectile to allow color customization
+	Color const &color = unit_prefab->get_projectile_color();
+	prefab.set<CustomBasicProjectile>({
+		color.get_r8(),
+		color.get_g8(),
+		color.get_b8(),
+		unit_prefab->get_projectile_origin(),
+		unit_prefab->get_projectile_scale()
+	});
 
 	if (unit_prefab->get_attack_particle()) {
 		prefab.set<AttackParticle>({

@@ -100,6 +100,7 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 		.member("target_y", &ProjectileTrajectory::target_y)
 	;
 
+	octopus::set_up_basic_projectile_basis(ecs);
 	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const, octopus::Position const>()
@@ -118,16 +119,6 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 					octopus::get_time_stamp(e.world()) + 20
 				});
 				e.set<SmartMMeshLibraryHandle>({0});
-				// octopus::Vector direction = proj.pos_target - pos.pos;
-				// particules->add_instance_coned(
-				// 	WORLD_SCALE * Vector3(pos.pos.x.to_double(), up.to_double(), pos.pos.y.to_double()),
-				// 	Color(r, g, b,1.),
-				// 	4,
-				// 	info.scale.to_double()*Vector3(1.,1.,1.),
-				// 	Vector3(direction.x.to_double(), (end_up-up).to_double(),direction.y.to_double()),
-				// 	20.,
-				// 	-1
-				// );
 			});
 
 	if (particules) {
