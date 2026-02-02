@@ -12,6 +12,9 @@ struct CustomBasicProjectile {
 	int64_t b = 255;
 	octopus::Fixed origin_y = 1.5;
 	octopus::Fixed scale = 0.2;
+	int32_t impact_effect_id = -1;
+	int32_t impact_count = 4;
+	float impact_scale = 0.5;
 };
 
 struct ProjectileTrajectory {

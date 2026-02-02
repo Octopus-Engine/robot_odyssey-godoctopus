@@ -95,6 +95,9 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 		.member("b", &CustomBasicProjectile::b)
 		.member("origin_y", &CustomBasicProjectile::origin_y)
 		.member("scale", &CustomBasicProjectile::scale)
+		.member("impact_effect_id", &CustomBasicProjectile::impact_effect_id)
+		.member("impact_count", &CustomBasicProjectile::impact_count)
+		.member("impact_scale", &CustomBasicProjectile::impact_scale)
 	;
 	ecs.component<ProjectileTrajectory>()
 		.member("target_y", &ProjectileTrajectory::target_y)
@@ -123,17 +126,16 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 
 	if (particules) {
 		// pop damage
-		ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, ProjectileSmartMMesh const>()
+		ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, ProjectileSmartMMesh const, CustomBasicProjectile const>()
 			.kind(ecs.entity(EndUpdatePhase))
-			.with<CustomBasicProjectile>()
 			.each([particules](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
-					octopus::Position const &pos, ProjectileSmartMMesh const& proj) {
+					octopus::Position const &pos, ProjectileSmartMMesh const& proj, CustomBasicProjectile const &info) {
 				particules->add_instance_detailed(
 					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.end_up.to_double(), pos.pos.y.to_double()),
 					Color(proj.r.to_double(), proj.g.to_double(),proj.b.to_double(),1.),
-					4,
-					Vector3(0.5,0.5,0.5),
-					-1
+					info.impact_count,
+					info.impact_scale * Vector3(1.,1.,1.),
+					info.impact_effect_id
 				);
 			});
 	}

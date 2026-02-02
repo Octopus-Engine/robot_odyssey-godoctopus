@@ -42,8 +42,8 @@ void declare_heavyfire_bot_projectile_systems(flecs::world &ecs, octopus::Positi
 				proj.pos_target = trigger.target.try_get<Position>()->pos;
 			}
 			HeavyfireBotProjectile proj_info {
-				attack.cst.damage * (octopus::Fixed::One() / 10 + get_special_value(e) /100),
-				10.
+				attack.cst.damage * (octopus::Fixed::One() / 2 + get_special_value(e) /50),
+				5.
 			};
 			step_l.set_up_function = [pos, proj, proj_info, proj_data, team](flecs::entity new_ent, flecs::world const &world_p) {
 				Position position;

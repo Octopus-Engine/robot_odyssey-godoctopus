@@ -92,7 +92,10 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		color.get_g8(),
 		color.get_b8(),
 		unit_prefab->get_projectile_origin(),
-		unit_prefab->get_projectile_scale()
+		unit_prefab->get_projectile_scale(),
+		unit_prefab->get_impact_effect_id(),
+		unit_prefab->get_impact_count(),
+		unit_prefab->get_impact_scale()
 	});
 
 	if (unit_prefab->get_attack_particle()) {

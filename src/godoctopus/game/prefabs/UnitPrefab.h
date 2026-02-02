@@ -19,6 +19,8 @@ public:
 		ClassDB::add_property_group("UnitPrefab", "General");
 		// General
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, prefab_name);
+		ADD_SIMPLE_PROP(UnitPrefab, STRING, description);
+		ADD_SIMPLE_PROP(UnitPrefab, STRING, lore);
 		ClassDB::add_property_group("UnitPrefab", "Rune");
 		// Rune
 		ADD_SIMPLE_PROP(UnitPrefab, INT, special_x10);
@@ -35,6 +37,9 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_scale);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_origin);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_target);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, impact_effect_id);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, impact_count);
+		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, impact_scale);
 		ClassDB::add_property_subgroup("UnitPrefab", "AttackParticle");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_particle);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, attack_particle_effect);
@@ -80,6 +85,8 @@ public:
 
 	// General
 	SET_GET_PARAM(String, prefab_name);
+	SET_GET_PARAM(String, description);
+	SET_GET_PARAM(String, lore);
 	// Rune
 	SET_GET_PARAM_DEF(int, special_x10, 0);
 	SET_GET_PARAM_DEF(int, affinity_x10, 10);
@@ -94,6 +101,9 @@ public:
 		SET_GET_PARAM_DEF(float, projectile_scale, 0.2);
 		SET_GET_PARAM_DEF(float, projectile_origin, 1.);
 		SET_GET_PARAM_DEF(float, projectile_target, 1.);
+		SET_GET_PARAM_DEF(int, impact_effect_id, -1);
+		SET_GET_PARAM_DEF(int, impact_count, 4);
+		SET_GET_PARAM_DEF(float, impact_scale, 0.5);
 		// Attack Particle
 		SET_GET_PARAM_DEF(bool, attack_particle, false);
 		SET_GET_PARAM_DEF(int, attack_particle_effect, -1);
