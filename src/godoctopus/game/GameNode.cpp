@@ -312,7 +312,10 @@ void GameNode::loop()
 	bool is_pipeline_pause = false;
 	size_t counter = 0;
 	size_t it_log = 100;
-	_timestamp.store(octopus::get_time_stamp(_world.ecs));
+	{
+		std::lock_guard<std::mutex> lock(_progress_mutex);
+		_timestamp.store(octopus::get_time_stamp(_world.ecs));
+	}
 	while(!_over)
 	{
 		if(is_pipeline_pause != _paused)
@@ -336,9 +339,9 @@ void GameNode::loop()
 			{
 				std::lock_guard<std::mutex> lock(_progress_mutex);
 				_world.ecs.progress();
+				_timestamp.store(octopus::get_time_stamp(_world.ecs));
 			}
 			--_ticks;
-			_timestamp.store(octopus::get_time_stamp(_world.ecs));
 
 			const auto end{std::chrono::steady_clock::now()};
 			const std::chrono::duration<double> elapsed_seconds{end - start};

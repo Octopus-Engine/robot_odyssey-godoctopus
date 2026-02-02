@@ -61,13 +61,7 @@ public:
 		}
 		out_stats->set_ready(false);
 		_stats_info = out_stats;
-		_query_entity = flecs::entity();
-		for (auto e : group->get_entities()) {
-			if (e.is_valid() && e.is_alive() && e.enabled()) {
-				_query_entity = e;
-				break;
-			}
-		}
+		_query_entities = group->get_entities();
 	}
 
 	void init_nodes();
@@ -76,7 +70,7 @@ protected:
 private:
 	std::mutex _mutex;
 	Ref<StatsInfo> _stats_info;
-	flecs::entity _query_entity;
+	std::vector<flecs::entity> _query_entities;
 };
 
 }

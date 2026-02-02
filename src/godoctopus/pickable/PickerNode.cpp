@@ -27,10 +27,12 @@ static Color safe_color(int x, int y, Ref<Image> const &image_p)
 namespace godot {
 
 int PickerNode::add_entity(flecs::entity e) {
+	std::lock_guard<std::mutex> lock(mutex);
 	return entities.new_instance(e).handle();
 }
 
 void PickerNode::remove_entity(int idx) {
+	std::lock_guard<std::mutex> lock(mutex);
 	entities.free_instance(idx);
 }
 
@@ -54,8 +56,11 @@ TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const
 	Rect2i rect_l = Rect2i(rect_p.get_position(), rect_p.get_size());
 	Ref<Image> image_l = texture->get_image();
 	TypedArray<bool> all_added_l;
-	all_added_l.resize(entities.size());
-	all_added_l.fill(false);
+	{
+		std::lock_guard<std::mutex> lock(mutex);
+		all_added_l.resize(entities.size());
+		all_added_l.fill(false);
+	}
 	for(int32_t x = rect_l.get_position().x ; x <= rect_l.get_position().x + rect_l.get_size().x ; ++ x)
 	{
 		for(int32_t y = rect_l.get_position().y ; y <= rect_l.get_position().y + rect_l.get_size().y ; ++ y)
@@ -79,6 +84,7 @@ Ref<EntityGroup> PickerNode::group_from_texture(Rect2 const &rect_p) const {
 	}
 
 	TypedArray<bool> set = index_array_from_texture(rect_p);
+	std::lock_guard<std::mutex> lock(mutex);
 	for(int i = 0 ; i < set.size() ; ++ i) {
 		if(set[i]) {
 			group->get_entities().push_back(entities.get(i));

@@ -43,6 +43,7 @@ static void insert_if_not_present(std::vector<flecs::entity> &entities, flecs::e
 }
 
 void SelectionGroup::setup() {
+	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
 
 	ecs.system<>()

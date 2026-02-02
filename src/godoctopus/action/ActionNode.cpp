@@ -26,6 +26,7 @@ void ActionNode::setup() {
 	if(!_game_node) {
 		return;
 	}
+	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
 	flecs::query<octopus::PlayerInfo> query_player = ecs.query<octopus::PlayerInfo>();
 	// flecs::query<RuneLoad<DefaultRune>> query_rune = ecs.query<RuneLoad<DefaultRune>>();

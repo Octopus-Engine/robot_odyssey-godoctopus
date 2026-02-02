@@ -22,13 +22,23 @@ void InfoNode::setup() {
 	if(!_game_node) {
 		return;
 	}
+	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.run([this, ecs](flecs::iter&) {
 			std::lock_guard<std::mutex> lock(_mutex);
-			if (!_stats_info.is_valid() || !_query_entity.is_valid()) {
+
+			flecs::entity query_entity;
+			for (auto e : _query_entities) {
+				if (e.is_valid() && e.is_alive() && e.enabled()) {
+					query_entity = e;
+					break;
+				}
+			}
+
+			if (!_stats_info.is_valid() || !query_entity.is_valid()) {
 				return;
 			}
 
@@ -42,18 +52,18 @@ void InfoNode::setup() {
 			_stats_info->set_affinity(0.);
 
 			// query stats
-			auto hp = _query_entity.try_get<octopus::HitPoint>();
+			auto hp = query_entity.try_get<octopus::HitPoint>();
 			if (hp) { _stats_info->set_hp(hp->qty.to_double()); }
-			auto hp_max = _query_entity.try_get<octopus::HitPointMax>();
+			auto hp_max = query_entity.try_get<octopus::HitPointMax>();
 			if (hp_max) { _stats_info->set_hp_max(hp_max->qty.to_double()); }
-			auto armor = _query_entity.try_get<octopus::Armor>();
+			auto armor = query_entity.try_get<octopus::Armor>();
 			if (armor) { _stats_info->set_armor(armor->qty.to_double()); }
-			auto atk = _query_entity.try_get<octopus::Attack>();
+			auto atk = query_entity.try_get<octopus::Attack>();
 			if (atk) {
 				_stats_info->set_damage(atk->cst.damage.to_double());
 				_stats_info->set_reload_time((double)(atk->cst.reload_time)/TICK_RATE);
 			}
-			auto spec = _query_entity.try_get<Special>();
+			auto spec = query_entity.try_get<Special>();
 			if (spec) {
 				_stats_info->set_special(spec->value.to_double());
 				_stats_info->set_affinity(spec->affinity.to_double());
@@ -63,7 +73,7 @@ void InfoNode::setup() {
 			_stats_info->set_ready(true);
 			// clear query
 			_stats_info = Ref<StatsInfo>();
-			_query_entity = flecs::entity();
+			_query_entities.clear();
 		});
 }
 

@@ -85,6 +85,7 @@ void HealthBarNode::_notification(int p_notification) {
 }
 
 void HealthBarNode::setup() {
+	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
 	ecs.component<HealthBar>()
 		.member("offset", &HealthBar::offset)

@@ -18,6 +18,10 @@ public:
 
 	VatMultiMeshInstance* get_multi_mesh(int idx) const { return vec_multi_mesh[idx]; }
 
+	int size() const {
+		return vec_multi_mesh.size();
+	}
+
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
 	static void _bind_methods()

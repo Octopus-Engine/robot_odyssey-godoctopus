@@ -39,6 +39,7 @@ protected:
 	void _notification(int p_notification);
 private:
 	smart_list<flecs::entity> entities;
+	mutable std::mutex mutex;
 };
 
 }
