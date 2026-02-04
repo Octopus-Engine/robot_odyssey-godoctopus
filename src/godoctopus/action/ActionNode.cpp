@@ -32,6 +32,7 @@ void ActionNode::setup() {
 	// flecs::query<RuneLoad<DefaultRune>> query_rune = ecs.query<RuneLoad<DefaultRune>>();
 
 	ecs.system<>()
+		.immediate()
 		.kind(ecs.entity(InputPhase))
 		.run([this, ecs, query_player](flecs::iter&) {
 			// handle actions

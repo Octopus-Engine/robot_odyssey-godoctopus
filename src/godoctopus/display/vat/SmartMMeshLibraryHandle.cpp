@@ -67,6 +67,7 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 
 	// update based on selection status (before locking mutex)
 	ecs.system<Selected const>()
+		.immediate()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.with<SelectionSmartMeshHandle>()
 		.write<SelectionSmartMeshHandle>()
@@ -78,6 +79,7 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 			}
 		});
 	ecs.system<Selected const>()
+		.immediate()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.without<SelectionSmartMeshHandle>()
 		.write<SelectionSmartMeshHandle>()
