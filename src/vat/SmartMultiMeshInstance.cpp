@@ -31,7 +31,7 @@ void SmartMultiMeshInstance::_process(double delta) {
 		instance_id = 0;
 		data.for_each([this, &mesh, &instance_id] (MultiMeshData &d, size_t i) {
 			// transform
-			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], elapsed_time / time_step);
+			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], std::clamp(elapsed_time / time_step, 0., 1.));
 			mesh->set_instance_transform(instance_id, transform);
 			// color info
 			mesh->set_instance_color(instance_id, d.color);
