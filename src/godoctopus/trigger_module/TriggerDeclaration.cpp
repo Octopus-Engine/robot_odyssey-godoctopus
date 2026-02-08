@@ -111,6 +111,14 @@ void declare_updatable_buff(flecs::world &ecs)
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 {
+	ecs.component<trigger_module::Death>();
+	ecs.component<trigger_module::Attack>();
+	ecs.component<trigger_module::DamageDealt>();
+	ecs.component<trigger_module::DamageReceived>();
+	ecs.component<trigger_module::Death>();
+	ecs.component<trigger_module::RuneConsumed<DefaultRune>>();
+	ecs.component<trigger_module::RuneLoaded<DefaultRune>>();
+
 	declare_trigger_life_system(ecs);
 	declare_trigger_attack_system(ecs);
 
