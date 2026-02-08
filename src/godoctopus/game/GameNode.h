@@ -61,7 +61,7 @@ public:
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);
-	SET_GET_PARAM(LevelNode*, level_node);
+	SET_GET_PARAM_DEF(LevelNode*, level_node, nullptr);
 	SET_GET_PARAM(TypedArray<Ref<UnitPrefab>>, unit_prefabs);
 public:
 	double get_avg_engine_times();

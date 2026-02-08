@@ -4,6 +4,7 @@
 
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/AttackCommandSystem.hh"
+#include "octopus/serialization/containers/VectorSupport.hh"
 
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
@@ -87,7 +88,18 @@ void declare_attack_particule_systems(flecs::world &ecs, godot::VatLibrary *libr
 		});
 }
 
-void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules) {
+void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator) {
+    // Register reflection for std::vector<float>
+    ecs.component<std::vector<float>>()
+        .opaque(std_vector_support<float>);
+
+	ecs.component<CustomBasicProjectile::Impact>()
+		.member("effect_idx", &CustomBasicProjectile::Impact::effect_idx)
+		.member("color", &CustomBasicProjectile::Impact::color);
+
+    // Register reflection for std::vector<CustomBasicProjectile::Impact>
+    ecs.component<std::vector<CustomBasicProjectile::Impact>>()
+        .opaque(std_vector_support<CustomBasicProjectile::Impact>);
 
 	ecs.component<CustomBasicProjectile>()
 		.member("r", &CustomBasicProjectile::r)
@@ -95,6 +107,7 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 		.member("b", &CustomBasicProjectile::b)
 		.member("origin_y", &CustomBasicProjectile::origin_y)
 		.member("scale", &CustomBasicProjectile::scale)
+		.member("impacts", &CustomBasicProjectile::impacts)
 		.member("impact_effect_id", &CustomBasicProjectile::impact_effect_id)
 		.member("impact_count", &CustomBasicProjectile::impact_count)
 		.member("impact_scale", &CustomBasicProjectile::impact_scale)
@@ -124,19 +137,28 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 				e.set<SmartMMeshLibraryHandle>({0});
 			});
 
-	if (particules) {
+	if (particules && particule_orchestrator) {
 		// pop damage
 		ecs.system<octopus::ProjectileTrigger const, octopus::Projectile const, octopus::Position const, ProjectileSmartMMesh const, CustomBasicProjectile const>()
 			.kind(ecs.entity(EndUpdatePhase))
-			.each([particules](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
+			.each([particules, particule_orchestrator](flecs::entity e, octopus::ProjectileTrigger const&, octopus::Projectile const &,
 					octopus::Position const &pos, ProjectileSmartMMesh const& proj, CustomBasicProjectile const &info) {
-				particules->add_instance_detailed(
-					WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.end_up.to_double(), pos.pos.y.to_double()),
-					Color(proj.r.to_double(), proj.g.to_double(),proj.b.to_double(),1.),
-					info.impact_count,
-					info.impact_scale * Vector3(1.,1.,1.),
-					info.impact_effect_id
-				);
+				// generic
+				Vector3 effect_position = WORLD_SCALE * Vector3(pos.pos.x.to_double(), proj.end_up.to_double(), pos.pos.y.to_double());
+				// specific
+				if (info.impacts.size() > 0) {
+					for (auto const &impact : info.impacts) {
+						particule_orchestrator->add_instance(effect_position, Color(impact.color[0],impact.color[1],impact.color[2],impact.color[3]), impact.effect_idx);
+					}
+				} else {
+					particules->add_instance_detailed(
+						effect_position,
+						Color(proj.r.to_double(), proj.g.to_double(),proj.b.to_double(),1.),
+						info.impact_count,
+						info.impact_scale * Vector3(1.,1.,1.),
+						info.impact_effect_id
+					);
+				}
 			});
 	}
 }

@@ -25,7 +25,6 @@ void ProximityChecker::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
 	auto& pos_context = _game_node->get_world().position_context;
-					std::cout<<"setup"<<std::endl;
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))

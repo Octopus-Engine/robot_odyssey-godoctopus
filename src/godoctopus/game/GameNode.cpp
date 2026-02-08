@@ -87,16 +87,31 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	}
 	// always register custom projectile to allow color customization
 	Color const &color = unit_prefab->get_projectile_color();
-	prefab.set<CustomBasicProjectile>({
+	CustomBasicProjectile projectile {
 		color.get_r8(),
 		color.get_g8(),
 		color.get_b8(),
 		unit_prefab->get_projectile_origin(),
 		unit_prefab->get_projectile_scale(),
+		{},
 		unit_prefab->get_impact_effect_id(),
 		unit_prefab->get_impact_count(),
 		unit_prefab->get_impact_scale()
-	});
+	};
+	for(int i = 0; i < unit_prefab->get_impacts().size(); ++ i) {
+		Ref<ParticleOcherstrated> impact = unit_prefab->get_impacts()[i];
+		std::cout<<"registring impact "<<i<<" with effect id "<<impact->get_type()<<std::endl;
+		projectile.impacts.push_back(CustomBasicProjectile::Impact{
+			impact->get_type(),
+			{
+				impact->get_color().r,
+				impact->get_color().g,
+				impact->get_color().b,
+				impact->get_color().a
+			}
+		});
+	}
+	prefab.set<CustomBasicProjectile>(std::move(projectile));
 
 	if (unit_prefab->get_attack_particle()) {
 		prefab.set<AttackParticle>({

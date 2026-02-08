@@ -7,6 +7,21 @@
 
 namespace godot {
 
+class ParticleOcherstrated : public Resource {
+	GDCLASS(ParticleOcherstrated, Resource)
+
+public:
+	ParticleOcherstrated() {}
+	// Will be called by Godot when the class is registered
+	// Use this to add properties to your class
+	static void _bind_methods() {
+		ADD_SIMPLE_PROP(ParticleOcherstrated, INT, type);
+		ADD_SIMPLE_PROP(ParticleOcherstrated, COLOR, color);
+	}
+	SET_GET_PARAM_DEF(int, type, -1);
+	SET_GET_PARAM(Color, color);
+};
+
 class UnitPrefab : public Resource {
 	GDCLASS(UnitPrefab, Resource)
 
@@ -37,6 +52,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_scale);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_origin);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, projectile_target);
+		ADD_ARRAY_OBJECT_PROP(UnitPrefab, ParticleOcherstrated, impacts);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, impact_effect_id);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, impact_count);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, impact_scale);
@@ -101,6 +117,7 @@ public:
 		SET_GET_PARAM_DEF(float, projectile_scale, 0.2);
 		SET_GET_PARAM_DEF(float, projectile_origin, 1.);
 		SET_GET_PARAM_DEF(float, projectile_target, 1.);
+		SET_GET_PARAM(TypedArray<Ref<ParticleOcherstrated>>, impacts);
 		SET_GET_PARAM_DEF(int, impact_effect_id, -1);
 		SET_GET_PARAM_DEF(int, impact_count, 4);
 		SET_GET_PARAM_DEF(float, impact_scale, 0.5);

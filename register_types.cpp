@@ -12,6 +12,7 @@
 #include "godoctopus/action/ActionNode.h"
 #include "godoctopus/command/CommandNode.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
+#include "godoctopus/display/particule/ParticleOrchestrator.h"
 #include "godoctopus/entity_group/EntityGroup.h"
 #include "godoctopus/entity_group/SelectionGroup.h"
 #include "godoctopus/game/GameNode.h"
@@ -42,11 +43,14 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ActionNode>();
 	ClassDB::register_class<godot::CommandNode>();
 	ClassDB::register_class<godot::ParticuleSmartResource>();
+	ClassDB::register_class<godot::ParticuleTypeResource>();
+	ClassDB::register_class<godot::ParticleOrchestrator>();
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
 	ClassDB::register_class<godot::InfoNode>();
 	ClassDB::register_class<godot::StatsInfo>();
+	ClassDB::register_class<godot::ParticleOcherstrated>();
 	ClassDB::register_class<godot::UnitPrefab>();
 	ClassDB::register_class<godot::ProximityChecker>();
 

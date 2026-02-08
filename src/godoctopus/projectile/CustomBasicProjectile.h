@@ -5,13 +5,20 @@
 #include "vat/VatLibrary.h"
 
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
+#include "godoctopus/display/particule/ParticleOrchestrator.h"
+
 
 struct CustomBasicProjectile {
+	struct Impact {
+		int32_t effect_idx = 0;
+		std::vector<float> color = {1.f, 1.f, 1.f, 1.f};
+	};
 	int64_t r = 255;
 	int64_t g = 255;
 	int64_t b = 255;
 	octopus::Fixed origin_y = 1.5;
 	octopus::Fixed scale = 0.2;
+	std::vector<Impact> impacts;
 	int32_t impact_effect_id = -1;
 	int32_t impact_count = 4;
 	float impact_scale = 0.5;
@@ -51,4 +58,4 @@ struct WindupEffect {
 
 void declare_windup_projectile_systems(flecs::world &ecs, godot::VatLibrary *library, godot::ParticuleSmartMMesh *particules);
 
-void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules);
+void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator);
