@@ -148,7 +148,17 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 				// specific
 				if (info.impacts.size() > 0) {
 					for (auto const &impact : info.impacts) {
-						particule_orchestrator->add_instance(effect_position, Color(impact.color[0],impact.color[1],impact.color[2],impact.color[3]), impact.effect_idx);
+						godot::ParticuleTypeData particule_data {
+							Color(impact.color[0],impact.color[1],impact.color[2],impact.color[3]).srgb_to_linear(),
+							Vector3(1.,1.,1.),			// scale
+							impact.effect_idx,			// resource
+							effect_position,			// position
+							Vector3(0.,0.,0.),			// direction
+							0.,							// time_offset
+							(std::rand() % 1024) / 1024. * 90. // rot_y
+						};
+						particule_orchestrator->add_particle(std::move(particule_data));
+							// effect_position, Color(impact.color[0],impact.color[1],impact.color[2],impact.color[3]), impact.effect_idx);
 					}
 				} else {
 					particules->add_instance_detailed(

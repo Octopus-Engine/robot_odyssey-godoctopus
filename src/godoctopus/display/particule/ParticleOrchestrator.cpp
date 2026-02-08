@@ -64,7 +64,7 @@ void ParticleOrchestrator::_process(double delta) {
 			transform.basis.scale(d.scale * current_resource->get_scale_curve()->sample_baked(lifetime));
 			d.position += d.direction * current_resource->get_speed_curve()->sample_baked(lifetime) * delta;
 			transform.origin = d.position;
-			transform = transform.rotated_local(Vector3(0,1,0), current_resource->get_rotation_curve()->sample_baked(lifetime));
+			transform = transform.rotated_local(Vector3(0,1,0), d.rot_y + current_resource->get_rotation_curve()->sample_baked(lifetime));
 			cur_mesh->set_instance_transform(instance_id, transform);
 			cur_mesh->set_instance_color(instance_id, d.color);
 			Color custom_data(
@@ -96,6 +96,11 @@ void ParticleOrchestrator::add_instance(Vector3 const &pos, Color const &color, 
 		Vector3(0.,0.,0.),			// direction
 		elapsed						// time_offset
 	};
+	data.new_instance(std::move(particule_data));
+}
+
+void ParticleOrchestrator::add_particle(ParticuleTypeData &&particule_data) {
+	particule_data.time_offset += elapsed;
 	data.new_instance(std::move(particule_data));
 }
 

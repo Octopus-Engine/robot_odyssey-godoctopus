@@ -46,6 +46,7 @@ struct ParticuleTypeData {
 	Vector3 position;
 	Vector3 direction;
 	double time_offset = 0.;
+	double rot_y = 0.;
 };
 
 class ParticleOrchestrator : public MultiMeshInstance3D {
@@ -67,6 +68,7 @@ public:
 	void _process(double delta);
 
 	void add_instance(Vector3 const &pos, Color const &color, int resource);
+	void add_particle(ParticuleTypeData &&particule_data);
 
 protected:
 	std::mutex _mutex;
