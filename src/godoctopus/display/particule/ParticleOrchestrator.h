@@ -43,10 +43,9 @@ struct ParticuleTypeData {
 	Color color;
 	Vector3 scale = Vector3(1,1,1);
 	int resource = -1;
-	std::vector<Vector3> position;
-	std::vector<Vector3> direction;
-	std::vector<double> time_offset;
-	std::vector<double> lifetime;
+	Vector3 position;
+	Vector3 direction;
+	double time_offset = 0.;
 };
 
 class ParticleOrchestrator : public MultiMeshInstance3D {

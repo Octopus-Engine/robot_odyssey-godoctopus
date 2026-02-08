@@ -33,7 +33,7 @@ void ParticleOrchestrator::_process(double delta) {
 	data.for_each_const([&sizes, this](auto const &d) {
 		auto res = get_resource_or_default(this, d.resource);
 		int mesh_idx = res->get_mesh_idx();
-		sizes[get_offseted_mesh_idx(mesh_idx)] += (int)d.position.size();
+		sizes[get_offseted_mesh_idx(mesh_idx)] += 1;
 	});
 	if (mesh->get_instance_count() < sizes[0]) {
 		mesh->set_instance_count(sizes[0]);
@@ -55,32 +55,30 @@ void ParticleOrchestrator::_process(double delta) {
 		auto cur_multi_mesh = get_mmseh_or_default(current_resource->get_mesh_idx());
 		auto cur_mesh = cur_multi_mesh->get_multimesh();
 		int &instance_id = mesh_instance_ids[get_offseted_mesh_idx(current_resource->get_mesh_idx())];
-		for (size_t i = 0; i < d.position.size() ; ++ i) {
-			double time = i < d.lifetime.size() ? d.lifetime[i] : current_resource->get_time();
-			if (d.time_offset[i] <= elapsed && d.time_offset[i]+time >= elapsed) {
-				double lifetime = elapsed - d.time_offset[i];
-				lifetime /= time;
+		double time = current_resource->get_time();
+		if (d.time_offset <= elapsed && d.time_offset+time >= elapsed) {
+			double lifetime = elapsed - d.time_offset;
+			lifetime /= time;
 
-				Transform3D transform;
-				transform.basis.scale(d.scale * current_resource->get_scale_curve()->sample_baked(lifetime));
-				d.position[i] += d.direction[i] * current_resource->get_speed_curve()->sample_baked(lifetime) * delta;
-				transform.origin = d.position[i];
-				transform = transform.rotated_local(Vector3(0,1,0), current_resource->get_rotation_curve()->sample_baked(lifetime));
-				cur_mesh->set_instance_transform(instance_id, transform);
-				cur_mesh->set_instance_color(instance_id, d.color);
-				Color custom_data(
-					current_resource->get_custom_data_x()->sample_baked(lifetime),
-					current_resource->get_custom_data_y()->sample_baked(lifetime),
-					current_resource->get_custom_data_z()->sample_baked(lifetime),
-					current_resource->get_custom_data_w()->sample_baked(lifetime)
-				);
-				cur_mesh->set_instance_custom_data(instance_id, custom_data);
-				++instance_id;
-				// one instance is enough to keep this data
-				do_not_free |= true;
-			}
-			do_not_free |= d.time_offset[i] > elapsed;
+			Transform3D transform;
+			transform.basis.scale(d.scale * current_resource->get_scale_curve()->sample_baked(lifetime));
+			d.position += d.direction * current_resource->get_speed_curve()->sample_baked(lifetime) * delta;
+			transform.origin = d.position;
+			transform = transform.rotated_local(Vector3(0,1,0), current_resource->get_rotation_curve()->sample_baked(lifetime));
+			cur_mesh->set_instance_transform(instance_id, transform);
+			cur_mesh->set_instance_color(instance_id, d.color);
+			Color custom_data(
+				current_resource->get_custom_data_x()->sample_baked(lifetime),
+				current_resource->get_custom_data_y()->sample_baked(lifetime),
+				current_resource->get_custom_data_z()->sample_baked(lifetime),
+				current_resource->get_custom_data_w()->sample_baked(lifetime)
+			);
+			cur_mesh->set_instance_custom_data(instance_id, custom_data);
+			++instance_id;
+			// one instance is enough to keep this data
+			do_not_free = true;
 		}
+		do_not_free |= d.time_offset > elapsed;
 		// no instance was alive -> free
 		if (!do_not_free) {
 			data.free_instance(idx);
@@ -90,10 +88,14 @@ void ParticleOrchestrator::_process(double delta) {
 
 void ParticleOrchestrator::add_instance(Vector3 const &pos, Color const &color, int resource) {
 	std::lock_guard<std::mutex> lock(_mutex);
-	ParticuleTypeData particule_data {color.srgb_to_linear(), Vector3(1.,1.,1.), resource};
-	particule_data.position.push_back(pos);
-	particule_data.direction.push_back(Vector3(0.,0.,0.));
-	particule_data.time_offset.push_back(elapsed);
+	ParticuleTypeData particule_data {
+		color.srgb_to_linear(),		// color
+		Vector3(1.,1.,1.),			// scale
+		resource,					// resource
+		pos,						// position
+		Vector3(0.,0.,0.),			// direction
+		elapsed						// time_offset
+	};
 	data.new_instance(std::move(particule_data));
 }
 
