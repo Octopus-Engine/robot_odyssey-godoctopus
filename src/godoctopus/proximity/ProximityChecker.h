@@ -27,6 +27,7 @@ public:
 	static void _bind_methods();
 
 	void register_proximity_checker(Vector3 const &position, int range, Callable const &callable);
+	void register_proximity_checker_for_team(Vector3 const &position, int range, int team, Callable const &callable);
 
 	void setup();
 	void _process(double delta);
@@ -41,6 +42,7 @@ private:
 		octopus::Vector pos;
 		octopus::Fixed range;
 		Callable callable;
+		int tree_idx = 0;
 		bool triggered = false;
 	};
 	smart_list<Checker> checkers;

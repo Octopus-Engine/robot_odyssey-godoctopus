@@ -12,10 +12,22 @@ void ProximityChecker::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("setup"), &ProximityChecker::setup);
 	ClassDB::bind_method(D_METHOD("register_proximity_checker", "position", "range", "callable"), &ProximityChecker::register_proximity_checker);
+	ClassDB::bind_method(D_METHOD("register_proximity_checker_for_team", "position", "range", "team", "callable"), &ProximityChecker::register_proximity_checker_for_team);
 }
 
 void ProximityChecker::register_proximity_checker(Vector3 const &position, int range, Callable const &callable) {
 	checkers.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable});
+}
+
+void ProximityChecker::register_proximity_checker_for_team(Vector3 const &position, int range, int team, Callable const &callable) {
+	int tree_idx = 0;
+	if (team == 1) {
+		tree_idx = 1;
+	}
+	else if (team == 0) {
+		tree_idx = 2;
+	}
+	checkers.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable, tree_idx});
 }
 
 void ProximityChecker::setup() {
@@ -35,7 +47,7 @@ void ProximityChecker::setup() {
 					checker.triggered = true;
 					return false;
 				};
-				tree_circle_query(pos_context.trees[0], checker.pos, checker.range, func_l);
+				tree_circle_query(pos_context.trees[checker.tree_idx], checker.pos, checker.range, func_l);
 			});
 		});
 }
