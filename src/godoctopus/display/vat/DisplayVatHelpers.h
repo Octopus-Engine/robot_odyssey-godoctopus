@@ -7,7 +7,7 @@
 
 template<typename Library, typename PosDisplayer, typename IndexContainer, typename... Data>
 void declare_displayer_instance_handling_systems(flecs::world &ecs, Library *lib,
-	std::function<void(PosDisplayer*, IndexContainer const &, Data&...)> setup = [](PosDisplayer* mmesh, IndexContainer const &handle, Data&...) {}) {
+	std::function<void(PosDisplayer*, IndexContainer const &, Data&...)> setup) {
 
 	ecs.observer<octopus::Position const, IndexContainer, Data...>()
 		.event(flecs::OnSet)

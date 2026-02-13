@@ -48,7 +48,8 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 		})
 	);
 
-	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SmartMMeshLibraryHandle, RelativePosition>(ecs,library);
+	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SmartMMeshLibraryHandle, RelativePosition>(ecs,library,
+		[](godot::SmartMultiMeshInstance* mmesh, SmartMMeshLibraryHandle const &handle, RelativePosition&) {});
 
 	// selection handling
 	using SelectionSmartMeshHandle = SmartMMeshLibraryHandleT<Selected>;
@@ -61,7 +62,8 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 		.member("selected", &Selected::selected)
 	;
 
-	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle>(ecs, library);
+	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle, SelectionSmartMeshHandle>(ecs, library,
+		[](godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, SelectionSmartMeshHandle&) {});
 
 	// Update phase
 

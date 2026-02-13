@@ -21,9 +21,10 @@ void declare_vat_library_systems(flecs::world &ecs, godot::VatLibrary *library) 
 		.member("multi_mesh_id", &VatLibraryHandle::multi_mesh_id)
 	;
 
-	declare_displayer_instance_handling_systems<godot::VatLibrary, godot::VatMultiMeshInstance, VatLibraryHandle>(
+	declare_displayer_instance_handling_systems<godot::VatLibrary, godot::VatMultiMeshInstance, VatLibraryHandle, VatLibraryHandle>(
 		ecs,
-		library);
+		library,
+		[](godot::VatMultiMeshInstance* mmesh, VatLibraryHandle const &handle, VatLibraryHandle&) {});
 
 	// Update phase
 
