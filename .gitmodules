@@ -6,3 +6,6 @@
 	path = src/octopus2
 	url = git@github.com:SimonPiCarter/octopus2.git
 	branch = main
+[submodule "src/nwfc"]
+	path = src/nwfc
+	url = git@github.com:SimonPiCarter/nwfc

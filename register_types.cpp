@@ -22,6 +22,7 @@
 #include "godoctopus/info/InfoNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 #include "godoctopus/proximity/ProximityChecker.h"
+#include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -56,6 +57,8 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 
 	// Demo Nodes
 	ClassDB::register_class<godot::AttackMoveDemoNode>();
+
+	ClassDB::register_class<godot::NotWaveFunctionCollapseNode>();
 }
 
 void uninitialize_godoctopus2_module(ModuleInitializationLevel p_level) {
