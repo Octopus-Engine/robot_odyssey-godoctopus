@@ -216,6 +216,8 @@ godoctopus2_sources = [
     "./src/godoctopus/projectile/HeavyfireBotProjectile.cpp",
     "./src/godoctopus/proximity/ProximityChecker.cpp",
     "./src/godoctopus/nwfc/NotWaveFunctionCollapseNode.cpp",
+    "./src/godoctopus/triangulation/TriangulationNode.cpp",
+    "./src/godoctopus/triangulation/impl/InsertPoint.cpp",
     "./src/vat/SmartMMeshLibrary.cpp",
     "./src/vat/SmartMultiMeshInstance.cpp",
     "./src/vat/VatLibrary.cpp",
