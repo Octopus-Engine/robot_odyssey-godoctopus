@@ -16,6 +16,8 @@ public:
 
 	/// @brief expected duration of a timestep
 	SET_GET_PARAM_DEF(double, time_step, 0.01);
+	SET_GET_PARAM_DEF(bool, disable_rotation, false);
+	SET_GET_PARAM_DEF(int, refresh_factor, 1);
 
 public:
 	void _ready();
@@ -40,6 +42,7 @@ public:
 	void set_instance_translation(int instance_id, Vector3 const &translation);
 	void set_instance_new_position(int instance_id, Vector3 const &new_position);
 	void snap_rotation(int instance_id, Vector3 direction);
+
 
 	std::mutex *_mutex = nullptr;
 	void lock() { if(_mutex) { _mutex->lock(); } }

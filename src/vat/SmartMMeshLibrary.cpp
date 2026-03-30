@@ -8,14 +8,16 @@ void SmartMMeshLibrary::_ready() {
 		if (obj) {
 			vec_multi_mesh.push_back(Object::cast_to<SmartMultiMeshInstance>(obj));
 			vec_multi_mesh.back()->_mutex = &_mutex;
-			vec_multi_mesh.back()->set_time_step(time_step);
+			vec_multi_mesh.back()->set_time_step(vec_multi_mesh.back()->get_refresh_factor() * time_step);
 		}
 	}
 }
 
-void SmartMMeshLibrary::swap_transforms() {
+void SmartMMeshLibrary::swap_transforms(int64_t time_stamp) {
 	for (auto &mmesh : vec_multi_mesh) {
-		mmesh->swap_transforms();
+		if ( vec_multi_mesh.back()->get_refresh_factor() > 0 && time_stamp % mmesh->get_refresh_factor() == 0) {
+			mmesh->swap_transforms();
+		}
 	}
 }
 

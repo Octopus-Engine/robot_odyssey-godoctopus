@@ -96,7 +96,7 @@ void SmartMultiMeshInstance::set_instance_new_position(int instance_id, Vector3 
 void SmartMultiMeshInstance::set_instance_translation(int instance_id, Vector3 const &translation) {
 	new_transform[instance_id] = old_transform[instance_id];
 	new_transform[instance_id].origin += translation;
-	if (translation != Vector3()) {
+	if (translation != Vector3() && !disable_rotation) {
 		// compute rotation
 		Vector3 forward = old_transform[instance_id].xform(Vector3(1,0,0)) - old_transform[instance_id].origin;
 		float delta_angle = translation.signed_angle_to(-1.*forward, Vector3(0,1,0));
@@ -114,6 +114,8 @@ void SmartMultiMeshInstance::snap_rotation(int instance_id, Vector3 direction) {
 
 void SmartMultiMeshInstance::_bind_methods() {
 	ADD_SIMPLE_PROP(SmartMultiMeshInstance, FLOAT, time_step);
+	ADD_SIMPLE_PROP(SmartMultiMeshInstance, BOOL, disable_rotation);
+	ADD_SIMPLE_PROP(SmartMultiMeshInstance, INT, refresh_factor);
 
 	ClassDB::bind_method(D_METHOD("add_instance"), &SmartMultiMeshInstance::add_instance);
 	ClassDB::bind_method(D_METHOD("free_instance", "instance_id"), &SmartMultiMeshInstance::free_instance);

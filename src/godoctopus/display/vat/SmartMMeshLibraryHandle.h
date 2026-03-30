@@ -39,4 +39,8 @@ struct Selected {
 	bool selected = false;
 };
 
+struct Vision {
+	bool visible = true;
+};
+
 void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library, int32_t selection_multi_mesh_id);

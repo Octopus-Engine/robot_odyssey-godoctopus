@@ -3,12 +3,15 @@
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
+#include "utils/log/Log.hh"
 
 #include "octopus_types.h"
+#include "octopus/components/basic/timestamp/TimeStamp.hh"
 
 #include "DisplayVatHelpers.h"
 
-void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library, int32_t selection_multi_mesh_id) {
+void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library,
+	int32_t selection_multi_mesh_id) {
 
 	// no instance id to enable reload
 	ecs.component<SmartMMeshLibraryHandle>()
@@ -73,6 +76,28 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 			setup);
 	}
 
+	// vision handling
+	using VisionSmartMeshHandle = SmartMMeshLibraryHandleT<Vision>;
+	// no instance id to enable reload
+	ecs.component<VisionSmartMeshHandle>()
+		.member("multi_mesh_id", &VisionSmartMeshHandle::multi_mesh_id)
+	;
+
+	ecs.component<Vision>()
+		.member("visible", &Vision::visible)
+	;
+
+	{
+		// for now we just set the multi mesh id
+		std::function<void(godot::SmartMultiMeshInstance*, VisionSmartMeshHandle const &, VisionSmartMeshHandle&)> setup =
+			[library](godot::SmartMultiMeshInstance*, VisionSmartMeshHandle const &, VisionSmartMeshHandle& handle) {
+				godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+				mmesh->set_outline_color(0, Color(0.5,1,1,1));
+			};
+		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, VisionSmartMeshHandle, VisionSmartMeshHandle>(ecs, library,
+			setup);
+	}
+
 	// Update phase
 
 	// update based on selection status (before locking mutex)
@@ -104,9 +129,9 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 	// lock mutex
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.run([library](flecs::iter&) {
+		.run([&ecs, library](flecs::iter&) {
 			library->_mutex.lock();
-			library->swap_transforms();
+			library->swap_transforms(octopus::get_time_stamp(ecs));
 		});
 
 
@@ -149,6 +174,18 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 		.each([&ecs, library](flecs::entity e, octopus::Position const &pos, SelectionSmartMeshHandle const &handle) {
 			if(handle.instance_id < 0 ) { return; }
 			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+			mmesh->set_instance_new_position(handle.instance_id, WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), 0., real_t(octopus::to_double(pos.pos.y))));
+		});
+
+	// update all positions for vision
+	ecs.system<octopus::Position const, VisionSmartMeshHandle const>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.multi_threaded()
+		.each([&ecs, library](flecs::entity e, octopus::Position const &pos, VisionSmartMeshHandle const &handle) {
+			if(handle.instance_id < 0 ) { return; }
+
+			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+			if (octopus::get_time_stamp(ecs) % mmesh->get_refresh_factor() != 0) { return; }
 			mmesh->set_instance_new_position(handle.instance_id, WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), 0., real_t(octopus::to_double(pos.pos.y))));
 		});
 

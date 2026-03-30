@@ -40,7 +40,7 @@ public:
 	}
 	void _ready();
 
-	void swap_transforms();
+	void swap_transforms(int64_t time_stamp);
 
 	// mutex used to lock during display to avoid syncing error while rendering
 	std::mutex _mutex;
