@@ -71,6 +71,10 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			unit_prefab->get_health_bar_width()})
 	;
 
+	if (unit_prefab->get_exploration()) {
+		prefab.set_auto_override<SmartMMeshLibraryHandleT<Vision>>(SmartMMeshLibraryHandleT<Vision>{2});
+	}
+
 	if (unit_prefab->get_death_particles()) {
 		prefab.set_auto_override<DeathParticle>({
 			unit_prefab->get_death_particles_color().get_r8(),
