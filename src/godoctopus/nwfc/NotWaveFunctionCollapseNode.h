@@ -27,6 +27,7 @@ public:
 	TypedArray<int> get_row(int row);
 
 	void add_value_oriented_variable_picker(int count, int value);
+	bool has_pickers();
 
 	void run();
 	bool advance();

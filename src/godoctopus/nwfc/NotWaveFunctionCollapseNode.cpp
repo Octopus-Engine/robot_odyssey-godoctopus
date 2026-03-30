@@ -62,6 +62,10 @@ void NotWaveFunctionCollapseNode::add_value_oriented_variable_picker(int count, 
 	pickers.push_back(std::make_unique<nwfc::ValueOrientedVariablePicker>(count, value));
 }
 
+bool NotWaveFunctionCollapseNode::has_pickers() {
+	return !pickers.empty();
+}
+
 void NotWaveFunctionCollapseNode::run() {
 	// NA
 }
@@ -90,7 +94,7 @@ bool NotWaveFunctionCollapseNode::advance() {
 }
 
 void NotWaveFunctionCollapseNode::set_seed(int seed) {
-	srand(seed);
+	state->generator.seed(seed);
 }
 
 // Will be called by Godot when the class is registered
@@ -104,6 +108,7 @@ void NotWaveFunctionCollapseNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_compatibility_constraint", "var", "value", "affected_var", "affected_val"), &NotWaveFunctionCollapseNode::add_compatibility_constraint);
 	ClassDB::bind_method(D_METHOD("get_row", "row"), &NotWaveFunctionCollapseNode::get_row);
 	ClassDB::bind_method(D_METHOD("add_value_oriented_variable_picker", "count", "value"), &NotWaveFunctionCollapseNode::add_value_oriented_variable_picker);
+	ClassDB::bind_method(D_METHOD("has_pickers"), &NotWaveFunctionCollapseNode::has_pickers);
 
 	ClassDB::bind_method(D_METHOD("run"), &NotWaveFunctionCollapseNode::run);
 	ClassDB::bind_method(D_METHOD("advance"), &NotWaveFunctionCollapseNode::advance);
