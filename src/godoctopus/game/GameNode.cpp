@@ -18,6 +18,7 @@
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
+#include "godoctopus/components/Explorator.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/components/types/Types.h"
@@ -72,7 +73,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	;
 
 	if (unit_prefab->get_exploration()) {
-		prefab.set_auto_override<SmartMMeshLibraryHandleT<Vision>>(SmartMMeshLibraryHandleT<Vision>{2});
+		prefab.set<Explorator>(Explorator{30});
 	}
 
 	if (unit_prefab->get_death_particles()) {
@@ -178,6 +179,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	// _grid = new octopus::Grid(200,200, 4);
 
 	basic_components_support(ecs);
+	declare_explorator_component(ecs);
 
 	//
 	// Systems

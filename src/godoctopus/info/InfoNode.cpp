@@ -6,6 +6,7 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/components/Explorator.h"
 
 namespace godot {
 
@@ -16,6 +17,7 @@ void InfoNode::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("setup"), &InfoNode::setup);
 	ClassDB::bind_method(D_METHOD("query_stats_info", "group", "stats"), &InfoNode::query_stats_info);
+	ClassDB::bind_method(D_METHOD("get_unit_vision_data"), &InfoNode::get_unit_vision_data);
 }
 
 void InfoNode::setup() {
@@ -25,10 +27,19 @@ void InfoNode::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
 
+	flecs::query<octopus::Position, Explorator> vision_query = ecs.query<octopus::Position, Explorator>();
+
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.run([this, ecs](flecs::iter&) {
+		.run([this, ecs, vision_query](flecs::iter&) {
 			std::lock_guard<std::mutex> lock(_mutex);
+
+			_unit_vision_data.clear();
+			vision_query.each([this](flecs::entity e, octopus::Position const &pos, Explorator const &expl) {
+				_unit_vision_data.push_back(WORLD_SCALE * real_t(octopus::to_double(pos.pos.x)) + 500.);
+				_unit_vision_data.push_back(WORLD_SCALE * real_t(octopus::to_double(pos.pos.y)) + 500.);
+				_unit_vision_data.push_back(expl.visibility_range);
+			});
 
 			flecs::entity query_entity;
 			for (auto e : _query_entities) {

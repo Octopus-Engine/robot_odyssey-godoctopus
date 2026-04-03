@@ -64,6 +64,11 @@ public:
 		_query_entities = group->get_entities();
 	}
 
+	PackedFloat32Array get_unit_vision_data() {
+		std::lock_guard<std::mutex> lock(_mutex);
+		return _unit_vision_data;
+	}
+
 	void init_nodes();
 protected:
 	void _notification(int p_notification);
@@ -71,6 +76,7 @@ private:
 	std::mutex _mutex;
 	Ref<StatsInfo> _stats_info;
 	std::vector<flecs::entity> _query_entities;
+	PackedFloat32Array _unit_vision_data;
 };
 
 }
