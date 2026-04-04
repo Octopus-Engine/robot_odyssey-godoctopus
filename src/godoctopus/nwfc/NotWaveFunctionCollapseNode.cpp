@@ -7,6 +7,7 @@
 #include "constraint/bitset/AllDifferentBitset.hh"
 #include "constraint/bitset/CompatibilityBitset.hh"
 #include "constraint/bitset/CardinalityBitset.hh"
+#include "constraint/bitset/ManhattanIncompatibilityBitset.hh"
 #include "variable/layout/2d/GridLayout.hh"
 
 namespace godot {
@@ -29,9 +30,7 @@ static std::vector<size_t> convert(TypedArray<int> array) {
 }
 
 void NotWaveFunctionCollapseNode::add_distance_constraint(int distance, int value, TypedArray<int> incomp) {
-	for (auto constraint : nwfc::create_man_distance_incompatibilty_constraint(*grid, distance, value, convert(incomp))) {
-		state->constraints.emplace_back(constraint);
-	}
+	state->constraints.emplace_back(create_manhattan_incompatibility_constraint(*grid, distance, static_cast<std::size_t>(value), convert(incomp)));
 }
 void NotWaveFunctionCollapseNode::add_lower_cardinality(TypedArray<int> vars, int value, int lb) {
 	state->constraints.emplace_back(nwfc::CardinalityBitset::newLowerCardinality(convert(vars), value, lb));
@@ -46,7 +45,7 @@ void NotWaveFunctionCollapseNode::add_compatibility_constraint(int variable, int
 TypedArray<int> NotWaveFunctionCollapseNode::get_row(int row) {
 	TypedArray<int> res;
 
-	for (int i = 0 ; i < grid->width ; ++i ) {
+	for (size_t i = 0 ; i < grid->width ; ++i ) {
 		size_t idx = row * grid->width + i;
 		if (nwfc::is_assigned(*state, idx)) {
 			res.append(nwfc::get_assigned_value(state->domains[idx]));
