@@ -188,6 +188,7 @@ octopus2_sources = [
     "./src/octopus2/src/octopus/src/octopus/world/step/EntityCreationStep.cc",
 
 	"./src/nwfc/src/nwfc/src/utils/log/Log.cc",
+	"./src/nwfc/src/nwfc/src/utils/Random.cc",
 	"./src/nwfc/src/nwfc/src/pickers/value/WeightBasedValuePicker.cc",
 	"./src/nwfc/src/nwfc/src/variable/domain/BitsetDomain.cc",
 	"./src/nwfc/src/nwfc/src/variable/layout/2d/GridLayout.cc",
