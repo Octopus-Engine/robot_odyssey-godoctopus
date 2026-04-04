@@ -24,6 +24,7 @@
 #include "godoctopus/proximity/ProximityChecker.h"
 #include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
 #include "godoctopus/triangulation/TriangulationNode.h"
+#include "godoctopus/triangulation/DelaunayTriangulationNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -57,6 +58,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ProximityChecker>();
 
 	ClassDB::register_class<godot::TriangulationNode>();
+	ClassDB::register_class<godot::DelaunayTriangulationNode>();
 	// Demo Nodes
 	ClassDB::register_class<godot::AttackMoveDemoNode>();
 
