@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/basic/position/PositionInTree.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
@@ -20,6 +21,7 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
 	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "level", "add"), &ActionNode::mod_rune);
+	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
 }
 
 void ActionNode::setup() {
@@ -102,6 +104,24 @@ void ActionNode::setup() {
 
 					octopus::Logger::getDebug() << "Modding rune "<< (add ? "add" : "remove") <<" for player: "<<player_idx<<", unit_type: "<<unit_type<<", rune_type: "<<rune_type<<std::endl;
 					mod_rune_based_on_names(player, unit_type, rune_type, add, mod_rune_action.level);
+				}
+				else if (std::holds_alternative<SpawnPropAction>(action)) {
+					SpawnPropAction const &prop_action = std::get<SpawnPropAction>(action);
+
+					octopus::EntityCreationStep step_l;
+					step_l.set_up_function = [prop_action](flecs::entity new_ent, flecs::world const &) {
+						octopus::Position pos_l;
+						pos_l.pos.x = prop_action.position.x;
+						pos_l.pos.y = prop_action.position.y;
+						pos_l.mass = octopus::Fixed(1000);
+						new_ent
+							.set<octopus::Position>(pos_l)
+							.set<octopus::Collision>({octopus::Fixed(prop_action.ray_x100) / 100})
+							.add<octopus::PositionInTree>()
+						;
+					};
+					octopus::Logger::getDebug() << "adding prop creation"<<std::endl;
+					ecs.try_get_mut<octopus::StepEntityManager>()->get_last_layer().push_back(step_l);
 				}
 			}
 			_actions.clear();

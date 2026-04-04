@@ -35,7 +35,12 @@ struct ModRuneAction {
 	bool add = false;
 };
 
-typedef std::variant<SpawnUnitsAction, ModRuneAction> Action;
+struct SpawnPropAction {
+	Vector2 position;
+	int ray_x100 = 100;
+};
+
+typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction> Action;
 
 class ActionNode : public Node {
 	GDCLASS(ActionNode, Node)
@@ -76,6 +81,11 @@ public:
 	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, int level, bool add) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, level, add});
+	}
+
+	void spawn_prop(Vector2 const &position, int ray_x100) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(SpawnPropAction{position, ray_x100});
 	}
 
 	void setup();
