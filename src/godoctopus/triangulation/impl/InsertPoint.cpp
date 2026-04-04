@@ -2,7 +2,7 @@
 
 namespace octopus::triangulation {
 
-ssize_t find_triangle_containing_point(Triangulation const &triangulation, Vector const &point) {
+size_t find_triangle_containing_point(Triangulation const &triangulation, Vector const &point) {
 	for (size_t i = 0; i < triangulation.triangles.size(); ++i) {
 		Triangle const &tri = triangulation.triangles[i];
 		Vector const &A = triangulation.vertices[tri.vertices[0]];
@@ -19,11 +19,11 @@ ssize_t find_triangle_containing_point(Triangulation const &triangulation, Vecto
 			return i;
 		}
 	}
-	return -1;
+	return 99999;
 }
 
-ssize_t find_closest_point(Triangulation const &triangulation, Vector const &point) {
-	ssize_t closest_vertex_index = -1;
+size_t find_closest_point(Triangulation const &triangulation, Vector const &point) {
+	size_t closest_vertex_index = 99999;
 	Fixed closest_distance_squared = 1000000; // some large number
 	for (size_t i = 0; i < triangulation.vertices.size(); ++i) {
 		Vector const &v = triangulation.vertices[i];
@@ -39,8 +39,8 @@ ssize_t find_closest_point(Triangulation const &triangulation, Vector const &poi
 }
 
 void insert_point(Triangulation &triangulation, Vector const &point) {
-	ssize_t tri_idx = find_triangle_containing_point(triangulation, point);
-	if (tri_idx == -1) {
+	size_t tri_idx = find_triangle_containing_point(triangulation, point);
+	if (tri_idx == 99999) {
 		// Point is outside all triangles, do not insert (for now)
 		return;
 	}

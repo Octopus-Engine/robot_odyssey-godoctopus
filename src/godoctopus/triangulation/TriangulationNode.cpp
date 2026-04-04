@@ -2,7 +2,7 @@
 
 namespace octopus::triangulation {
 
-ssize_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2) {
+size_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2) {
 	for (size_t edge1 = 0; edge1 < 3; ++edge1) {
 	bool found = false;
 		for (size_t edge2 = 0; edge2 < 3; ++edge2) {
@@ -19,11 +19,11 @@ ssize_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2) {
 }
 
 void connect_opposites(Triangulation &triangulation, size_t tri1, size_t tri2) {
-	ssize_t edge1 = find_opposite_vertex_idx(triangulation.triangles[tri1], triangulation.triangles[tri2]);
+	size_t edge1 = find_opposite_vertex_idx(triangulation.triangles[tri1], triangulation.triangles[tri2]);
 	if (edge1 != -1) {
 		triangulation.triangles[tri1].opposites[edge1] = tri2;
 	}
-	ssize_t edge2 = find_opposite_vertex_idx(triangulation.triangles[tri2], triangulation.triangles[tri1]);
+	size_t edge2 = find_opposite_vertex_idx(triangulation.triangles[tri2], triangulation.triangles[tri1]);
 	if (edge2 != -1) {
 		triangulation.triangles[tri2].opposites[edge2] = tri1;
 	}

@@ -13,10 +13,10 @@ namespace octopus::triangulation {
 
 struct Triangle {
 	std::array<size_t, 3> vertices;
-	std::array<ssize_t, 3> opposites {-1,-1,-1}; // indices of opposite triangles, -1 if no opposite
+	std::array<size_t, 3> opposites {99999, 99999, 99999}; // indices of opposite triangles, 99999 if no opposite
 };
 
-ssize_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2);
+size_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2);
 
 struct Triangulation;
 
@@ -105,8 +105,8 @@ struct Triangulation {
 
 void connect_opposites(Triangulation &triangulation, size_t tri1, size_t tri2);
 
-ssize_t find_triangle_containing_point(Triangulation const &triangulation, Vector const &point);
-ssize_t find_closest_point(Triangulation const &triangulation, Vector const &point);
+size_t find_triangle_containing_point(Triangulation const &triangulation, Vector const &point);
+size_t find_closest_point(Triangulation const &triangulation, Vector const &point);
 void insert_point(Triangulation &triangulation, Vector const &point);
 
 }
@@ -136,8 +136,8 @@ protected:
 	void draw_triangle(size_t triangle_index, Color color);
 
 	octopus::triangulation::Triangulation triangulation;
-	ssize_t selected_triangle_index = -1;
-	ssize_t selected_vertex_index = -1;
+	size_t selected_triangle_index = -1;
+	size_t selected_vertex_index = -1;
 };
 
 }
