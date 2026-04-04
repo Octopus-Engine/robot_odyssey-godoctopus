@@ -29,6 +29,9 @@ public:
 
 	TypedArray<int> get_row(int row);
 
+	void remove_values_by_distance(int x, int y, int distance, TypedArray<int> values);
+	void remove_value_at(int x, int y, int value);
+
 	void add_value_oriented_variable_picker(int count, int value);
 	bool has_pickers();
 
