@@ -66,7 +66,36 @@ bool NotWaveFunctionCollapseNode::has_pickers() {
 }
 
 void NotWaveFunctionCollapseNode::run() {
-	// NA
+	if (!state || _thread.joinable()) {
+		return;
+	}
+	_solving_done = false;
+	_thread = std::thread([this]() {
+		while (true) {
+			bool done;
+			{
+				std::lock_guard<std::mutex> lock(_mutex);
+				done = advance();
+			}
+			if (done) {
+				_solving_done = true;
+				break;
+			}
+		}
+	});
+}
+
+float NotWaveFunctionCollapseNode::get_progress() const {
+	if (!state) {
+		return 0.0f;
+	}
+	std::lock_guard<std::mutex> lock(_mutex);
+	std::size_t assigned_count = std::count(state->assigned.begin(), state->assigned.end(), true);
+	return static_cast<float>(assigned_count) / static_cast<float>(state->domains.size());
+}
+
+bool NotWaveFunctionCollapseNode::is_done() const {
+	return _solving_done.load();
 }
 
 bool NotWaveFunctionCollapseNode::advance() {
@@ -111,11 +140,18 @@ void NotWaveFunctionCollapseNode::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("run"), &NotWaveFunctionCollapseNode::run);
 	ClassDB::bind_method(D_METHOD("advance"), &NotWaveFunctionCollapseNode::advance);
+	ClassDB::bind_method(D_METHOD("get_progress"), &NotWaveFunctionCollapseNode::get_progress);
+	ClassDB::bind_method(D_METHOD("is_done"), &NotWaveFunctionCollapseNode::is_done);
 }
 
 void NotWaveFunctionCollapseNode::_notification(int p_notification)
 {
 	switch (p_notification) {
+		case NOTIFICATION_EXIT_TREE: {
+			if (_thread.joinable()) {
+				_thread.join();
+			}
+		} break;
 		case NOTIFICATION_PROCESS: {
 			// _process(get_process_delta_time());
 		} break;

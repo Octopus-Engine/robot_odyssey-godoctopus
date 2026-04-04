@@ -4,8 +4,11 @@
 
 #include "scene/main/node.h"
 
+#include <atomic>
 #include <list>
 #include <memory>
+#include <mutex>
+#include <thread>
 #include "state/State.hh"
 #include "pickers/variable/VariablePicker.hh"
 #include "variable/layout/2d/GridLayout.hh"
@@ -31,6 +34,8 @@ public:
 
 	void run();
 	bool advance();
+	float get_progress() const;
+	bool is_done() const;
 
 	void set_seed(int seed);
 	// Will be called by Godot when the class is registered
@@ -42,6 +47,10 @@ protected:
 	std::unique_ptr<nwfc::State> state;
 	std::unique_ptr<nwfc::GridLayout> grid;
 	std::list<std::unique_ptr<nwfc::VariablePicker>> pickers;
+
+	std::thread _thread;
+	mutable std::mutex _mutex;
+	std::atomic<bool> _solving_done{false};
 };
 
 }
