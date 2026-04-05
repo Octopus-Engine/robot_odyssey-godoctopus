@@ -79,6 +79,8 @@ public:
 	octopus::DefaultStepContext<custom_variant>& get_step_context() { return step_context; }
 	octopus::Input<custom_variant, custom_step_manager> * get_input_controller() { return _input_container; }
 	std::mutex &get_progress_mutex() { return _progress_mutex; }
+
+	bool init_done() const { return _init; }
 protected:
 	void _notification(int p_notification);
 private:
