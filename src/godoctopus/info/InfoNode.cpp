@@ -3,6 +3,7 @@
 #include <cmath>
 
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/basic/player/Team.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
@@ -16,6 +17,8 @@ void InfoNode::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("setup"), &InfoNode::setup);
 	ClassDB::bind_method(D_METHOD("query_stats_info", "group", "stats"), &InfoNode::query_stats_info);
+
+	ADD_SIGNAL(MethodInfo("is_ready"));
 }
 
 void InfoNode::setup() {
@@ -37,12 +40,12 @@ void InfoNode::setup() {
 					break;
 				}
 			}
-
 			if (!_stats_info.is_valid() || !query_entity.is_valid()) {
 				return;
 			}
 
 			// reset stats
+			_stats_info->set_team(0);
 			_stats_info->set_hp(0.);
 			_stats_info->set_hp_max(0.);
 			_stats_info->set_armor(0.);
@@ -52,6 +55,8 @@ void InfoNode::setup() {
 			_stats_info->set_affinity(0.);
 
 			// query stats
+			auto team = query_entity.try_get<octopus::Team>();
+			if (team) { _stats_info->set_team(team->team); }
 			auto hp = query_entity.try_get<octopus::HitPoint>();
 			if (hp) { _stats_info->set_hp(hp->qty.to_double()); }
 			auto hp_max = query_entity.try_get<octopus::HitPointMax>();
@@ -71,6 +76,7 @@ void InfoNode::setup() {
 
 			// tag stats as ready
 			_stats_info->set_ready(true);
+			this->call_deferred("emit", "is_ready");
 			// clear query
 			_stats_info = Ref<StatsInfo>();
 			_query_entities.clear();
