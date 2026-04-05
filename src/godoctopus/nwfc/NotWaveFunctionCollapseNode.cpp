@@ -191,9 +191,9 @@ void NotWaveFunctionCollapseNode::_notification(int p_notification)
 {
 	switch (p_notification) {
 		case NOTIFICATION_EXIT_TREE: {
-			if (_thread.joinable()) {
-				_thread.join();
-			}
+			// if (_thread.joinable()) {
+			// 	_thread.join();
+			// }
 		} break;
 		case NOTIFICATION_PROCESS: {
 			// _process(get_process_delta_time());
