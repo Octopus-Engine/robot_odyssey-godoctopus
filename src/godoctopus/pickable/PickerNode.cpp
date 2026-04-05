@@ -48,8 +48,7 @@ void PickerNode::_notification(int p_notification) {
 }
 
 TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const {
-	if(!texture.is_valid())
-	{
+	if(!texture.is_valid()) {
 		return TypedArray<bool>();
 	}
 	// scale from texture viewport scale
@@ -61,14 +60,11 @@ TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const
 		all_added_l.resize(entities.size());
 		all_added_l.fill(false);
 	}
-	for(int32_t x = rect_l.get_position().x ; x <= rect_l.get_position().x + rect_l.get_size().x ; ++ x)
-	{
-		for(int32_t y = rect_l.get_position().y ; y <= rect_l.get_position().y + rect_l.get_size().y ; ++ y)
-		{
+	for(int32_t x = rect_l.get_position().x ; x <= rect_l.get_position().x + rect_l.get_size().x ; ++ x) {
+		for(int32_t y = rect_l.get_position().y ; y <= rect_l.get_position().y + rect_l.get_size().y ; ++ y) {
 			Color color = safe_color(x, y, image_l);
 			int idx_l = idx_from_color(color);
-			if(idx_l >= 0)
-			{
+			if(idx_l >= 0) {
 				all_added_l[idx_l] = true;
 			}
 		}
@@ -78,8 +74,7 @@ TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const
 
 Ref<EntityGroup> PickerNode::group_from_texture(Rect2 const &rect_p) const {
 	Ref<EntityGroup> group(memnew(EntityGroup));
-	if(!texture.is_valid())
-	{
+	if(!texture.is_valid()) {
 		return group;
 	}
 
@@ -89,6 +84,47 @@ Ref<EntityGroup> PickerNode::group_from_texture(Rect2 const &rect_p) const {
 		if(set[i]) {
 			group->get_entities().push_back(entities.get(i));
 		}
+	}
+
+	return group;
+}
+
+Ref<EntityGroup> PickerNode::single_selection_from_texture(Rect2 const &rect_p) const {
+	Ref<EntityGroup> group(memnew(EntityGroup));
+	if (!texture.is_valid()) {
+		return group;
+	}
+
+	Rect2i rect_l = Rect2i(rect_p.get_position(), rect_p.get_size());
+	Ref<Image> image_l = texture->get_image();
+
+	const int32_t center_x = rect_l.get_position().x + rect_l.get_size().x / 2;
+	const int32_t center_y = rect_l.get_position().y + rect_l.get_size().y / 2;
+
+	int best_idx = -1;
+	int64_t best_dist2 = 0;
+
+	for (int32_t x = rect_l.get_position().x; x <= rect_l.get_position().x + rect_l.get_size().x; ++x) {
+		for (int32_t y = rect_l.get_position().y; y <= rect_l.get_position().y + rect_l.get_size().y; ++y) {
+			const int idx_l = idx_from_color(safe_color(x, y, image_l));
+			if (idx_l < 0) {
+				continue;
+			}
+
+			const int64_t dx = int64_t(x) - int64_t(center_x);
+			const int64_t dy = int64_t(y) - int64_t(center_y);
+			const int64_t dist2 = dx * dx + dy * dy;
+
+			if (best_idx < 0 || dist2 < best_dist2) {
+				best_idx = idx_l;
+				best_dist2 = dist2;
+			}
+		}
+	}
+
+	std::lock_guard<std::mutex> lock(mutex);
+	if (best_idx >= 0 && best_idx < entities.size()) {
+		group->get_entities().push_back(entities.get(best_idx));
 	}
 
 	return group;

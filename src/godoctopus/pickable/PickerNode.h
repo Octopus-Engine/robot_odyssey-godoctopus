@@ -25,13 +25,14 @@ public:
 
 		ClassDB::bind_method(D_METHOD("index_array_from_texture", "rect"), &PickerNode::index_array_from_texture);
 		ClassDB::bind_method(D_METHOD("group_from_texture", "rect"), &PickerNode::group_from_texture);
-
+		ClassDB::bind_method(D_METHOD("single_selection_from_texture", "rect"), &PickerNode::single_selection_from_texture);
 	}
 	// All nodes
 	void init_nodes() {}
 
 	TypedArray<bool> index_array_from_texture(Rect2 const &rect_p) const;
 	Ref<EntityGroup> group_from_texture(Rect2 const &rect_p) const;
+	Ref<EntityGroup> single_selection_from_texture(Rect2 const &rect_p) const;
 
 	int add_entity(flecs::entity e);
 	void remove_entity(int id);
