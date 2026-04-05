@@ -6,7 +6,6 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
-#include "godoctopus/components/Explorator.h"
 
 namespace godot {
 
@@ -17,10 +16,6 @@ void InfoNode::_bind_methods() {
 
 	ClassDB::bind_method(D_METHOD("setup"), &InfoNode::setup);
 	ClassDB::bind_method(D_METHOD("query_stats_info", "group", "stats"), &InfoNode::query_stats_info);
-	ClassDB::bind_method(D_METHOD("get_unit_vision_data"), &InfoNode::get_unit_vision_data);
-	ClassDB::bind_method(D_METHOD("add_custom_unit", "x", "y", "visibility_range"), &InfoNode::add_custom_unit);
-	ClassDB::bind_method(D_METHOD("update_custom_unit", "id", "x", "y", "visibility_range"), &InfoNode::update_custom_unit);
-	ClassDB::bind_method(D_METHOD("remove_custom_unit", "id"), &InfoNode::remove_custom_unit);
 }
 
 void InfoNode::setup() {
@@ -30,19 +25,10 @@ void InfoNode::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
 
-	flecs::query<octopus::Position, Explorator> vision_query = ecs.query<octopus::Position, Explorator>();
-
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.run([this, ecs, vision_query](flecs::iter&) {
+		.run([this, ecs](flecs::iter&) {
 			std::lock_guard<std::mutex> lock(_mutex);
-
-			_unit_vision_data.clear();
-			vision_query.each([this](flecs::entity e, octopus::Position const &pos, Explorator const &expl) {
-				_unit_vision_data.push_back(WORLD_SCALE * real_t(octopus::to_double(pos.pos.x)) + 500.);
-				_unit_vision_data.push_back(WORLD_SCALE * real_t(octopus::to_double(pos.pos.y)) + 500.);
-				_unit_vision_data.push_back(expl.visibility_range);
-			});
 
 			flecs::entity query_entity;
 			for (auto e : _query_entities) {
@@ -89,23 +75,6 @@ void InfoNode::setup() {
 			_stats_info = Ref<StatsInfo>();
 			_query_entities.clear();
 		});
-}
-
-int InfoNode::add_custom_unit(float x, float y, float visibility_range) {
-	smart_list_handle<CustomUnitData> handle = _custom_units.new_instance(CustomUnitData{x, y, visibility_range});
-	return (int)handle.handle();
-}
-
-void InfoNode::update_custom_unit(int id, float x, float y, float visibility_range) {
-	if (id >= 0 && _custom_units.is_valid((size_t)id)) {
-		_custom_units.get((size_t)id) = CustomUnitData{x, y, visibility_range};
-	}
-}
-
-void InfoNode::remove_custom_unit(int id) {
-	if (id >= 0 && _custom_units.is_valid((size_t)id)) {
-		_custom_units.free_instance((size_t)id);
-	}
 }
 
 void InfoNode::init_nodes() {

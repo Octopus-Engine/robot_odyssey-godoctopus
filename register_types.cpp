@@ -20,6 +20,7 @@
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/info/InfoNode.h"
+#include "godoctopus/info/VisionNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 #include "godoctopus/proximity/ProximityChecker.h"
 #include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
@@ -53,6 +54,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::HealthBarNode>();
 	ClassDB::register_class<godot::InfoNode>();
 	ClassDB::register_class<godot::StatsInfo>();
+	ClassDB::register_class<godot::VisionNode>();
 	ClassDB::register_class<godot::ParticleOcherstrated>();
 	ClassDB::register_class<godot::UnitPrefab>();
 	ClassDB::register_class<godot::ProximityChecker>();
