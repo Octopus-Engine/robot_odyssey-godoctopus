@@ -25,6 +25,9 @@
 #include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/components/special/Special.h"
 #include "godoctopus/components/proximity_sensor/ProximitySensor.h"
+#include "godoctopus/components/beacon/BeaconConfig.h"
+#include "godoctopus/components/resource_producer/ResourceProducer.h"
+#include "godoctopus/game/ability/BeaconSpawnAbility.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
@@ -148,6 +151,31 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			unit_prefab->get_windup_effect_scale()
 		});
 	}
+
+	if (unit_prefab->get_has_proximity_sensor()) {
+		ProximitySensor sensor;
+		sensor.range = octopus::Fixed(unit_prefab->get_proximity_sensor_range_x10()) / 10;
+		sensor.refresh_rate = unit_prefab->get_proximity_sensor_refresh_rate();
+		sensor.check_allies = unit_prefab->get_proximity_sensor_check_allies();
+		prefab.set<ProximitySensor>(sensor);
+	}
+
+	if (unit_prefab->get_has_beacon_ability()) {
+		BeaconConfig config;
+		config.producer_prefab_name = unit_prefab->get_beacon_producer_prefab().utf8().get_data();
+		prefab.set<BeaconConfig>(config)
+			.auto_override<octopus::ResourceStock>()
+			.auto_override<octopus::Caster>()
+			.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
+	}
+
+	if (unit_prefab->get_producer_resource_name().length() > 0) {
+		ResourceProducer producer;
+		producer.resource_name = unit_prefab->get_producer_resource_name().utf8().get_data();
+		producer.amount = octopus::Fixed(unit_prefab->get_producer_resource_amount_x10()) / 10;
+		producer.interval = unit_prefab->get_producer_resource_interval();
+		prefab.set<ResourceProducer>(producer);
+	}
 }
 
 
@@ -184,6 +212,8 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_explorator_component(ecs);
 	declare_prefab_type(ecs);
 	declare_proximity_sensor_component(ecs);
+	declare_beacon_config_component(ecs);
+	declare_resource_producer_component(ecs);
 
 	//
 	// Systems
@@ -194,6 +224,8 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 
 	set_up_systems<DefaultStepContext<custom_variant> >(_world, step_context, 100);
 	declare_proximity_sensor_system(ecs, _world.position_context);
+	declare_resource_producer_system(ecs, step_context.step_manager);
+	declare_beacon_spawn_ability(ecs, *this);
 
 	if (_vat_library) {
 		declare_vat_library_systems(ecs, _vat_library);

@@ -98,6 +98,21 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, death_particles_count);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, death_particles_scale);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, death_particles_effect_id);
+		// Proximity sensor
+		ClassDB::add_property_group("UnitPrefab", "ProximitySensor");
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, has_proximity_sensor);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_sensor_range_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_sensor_refresh_rate);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_sensor_check_allies);
+		// Beacon
+		ClassDB::add_property_group("UnitPrefab", "Beacon");
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, has_beacon_ability);
+		ADD_SIMPLE_PROP(UnitPrefab, STRING, beacon_producer_prefab);
+		// Resource producer properties
+		ClassDB::add_property_group("UnitPrefab", "ResourceProducer");
+		ADD_SIMPLE_PROP(UnitPrefab, STRING, producer_resource_name);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, producer_resource_amount_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, producer_resource_interval);
 	}
 
 	// General
@@ -160,6 +175,18 @@ public:
 	SET_GET_PARAM_DEF(int, death_particles_count, 8);
 	SET_GET_PARAM_DEF(float, death_particles_scale, 1.5);
 	SET_GET_PARAM_DEF(int, death_particles_effect_id, -1);
+	// Proximity sensor
+	SET_GET_PARAM_DEF(bool, has_proximity_sensor, false);
+	SET_GET_PARAM_DEF(int, proximity_sensor_range_x10, 50);
+	SET_GET_PARAM_DEF(int, proximity_sensor_refresh_rate, 50);
+	SET_GET_PARAM_DEF(bool, proximity_sensor_check_allies, true);
+	// Beacon
+	SET_GET_PARAM_DEF(bool, has_beacon_ability, false);
+	SET_GET_PARAM(String, beacon_producer_prefab);
+	// Resource producer
+	SET_GET_PARAM(String, producer_resource_name);
+	SET_GET_PARAM_DEF(int, producer_resource_amount_x10, 10);
+	SET_GET_PARAM_DEF(int, producer_resource_interval, 50);
 };
 
 }
