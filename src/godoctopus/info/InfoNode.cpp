@@ -8,6 +8,7 @@
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/components/proximity_sensor/ProximitySensor.h"
 
 namespace godot {
 
@@ -55,6 +56,7 @@ void InfoNode::setup() {
 			_stats_info->set_reload_time(0.);
 			_stats_info->set_special(0.);
 			_stats_info->set_affinity(0.);
+			_stats_info->set_proximity_sensor_activated(false);
 
 			// query stats
 			auto prefab_type = query_entity.try_get<PrefabType>();
@@ -76,6 +78,10 @@ void InfoNode::setup() {
 			if (spec) {
 				_stats_info->set_special(spec->value.to_double());
 				_stats_info->set_affinity(spec->affinity.to_double());
+			}
+			auto proximity_sensor = query_entity.try_get<ProximitySensor>();
+			if (proximity_sensor) {
+				_stats_info->set_proximity_sensor_activated(proximity_sensor->activated);
 			}
 
 			// tag stats as ready

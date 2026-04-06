@@ -26,6 +26,7 @@ class StatsInfo : public Resource {
 	SET_GET_PARAM_DEF(double, special, 0);
 	SET_GET_PARAM_DEF(double, affinity, 0);
 	SET_GET_PARAM_DEF(bool, ready, false);
+	SET_GET_PARAM_DEF(bool, proximity_sensor_activated, false);
 public:
 
 	// Will be called by Godot when the class is registered
@@ -41,6 +42,7 @@ public:
 		ADD_SIMPLE_PROP(StatsInfo, FLOAT, special);
 		ADD_SIMPLE_PROP(StatsInfo, FLOAT, affinity);
 		ADD_SIMPLE_PROP(StatsInfo, BOOL, ready);
+		ADD_SIMPLE_PROP(StatsInfo, BOOL, proximity_sensor_activated);
 	}
 };
 
