@@ -16,6 +16,7 @@ namespace godot {
 class StatsInfo : public Resource {
 	GDCLASS(StatsInfo, Resource)
 
+	SET_GET_PARAM_DEF(String, type, "");
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM_DEF(double, hp, 0);
 	SET_GET_PARAM_DEF(double, hp_max, 0);
@@ -30,6 +31,7 @@ public:
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
 	static void _bind_methods() {
+		ADD_SIMPLE_PROP(StatsInfo, STRING, type);
 		ADD_SIMPLE_PROP(StatsInfo, INT, team);
 		ADD_SIMPLE_PROP(StatsInfo, FLOAT, hp);
 		ADD_SIMPLE_PROP(StatsInfo, FLOAT, hp_max);

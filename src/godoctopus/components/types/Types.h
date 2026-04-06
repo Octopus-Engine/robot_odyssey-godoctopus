@@ -15,6 +15,15 @@ struct TankyBot { static constexpr char const * const naming() { return "tankybo
 struct Tiny_eBot { static constexpr char const * const naming() { return "tiny_ebot"; } };
 struct HeavyfireBot { static constexpr char const * const naming() { return "heavyfire_bot"; } };
 
+struct PrefabType {
+	std::string name;
+};
+
+inline void declare_prefab_type(flecs::world &ecs) {
+	ecs.component<PrefabType>()
+		.member("name", &PrefabType::name);
+}
+
 template<typename Callable, typename... Ts>
 void for_each_type(Callable&& callable) {
 	(callable.template operator()<Ts>(), ...);

@@ -48,6 +48,7 @@ GameNode::~GameNode() {
 static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
 
 	auto prefab = ecs.prefab(unit_prefab->get_prefab_name().utf8().get_data())
+		.set<PrefabType>({unit_prefab->get_prefab_name().utf8().get_data()})
 		.auto_override<custom_queue>()
 		.auto_override<Selected>()
 		.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE})
@@ -180,6 +181,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 
 	basic_components_support(ecs);
 	declare_explorator_component(ecs);
+	declare_prefab_type(ecs);
 
 	//
 	// Systems

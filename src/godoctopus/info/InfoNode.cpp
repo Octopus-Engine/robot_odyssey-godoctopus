@@ -7,6 +7,7 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/components/types/Types.h"
 
 namespace godot {
 
@@ -45,6 +46,7 @@ void InfoNode::setup() {
 			}
 
 			// reset stats
+			_stats_info->set_type("");
 			_stats_info->set_team(0);
 			_stats_info->set_hp(0.);
 			_stats_info->set_hp_max(0.);
@@ -55,6 +57,8 @@ void InfoNode::setup() {
 			_stats_info->set_affinity(0.);
 
 			// query stats
+			auto prefab_type = query_entity.try_get<PrefabType>();
+			if (prefab_type) { _stats_info->set_type(prefab_type->name.c_str()); }
 			auto team = query_entity.try_get<octopus::Team>();
 			if (team) { _stats_info->set_team(team->team); }
 			auto hp = query_entity.try_get<octopus::HitPoint>();
@@ -76,7 +80,7 @@ void InfoNode::setup() {
 
 			// tag stats as ready
 			_stats_info->set_ready(true);
-			this->call_deferred("emit", "is_ready");
+			this->call_deferred("emit_signal", "is_ready");
 			// clear query
 			_stats_info = Ref<StatsInfo>();
 			_query_entities.clear();
