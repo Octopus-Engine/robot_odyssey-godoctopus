@@ -112,7 +112,7 @@ void NotWaveFunctionCollapseNode::run() {
 	}
 	_solving_done = false;
 	_thread = std::thread([this]() {
-		while (true) {
+		while (_interrupted.load() == false) {
 			bool done;
 			{
 				std::lock_guard<std::mutex> lock(_mutex);
@@ -191,6 +191,7 @@ void NotWaveFunctionCollapseNode::_notification(int p_notification)
 {
 	switch (p_notification) {
 		case NOTIFICATION_EXIT_TREE: {
+			_interrupted = true;
 			if (_thread.joinable()) {
 				_thread.join();
 			}

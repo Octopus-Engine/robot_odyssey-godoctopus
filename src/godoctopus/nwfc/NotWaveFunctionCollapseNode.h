@@ -54,6 +54,7 @@ protected:
 	std::thread _thread;
 	mutable std::mutex _mutex;
 	std::atomic<bool> _solving_done{false};
+	std::atomic<bool> _interrupted{false};
 };
 
 }
