@@ -3,7 +3,15 @@
 #include <string>
 #include "flecs.h"
 #include "octopus/utils/FixedPoint.hh"
+#include "octopus/utils/Vector.hh"
 #include "octopus_types.h"
+
+struct ResourceProducedEvent {
+	octopus::Vector position;
+	std::string resource;
+	double amount = 0.;
+	uint32_t player_idx = 0;
+};
 
 /// @brief Placed on an entity spawned by BeaconSpawnAbility.
 /// Periodically credits resources to the owning player's ResourceStock.
@@ -22,5 +30,3 @@ inline void declare_resource_producer_component(flecs::world &ecs)
 		.member("interval", &ResourceProducer::interval)
 		.member("ticks_since_last", &ResourceProducer::ticks_since_last);
 }
-
-void declare_resource_producer_system(flecs::world &ecs, custom_step_manager &step_manager);

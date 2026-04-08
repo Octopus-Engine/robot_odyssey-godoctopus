@@ -240,7 +240,6 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 
 	set_up_systems<DefaultStepContext<custom_variant> >(_world, step_context, 100);
 	declare_proximity_sensor_system(ecs, _world.position_context);
-	declare_resource_producer_system(ecs, step_context.step_manager);
 	declare_beacon_occupant_observers(ecs);
 	declare_beacon_spawn_ability(ecs, *this);
 
