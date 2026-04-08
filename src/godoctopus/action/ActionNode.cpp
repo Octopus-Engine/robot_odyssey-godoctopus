@@ -113,10 +113,12 @@ void ActionNode::setup() {
 						octopus::Position pos_l;
 						pos_l.pos.x = prop_action.position.x;
 						pos_l.pos.y = prop_action.position.y;
-						pos_l.mass = octopus::Fixed(1000);
+						octopus::Collision col_l;
+						col_l.ray = octopus::Fixed(prop_action.ray_x100) / 100;
+						col_l.mass = octopus::Fixed(1000);
 						new_ent
 							.set<octopus::Position>(pos_l)
-							.set<octopus::Collision>({octopus::Fixed(prop_action.ray_x100) / 100})
+							.set<octopus::Collision>(col_l)
 							.add<octopus::PositionInTree>()
 						;
 					};

@@ -53,17 +53,23 @@ GameNode::~GameNode() {
 
 static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
 
+	bool is_static = unit_prefab->get_is_static();
+	octopus::Collision collision;
+	collision.ray = unit_prefab->get_ray_x100() / 100.;
+	if (is_static) {
+		collision.mass = octopus::Fixed(1000);
+	}
+
 	auto prefab = ecs.prefab(unit_prefab->get_prefab_name().utf8().get_data())
 		.set<PrefabType>({unit_prefab->get_prefab_name().utf8().get_data()})
 		.auto_override<custom_queue>()
 		.auto_override<Selected>()
-		.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE})
 		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::Armor>({unit_prefab->get_armor()})
 		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
 		.auto_override<octopus::Destroyable>()
-		.set<octopus::Collision>({unit_prefab->get_ray_x100()/100.})
+		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 		.set_auto_override<octopus::Attack>({{
@@ -79,6 +85,11 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			unit_prefab->get_health_bar_width()})
 	;
 
+	if (!is_static) {
+		prefab.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE});
+	} else {
+		prefab.set_auto_override<octopus::Move>({0});
+	}
 	if (unit_prefab->get_exploration()) {
 		prefab.set<Explorator>(Explorator{30});
 	}
