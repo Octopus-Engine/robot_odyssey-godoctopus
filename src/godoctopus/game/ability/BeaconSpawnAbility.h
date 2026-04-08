@@ -11,6 +11,8 @@
 #include "octopus_types.h"
 #include "godoctopus/components/proximity_sensor/ProximitySensor.h"
 #include "godoctopus/components/beacon/BeaconConfig.h"
+#include "godoctopus/components/beacon/BeaconSlotOccupied.h"
+#include "godoctopus/components/beacon/BeaconOccupant.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
 
 namespace godot {
@@ -24,7 +26,14 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 
 	virtual std::string is_castable(flecs::entity caster, flecs::world const &) const override {
 		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();
-		return sensor && sensor->activated ? "" : "ALLY_PROXIMITY_SENSOR_NOT_ACTIVATED";
+		if (!sensor || !sensor->activated) {
+			return "ALLY_PROXIMITY_SENSOR_NOT_ACTIVATED";
+		}
+		BeaconSlotOccupied const *slot = caster.try_get<BeaconSlotOccupied>();
+		if (slot && slot->occupied) {
+			return "BEACON_SLOT_OCCUPIED";
+		}
+		return "";
 	}
 
 	virtual void cast(flecs::entity caster, octopus::Vector, flecs::entity, flecs::world const &ecs, custom_step_manager &) const {
@@ -47,15 +56,19 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 
 		octopus::PlayerAppartenance const *appartenance = caster.try_get<octopus::PlayerAppartenance>();
 		uint32_t player_idx = appartenance ? appartenance->idx : 0;
+		octopus::Team const *team = caster.try_get<octopus::Team>();
+		uint16_t player_team = team ? team->team : 0;
 
 		octopus::Position spawn_pos = *pos;
 		std::string producer_prefab_name = config->producer_prefab_name;
 
 		octopus::EntityCreationStep step;
-		step.set_up_function = [spawn_pos, player_idx, producer_prefab_name](flecs::entity new_ent, flecs::world const &world_p) {
+		step.set_up_function = [spawn_pos, player_idx, player_team, producer_prefab_name, caster](flecs::entity new_ent, flecs::world const &world_p) {
 			auto e = new_ent
 				.set<octopus::Position>(spawn_pos)
-				.set<octopus::PlayerAppartenance>({player_idx});
+				.set<octopus::Team>({player_team})
+				.set<octopus::PlayerAppartenance>({player_idx})
+				.set<BeaconOccupant>({caster});
 			if (!producer_prefab_name.empty()) {
 				e.is_a(world_p.prefab(producer_prefab_name.c_str()));
 			}
