@@ -53,14 +53,16 @@ void ResourceNodeEventBus::setup() {
 			step_manager.get_last_layer().back().template get<octopus::ResourceStockStep>().add_step(
 				player, {producer.amount, producer.resource_name});
 
-			ResourceProducedEvent event;
-			event.position = pos.pos;
-			event.resource = producer.resource_name;
-			event.amount = producer.amount.to_double();
-			event.player_idx = appartenance.idx;
+			Vector3 godot_pos(
+				real_t(pos.pos.x.to_double()) * WORLD_SCALE,
+				0.f,
+				real_t(pos.pos.y.to_double()) * WORLD_SCALE);
+			call_deferred("emit_signal", "resource_produced",
+				godot_pos,
+				String(producer.resource_name.c_str()),
+				producer.amount.to_double(),
+				int(appartenance.idx));
 
-			std::lock_guard<std::mutex> lock(_mutex);
-			_pending_events.push_back(std::move(event));
 		});
 }
 
@@ -70,22 +72,6 @@ void ResourceNodeEventBus::notify_resource_consumed(Vector3 const &position, Str
 		resource_name,
 		amount,
 		player);
-}
-
-void ResourceNodeEventBus::_process(double delta) {
-	std::lock_guard<std::mutex> lock(_mutex);
-	for (ResourceProducedEvent const &event : _pending_events) {
-		Vector3 godot_pos(
-			real_t(event.position.x.to_double()) * WORLD_SCALE,
-			0.f,
-			real_t(event.position.y.to_double()) * WORLD_SCALE);
-		call_deferred("emit_signal", "resource_produced",
-			godot_pos,
-			String(event.resource.c_str()),
-			event.amount,
-			int(event.player_idx));
-	}
-	_pending_events.clear();
 }
 
 void ResourceNodeEventBus::init_nodes() {
@@ -98,10 +84,10 @@ void ResourceNodeEventBus::init_nodes() {
 void ResourceNodeEventBus::_notification(int p_notification) {
 	switch (p_notification) {
 		case NOTIFICATION_PROCESS: {
-			_process(get_process_delta_time());
+			// NA
 		} break;
 		case NOTIFICATION_READY: {
-			set_process(true);
+			set_process(false);
 			init_nodes();
 		} break;
 	}

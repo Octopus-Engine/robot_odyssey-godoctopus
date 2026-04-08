@@ -10,9 +10,6 @@
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
 
-#include <mutex>
-#include <vector>
-
 namespace godot {
 
 /// @brief Godot Node that bridges ResourceProducer ECS events to Godot signals.
@@ -34,12 +31,6 @@ public:
 
 protected:
 	void _notification(int p_notification);
-
-private:
-	void _process(double delta);
-
-	std::mutex _mutex;
-	std::vector<ResourceProducedEvent> _pending_events;
 };
 
 } // namespace godot
