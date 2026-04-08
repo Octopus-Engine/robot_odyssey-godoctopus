@@ -22,6 +22,11 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 	virtual octopus::UpgradeRequirement get_requirements() const { return {}; }
 	virtual std::unordered_map<std::string, octopus::Fixed> resource_consumption() const { return {}; }
 
+	virtual std::string is_castable(flecs::entity caster, flecs::world const &) const override {
+		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();
+		return sensor && sensor->activated ? "" : "ALLY_PROXIMITY_SENSOR_NOT_ACTIVATED";
+	}
+
 	virtual void cast(flecs::entity caster, octopus::Vector, flecs::entity, flecs::world const &ecs, custom_step_manager &) const {
 		octopus::Logger::getDebug() <<"Beacon spawn :: Entering"<<std::endl;
 		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();

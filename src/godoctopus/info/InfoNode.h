@@ -46,6 +46,20 @@ public:
 	}
 };
 
+class AbilityCastableInfo : public Resource {
+	GDCLASS(AbilityCastableInfo, Resource)
+
+	SET_GET_PARAM_DEF(bool, castable, false);
+	SET_GET_PARAM_DEF(bool, ready, false);
+	SET_GET_PARAM_DEF(String, reason, "");
+	public:
+	static void _bind_methods() {
+		ADD_SIMPLE_PROP(AbilityCastableInfo, BOOL, castable);
+		ADD_SIMPLE_PROP(AbilityCastableInfo, BOOL, ready);
+		ADD_SIMPLE_PROP(AbilityCastableInfo, STRING, reason);
+	}
+};
+
 class InfoNode : public Node {
 	GDCLASS(InfoNode, Node)
 
@@ -68,6 +82,17 @@ public:
 		_query_entities = group->get_entities();
 	}
 
+	void query_ability_castable(Ref<EntityGroup> group, String const &ability_name, Ref<AbilityCastableInfo> out_info) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		if (!group.is_valid() || !out_info.is_valid()) {
+			return;
+		}
+		out_info->set_ready(false);
+		_ability_castable_info = out_info;
+		_ability_castable_name = ability_name.utf8().get_data();
+		_ability_castable_entities = group->get_entities();
+	}
+
 	void init_nodes();
 protected:
 	void _notification(int p_notification);
@@ -75,6 +100,9 @@ private:
 	std::mutex _mutex;
 	Ref<StatsInfo> _stats_info;
 	std::vector<flecs::entity> _query_entities;
+	Ref<AbilityCastableInfo> _ability_castable_info;
+	std::string _ability_castable_name;
+	std::vector<flecs::entity> _ability_castable_entities;
 };
 
 }

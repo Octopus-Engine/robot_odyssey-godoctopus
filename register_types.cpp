@@ -54,6 +54,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::HealthBarNode>();
 	ClassDB::register_class<godot::InfoNode>();
 	ClassDB::register_class<godot::StatsInfo>();
+	ClassDB::register_class<godot::AbilityCastableInfo>();
 	ClassDB::register_class<godot::VisionNode>();
 	ClassDB::register_class<godot::ParticleOcherstrated>();
 	ClassDB::register_class<godot::UnitPrefab>();
