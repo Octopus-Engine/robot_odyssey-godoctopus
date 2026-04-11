@@ -38,6 +38,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, lore);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, exploration);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, is_static);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, destroyable);
 		ClassDB::add_property_group("UnitPrefab", "Rune");
 		// Rune
 		ADD_SIMPLE_PROP(UnitPrefab, INT, special_x10);
@@ -122,6 +123,7 @@ public:
 	SET_GET_PARAM(String, lore);
 	SET_GET_PARAM_DEF(bool, exploration, false);
 	SET_GET_PARAM_DEF(bool, is_static, false);
+	SET_GET_PARAM_DEF(bool, destroyable, true);
 	// Rune
 	SET_GET_PARAM_DEF(int, special_x10, 0);
 	SET_GET_PARAM_DEF(int, affinity_x10, 10);

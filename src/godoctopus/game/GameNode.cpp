@@ -54,6 +54,7 @@ GameNode::~GameNode() {
 static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
 
 	bool is_static = unit_prefab->get_is_static();
+	bool destroyable = unit_prefab->get_destroyable();
 	octopus::Collision collision;
 	collision.ray = unit_prefab->get_ray_x100() / 100.;
 	if (is_static) {
@@ -64,11 +65,8 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set<PrefabType>({unit_prefab->get_prefab_name().utf8().get_data()})
 		.auto_override<custom_queue>()
 		.auto_override<Selected>()
-		.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
-		.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
 		.set_auto_override<octopus::Armor>({unit_prefab->get_armor()})
 		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
-		.auto_override<octopus::Destroyable>()
 		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
@@ -80,10 +78,16 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<VatLibraryHandle>({unit_prefab->get_track_idx()})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
-		.set_auto_override<HealthBar>({
-			unit_prefab->get_health_bar_offset_y(),
-			unit_prefab->get_health_bar_width()})
 	;
+
+	if (destroyable) {
+		prefab.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
+			.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
+			.auto_override<octopus::Destroyable>()
+			.set_auto_override<HealthBar>({
+				unit_prefab->get_health_bar_offset_y(),
+				unit_prefab->get_health_bar_width()});
+	}
 
 	if (!is_static) {
 		prefab.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE});

@@ -12,7 +12,10 @@ struct HitpointEvent
 	static void apply(flecs::entity source, int32_t level)
 	{
 		octopus::HitPoint * hp = source.try_get_mut<octopus::HitPoint>();
-		hp->qty += delta + upgrade * level;
+		if(hp)
+		{
+			hp->qty += delta + upgrade * level;
+		}
 	}
 };
 
@@ -63,8 +66,12 @@ struct DamageAreaEventHitpointBasedSpecialScaled
 	{
 		using namespace octopus;
 		auto const special = get_special_value(source);
-		auto const &hp_max = source.get<octopus::HitPointMax>();
-		auto const aoe_dmg = hp_max.qty * (special * upgrade + damage) / 100;
+		HitPointMax const * hp_max = source.try_get<octopus::HitPointMax>();
+		if(!hp_max)
+		{
+			return;
+		}
+		auto const aoe_dmg = hp_max->qty * (special * upgrade + damage) / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())

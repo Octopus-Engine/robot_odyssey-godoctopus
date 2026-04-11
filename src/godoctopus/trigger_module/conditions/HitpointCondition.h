@@ -13,6 +13,10 @@ struct HitPointOverPercentCondition
 	{
 		octopus::HitPoint const * hp = e.try_get<octopus::HitPoint>();
 		octopus::HitPointMax const * hp_max = e.try_get<octopus::HitPointMax>();
+		if(!hp || !hp_max)
+		{
+			return false;
+		}
 		octopus::Fixed ratio = octopus::Fixed(percent) / 100;
 
 		return hp->qty / hp_max->qty >= ratio;
@@ -28,6 +32,10 @@ struct HitPointUnderPercentCondition
 	{
 		octopus::HitPoint const * hp = e.try_get<octopus::HitPoint>();
 		octopus::HitPointMax const * hp_max = e.try_get<octopus::HitPointMax>();
+		if(!hp || !hp_max)
+		{
+			return false;
+		}
 		octopus::Fixed ratio = octopus::Fixed(percent) / 100;
 
 		return hp->qty / hp_max->qty <= ratio;
