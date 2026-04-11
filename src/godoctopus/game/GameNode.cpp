@@ -55,6 +55,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 
 	bool is_static = unit_prefab->get_is_static();
 	bool destroyable = unit_prefab->get_destroyable();
+	bool attack_enabled = unit_prefab->get_attack_enabled();
 	octopus::Collision collision;
 	collision.ray = unit_prefab->get_ray_x100() / 100.;
 	if (is_static) {
@@ -69,16 +70,20 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
 		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
-		.set_auto_override<octopus::AttackCommand>({flecs::entity()})
-		.set_auto_override<octopus::Attack>({{
-			unit_prefab->get_windup_x10() * (TICK_RATE / 10),
-			unit_prefab->get_reload_x10() * (TICK_RATE / 10),
-			unit_prefab->get_damage_x10()/10.,
-			unit_prefab->get_range_x10()/10.}})
 		.set_auto_override<VatLibraryHandle>({unit_prefab->get_track_idx()})
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
 	;
+
+	if (attack_enabled) {
+		prefab
+			.set_auto_override<octopus::AttackCommand>({flecs::entity()})
+			.set_auto_override<octopus::Attack>({{
+				unit_prefab->get_windup_x10() * (TICK_RATE / 10),
+				unit_prefab->get_reload_x10() * (TICK_RATE / 10),
+				unit_prefab->get_damage_x10()/10.,
+				unit_prefab->get_range_x10()/10.}});
+	}
 
 	if (destroyable) {
 		prefab.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
@@ -109,64 +114,66 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		});
 	}
 
-	if (unit_prefab->get_basic_projectile()) {
-		prefab.set<octopus::BasicProjectileAttack>({20./TICK_RATE});
-	}
-	// always register custom projectile to allow color customization
-	Color const &color = unit_prefab->get_projectile_color();
-	CustomBasicProjectile projectile {
-		color.get_r8(),
-		color.get_g8(),
-		color.get_b8(),
-		unit_prefab->get_projectile_origin(),
-		unit_prefab->get_projectile_scale(),
-		{},
-		unit_prefab->get_impact_effect_id(),
-		unit_prefab->get_impact_count(),
-		unit_prefab->get_impact_scale()
-	};
-	for(int i = 0; i < unit_prefab->get_impacts().size(); ++ i) {
-		Ref<ParticleOcherstrated> impact = unit_prefab->get_impacts()[i];
-		std::cout<<"registring impact "<<i<<" with effect id "<<impact->get_type()<<std::endl;
-		projectile.impacts.push_back(CustomBasicProjectile::Impact{
-			impact->get_type(),
-			{
-				impact->get_color().r,
-				impact->get_color().g,
-				impact->get_color().b,
-				impact->get_color().a
-			}
-		});
-	}
-	prefab.set<CustomBasicProjectile>(std::move(projectile));
+	if (attack_enabled) {
+		if (unit_prefab->get_basic_projectile()) {
+			prefab.set<octopus::BasicProjectileAttack>({20./TICK_RATE});
+		}
+		// always register custom projectile to allow color customization
+		Color const &color = unit_prefab->get_projectile_color();
+		CustomBasicProjectile projectile {
+			color.get_r8(),
+			color.get_g8(),
+			color.get_b8(),
+			unit_prefab->get_projectile_origin(),
+			unit_prefab->get_projectile_scale(),
+			{},
+			unit_prefab->get_impact_effect_id(),
+			unit_prefab->get_impact_count(),
+			unit_prefab->get_impact_scale()
+		};
+		for(int i = 0; i < unit_prefab->get_impacts().size(); ++ i) {
+			Ref<ParticleOcherstrated> impact = unit_prefab->get_impacts()[i];
+			std::cout<<"registring impact "<<i<<" with effect id "<<impact->get_type()<<std::endl;
+			projectile.impacts.push_back(CustomBasicProjectile::Impact{
+				impact->get_type(),
+				{
+					impact->get_color().r,
+					impact->get_color().g,
+					impact->get_color().b,
+					impact->get_color().a
+				}
+			});
+		}
+		prefab.set<CustomBasicProjectile>(std::move(projectile));
 
-	if (unit_prefab->get_attack_particle()) {
-		prefab.set<AttackParticle>({
-			unit_prefab->get_attack_particle_effect(),
-			unit_prefab->get_attack_particle_origin().x,
-			unit_prefab->get_attack_particle_origin().y,
-			unit_prefab->get_attack_particle_origin().z,
-			unit_prefab->get_attack_particle_color().get_r8(),
-			unit_prefab->get_attack_particle_color().get_g8(),
-			unit_prefab->get_attack_particle_color().get_b8(),
-			unit_prefab->get_attack_particle_count(),
-			unit_prefab->get_attack_particle_scale()
-		});
-	}
+		if (unit_prefab->get_attack_particle()) {
+			prefab.set<AttackParticle>({
+				unit_prefab->get_attack_particle_effect(),
+				unit_prefab->get_attack_particle_origin().x,
+				unit_prefab->get_attack_particle_origin().y,
+				unit_prefab->get_attack_particle_origin().z,
+				unit_prefab->get_attack_particle_color().get_r8(),
+				unit_prefab->get_attack_particle_color().get_g8(),
+				unit_prefab->get_attack_particle_color().get_b8(),
+				unit_prefab->get_attack_particle_count(),
+				unit_prefab->get_attack_particle_scale()
+			});
+		}
 
-	if (unit_prefab->get_windup_effect()) {
-		prefab.set<WindupEffect>({
-			unit_prefab->get_windup_effect_loading(),
-			unit_prefab->get_windup_effect_incoming(),
-			unit_prefab->get_windup_effect_origin().x,
-			unit_prefab->get_windup_effect_origin().y,
-			unit_prefab->get_windup_effect_origin().z,
-			unit_prefab->get_windup_effect_color().get_r8(),
-			unit_prefab->get_windup_effect_color().get_g8(),
-			unit_prefab->get_windup_effect_color().get_b8(),
-			unit_prefab->get_windup_effect_count(),
-			unit_prefab->get_windup_effect_scale()
-		});
+		if (unit_prefab->get_windup_effect()) {
+			prefab.set<WindupEffect>({
+				unit_prefab->get_windup_effect_loading(),
+				unit_prefab->get_windup_effect_incoming(),
+				unit_prefab->get_windup_effect_origin().x,
+				unit_prefab->get_windup_effect_origin().y,
+				unit_prefab->get_windup_effect_origin().z,
+				unit_prefab->get_windup_effect_color().get_r8(),
+				unit_prefab->get_windup_effect_color().get_g8(),
+				unit_prefab->get_windup_effect_color().get_b8(),
+				unit_prefab->get_windup_effect_count(),
+				unit_prefab->get_windup_effect_scale()
+			});
+		}
 	}
 
 	if (unit_prefab->get_has_proximity_sensor()) {

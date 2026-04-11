@@ -45,6 +45,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, affinity_x10);
 		ClassDB::add_property_group("UnitPrefab", "Damage");
 		// Damage
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_enabled);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, damage_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, windup_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, reload_x10);
@@ -128,6 +129,7 @@ public:
 	SET_GET_PARAM_DEF(int, special_x10, 0);
 	SET_GET_PARAM_DEF(int, affinity_x10, 10);
 	// Damage
+	SET_GET_PARAM_DEF(bool, attack_enabled, true);
 	SET_GET_PARAM_DEF(int, damage_x10, 30);
 	SET_GET_PARAM_DEF(int, reload_x10, 10);
 	SET_GET_PARAM_DEF(int, windup_x10, 10);
