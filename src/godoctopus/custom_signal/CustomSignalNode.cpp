@@ -5,6 +5,8 @@
 namespace godot {
 
 void CustomSignalNode::_bind_methods() {
+	BIND_NODE_PATH(CustomSignalNode, GameNode, game_node);
+
 	ADD_SIGNAL(MethodInfo("custom_signal", PropertyInfo(Variant::STRING, "payload"), PropertyInfo(Variant::ARRAY, "args", PROPERTY_HINT_ARRAY_TYPE, "float")));
 }
 

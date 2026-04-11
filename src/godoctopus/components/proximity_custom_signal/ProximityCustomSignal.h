@@ -11,7 +11,6 @@
 /// Emits a CustomSignalEvent on the CustomSignalNode singleton entity when
 /// at least one entity is found in range, then removes itself.
 struct ProximityCustomSignal {
-	octopus::Vector pos;
 	octopus::Fixed range = octopus::Fixed(10);
 	std::string payload = "proximity_triggered";
 	int tree_idx = 0;

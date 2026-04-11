@@ -12,9 +12,9 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 {
 	flecs::entity custom_signal_entity = ecs.entity(godot::CustomSignalNode::NAME());
 
-	ecs.system<ProximityCustomSignal>()
+	ecs.system<ProximityCustomSignal, octopus::Position const>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.each([&pos_context, custom_signal_entity](flecs::entity e, ProximityCustomSignal &checker) {
+		.each([&pos_context, custom_signal_entity](flecs::entity e, ProximityCustomSignal &checker, octopus::Position const &pos) {
 			if (checker.tree_idx < 0 || size_t(checker.tree_idx) >= pos_context.trees.size()) {
 				print_line("ProximityCustomSignal has invalid tree_idx!");
 				e.remove<ProximityCustomSignal>();
@@ -22,11 +22,11 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 			}
 
 			bool found = false;
-			std::function<bool(int32_t, flecs::entity)> func_l = [&found](int32_t, flecs::entity) -> bool {
-				found = true;
+			std::function<bool(int32_t, flecs::entity)> func_l = [&found, e](int32_t, flecs::entity other) -> bool {
+				found = other != e;
 				return false;
 			};
-			tree_circle_query(pos_context.trees[checker.tree_idx], checker.pos, checker.range, func_l);
+			tree_circle_query(pos_context.trees[checker.tree_idx], pos.pos, checker.range, func_l);
 
 			if (!found) {
 				return;
@@ -35,8 +35,8 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 			godot::CustomSignalEvent custom_signal_event {
 				checker.payload,
 				{
-					float(checker.pos.x.to_double()),
-					float(checker.pos.y.to_double())
+					float(pos.pos.x.to_double()),
+					float(pos.pos.y.to_double())
 				}
 			};
 			custom_signal_entity.emit<godot::CustomSignalEvent>(custom_signal_event);
