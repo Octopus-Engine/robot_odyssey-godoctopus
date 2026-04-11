@@ -29,7 +29,15 @@ public:
 
 	TypedArray<int> get_row(int row);
 
-	void remove_values_by_distance(int x, int y, int distance, TypedArray<int> values);
+	TypedArray<int> get_vars_idx_by_distance(int x, int y, int lower_distance, int upper_distance);
+
+	/// @brief Remove values from variables within a certain distance interval from a position
+	/// @param x The x-coordinate of the position
+	/// @param y The y-coordinate of the position
+	/// @param lower_distance The minimum distance from the position (every variable at a distance strictly lower than this will be affected)
+	/// @param upper_distance The maximum distance from the position (every variable at a distance strictly greater than this will be affected)
+	/// @param values The values to be removed
+	void remove_values_by_distance(int x, int y, int lower_distance, int upper_distance, TypedArray<int> values);
 	void remove_value_at(int x, int y, int value);
 
 	void add_value_oriented_variable_picker(int count, int value);

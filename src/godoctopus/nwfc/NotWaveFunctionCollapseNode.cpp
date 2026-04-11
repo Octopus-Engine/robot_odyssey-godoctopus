@@ -42,27 +42,19 @@ void NotWaveFunctionCollapseNode::add_compatibility_constraint(int variable, int
 	// Todo
 }
 
-void NotWaveFunctionCollapseNode::remove_values_by_distance(int x, int y, int distance, TypedArray<int> values) {
-	if (!state || !grid) {
-		return;
-	}
-	for (int dx = -distance; dx <= distance; ++dx) {
-		for (int dy = -distance; dy <= distance; ++dy) {
-			if (std::abs(dx) + std::abs(dy) > distance) {
-				continue;
-			}
-			int nx = x + dx;
-			int ny = y + dy;
-			if (nx < 0 || ny < 0 || nx >= static_cast<int>(grid->width) || ny >= static_cast<int>(grid->height)) {
-				continue;
-			}
-			std::size_t idx = grid->get_index(static_cast<std::size_t>(nx), static_cast<std::size_t>(ny));
-			nwfc::BitsetDomain &domain = state->domains[idx];
-			for (int i = 0; i < values.size(); ++i) {
-				std::size_t v = static_cast<std::size_t>(static_cast<int>(values[i]));
-				if (v < domain.bits.size()) {
-					domain.bits[v] = false;
-				}
+void NotWaveFunctionCollapseNode::remove_values_by_distance(int x, int y, int lower_distance, int upper_distance, TypedArray<int> values) {
+	auto vars = get_vars_idx_by_distance(x, y, lower_distance, upper_distance);
+
+	for (int i = 0; i < vars.size(); ++i) {
+		std::size_t idx = static_cast<std::size_t>(vars[i]);
+		if (nwfc::is_assigned(*state, idx)) {
+			continue;
+		}
+		nwfc::BitsetDomain &domain = state->domains[idx];
+		for (int j = 0; j < values.size(); ++j) {
+			std::size_t v = static_cast<std::size_t>(values[j]);
+			if (v < domain.bits.size()) {
+				domain.bits[v] = false;
 			}
 		}
 	}
@@ -72,7 +64,7 @@ void NotWaveFunctionCollapseNode::remove_value_at(int x, int y, int value) {
 	if (!state || !grid) {
 		return;
 	}
-	if (x < 0 || y < 0 || x >= static_cast<int>(grid->width) || y >= static_cast<int>(grid->height)) {
+	if (x < 0 || y < 0 || static_cast<size_t>(x) >= grid->width || static_cast<size_t>(y) >= grid->height) {
 		return;
 	}
 	std::size_t idx = grid->get_index(static_cast<std::size_t>(x), static_cast<std::size_t>(y));
@@ -97,6 +89,32 @@ TypedArray<int> NotWaveFunctionCollapseNode::get_row(int row) {
 
 	return res;
 }
+
+TypedArray<int> NotWaveFunctionCollapseNode::get_vars_idx_by_distance(int x, int y, int lower_distance, int upper_distance) {
+	TypedArray<int> res;
+
+	if (!state || !grid ||
+		x < 0 || y < 0 || static_cast<size_t>(x) >= grid->width || static_cast<size_t>(y) >= grid->height ||
+		lower_distance < 0 || upper_distance < 0 || lower_distance > upper_distance) {
+		return res;
+	}
+
+	for (size_t ox = 0; ox < grid->width; ++ox) {
+		for (size_t oy = 0; oy < grid->height; ++oy) {
+			size_t idx = grid->get_index(ox, oy);
+			int dx = static_cast<int>(ox) - x;
+			int dy = static_cast<int>(oy) - y;
+			size_t dist = static_cast<size_t>(std::abs(dx) + std::abs(dy));
+			if (dist < static_cast<size_t>(lower_distance) || dist > static_cast<size_t>(upper_distance)) {
+				continue;
+			}
+			res.append(static_cast<int>(idx));
+		}
+	}
+
+	return res;
+}
+
 
 void NotWaveFunctionCollapseNode::add_value_oriented_variable_picker(int count, int value) {
 	pickers.push_back(std::make_unique<nwfc::ValueOrientedVariablePicker>(count, value));
@@ -175,7 +193,8 @@ void NotWaveFunctionCollapseNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_lower_cardinality", "vars", "value", "bound"), &NotWaveFunctionCollapseNode::add_lower_cardinality);
 	ClassDB::bind_method(D_METHOD("add_upper_cardinality", "vars", "value", "bound"), &NotWaveFunctionCollapseNode::add_upper_cardinality);
 	ClassDB::bind_method(D_METHOD("add_compatibility_constraint", "var", "value", "affected_var", "affected_val"), &NotWaveFunctionCollapseNode::add_compatibility_constraint);
-	ClassDB::bind_method(D_METHOD("remove_values_by_distance", "x", "y", "distance", "values"), &NotWaveFunctionCollapseNode::remove_values_by_distance);
+	ClassDB::bind_method(D_METHOD("get_vars_idx_by_distance", "x", "y", "lower_distance", "upper_distance"), &NotWaveFunctionCollapseNode::get_vars_idx_by_distance);
+	ClassDB::bind_method(D_METHOD("remove_values_by_distance", "x", "y", "lower_distance", "upper_distance", "values"), &NotWaveFunctionCollapseNode::remove_values_by_distance);
 	ClassDB::bind_method(D_METHOD("remove_value_at", "x", "y", "value"), &NotWaveFunctionCollapseNode::remove_value_at);
 	ClassDB::bind_method(D_METHOD("get_row", "row"), &NotWaveFunctionCollapseNode::get_row);
 	ClassDB::bind_method(D_METHOD("add_value_oriented_variable_picker", "count", "value"), &NotWaveFunctionCollapseNode::add_value_oriented_variable_picker);
