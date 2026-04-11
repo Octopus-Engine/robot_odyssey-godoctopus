@@ -12,10 +12,12 @@
 #include "octopus/components/step/StepContainer.hh"
 #include "octopus/world/player/PlayerInfo.hh"
 
+#include "godoctopus/components/proximity_custom_signal/ProximityCustomSignal.h"
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/game/ability/ArmorbotBuff.h"
+#include "godoctopus/game/ability/BeaconSpawnAbility.h"
 #include "godoctopus/game/ability/EarbotSteam.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
@@ -41,6 +43,17 @@ void declare_prefab(flecs::world &ecs) {
 		.auto_override<octopus::ResourceStock>()
 		.auto_override<octopus::Caster>()
 		.add<octopus::Caster>(ecs.component(EarbotSteam::NAME().c_str()));
+
+	// Add casting ability for basic_resource
+	ecs.prefab("basic_resource")
+		.auto_override<octopus::ResourceStock>()
+		.auto_override<octopus::Caster>()
+		.set<ProximityCustomSignal>(ProximityCustomSignal {
+			octopus::Fixed(20),
+			"basic_resource_proximity",
+			2
+		})
+		.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
 
 	// Add casting ability for armorbot
 	ecs.prefab("armorbot")
