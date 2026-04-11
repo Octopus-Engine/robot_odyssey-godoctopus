@@ -202,6 +202,7 @@ godoctopus2_sources = [
     "./src/godoctopus/command/CommandNode.cpp",
     "./src/godoctopus/custom_signal/CustomSignalNode.cpp",
     "./src/godoctopus/components/special/Special.cpp",
+    "./src/godoctopus/components/proximity_custom_signal/ProximityCustomSignal.cpp",
     "./src/godoctopus/components/proximity_sensor/ProximitySensor.cpp",
     "./src/godoctopus/components/beacon/BeaconOccupant.cpp",
     "./src/godoctopus/entity_group/SelectionGroup.cpp",

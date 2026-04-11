@@ -24,6 +24,7 @@
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/components/special/Special.h"
+#include "godoctopus/components/proximity_custom_signal/ProximityCustomSignal.h"
 #include "godoctopus/components/proximity_sensor/ProximitySensor.h"
 #include "godoctopus/components/beacon/BeaconConfig.h"
 #include "godoctopus/components/beacon/BeaconSlotOccupied.h"
@@ -236,6 +237,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	basic_components_support(ecs);
 	declare_explorator_component(ecs);
 	declare_prefab_type(ecs);
+	declare_proximity_custom_signal_component(ecs);
 	declare_proximity_sensor_component(ecs);
 	declare_beacon_config_component(ecs);
 	declare_beacon_slot_occupied_component(ecs);
@@ -250,6 +252,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	ecs.try_get_mut<PathFindingCache>()->declare_cache_update_system(ecs, _world.time_stats);
 
 	set_up_systems<DefaultStepContext<custom_variant> >(_world, step_context, 100);
+	declare_proximity_custom_signal_system(ecs, _world.position_context);
 	declare_proximity_sensor_system(ecs, _world.position_context);
 	declare_beacon_occupant_observers(ecs);
 	declare_beacon_spawn_ability(ecs, *this);
