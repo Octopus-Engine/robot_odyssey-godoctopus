@@ -51,6 +51,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ParticuleTypeResource>();
 	ClassDB::register_class<godot::ParticleOrchestrator>();
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
+	ClassDB::register_class<godot::LevelNode>();
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
 	ClassDB::register_class<godot::InfoNode>();
