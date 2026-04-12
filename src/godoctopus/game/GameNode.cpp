@@ -48,12 +48,31 @@ struct PrefabDeclarer {
 	}
 };
 
+/// @brief Checks that all prefabs defined in the editor are registered in Types.h to avoid
+/// silent bugs when a prefab is not registered and thus not properly initialized
+struct PrefabExistenceChecker {
+	std::string const &prefab_name;
+	bool found = false;
+
+	template<typename BotType>
+	void operator()() {
+		found |= (prefab_name == BotType::naming());
+	}
+
+	~PrefabExistenceChecker() {
+		if(!found) {
+			std::cerr<<"Warning: prefab "<<prefab_name<<" is not registered in Types.h"<<std::endl;
+		}
+	}
+};
+
 GameNode::~GameNode() {
 	stop();
 }
 
 static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
 
+	for_each_bot_type(PrefabExistenceChecker{unit_prefab->get_prefab_name().utf8().get_data(), false});
 	bool is_static = unit_prefab->get_is_static();
 	bool destroyable = unit_prefab->get_destroyable();
 	bool attack_enabled = unit_prefab->get_attack_enabled();

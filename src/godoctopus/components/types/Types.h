@@ -14,6 +14,7 @@ struct TallBot { static constexpr char const * const naming() { return "tallbot"
 struct TankyBot { static constexpr char const * const naming() { return "tankybot"; } };
 struct Tiny_eBot { static constexpr char const * const naming() { return "tiny_ebot"; } };
 struct HeavyfireBot { static constexpr char const * const naming() { return "heavyfire_bot"; } };
+struct SniperBot { static constexpr char const * const naming() { return "sniperbot"; } };
 
 struct PrefabType {
 	std::string name;
@@ -46,5 +47,6 @@ void for_each_bot_type(Callable&& callable) {
 		, TankyBot
 		, Tiny_eBot
 		, HeavyfireBot
+		, SniperBot
 	>(std::move(callable));
 }

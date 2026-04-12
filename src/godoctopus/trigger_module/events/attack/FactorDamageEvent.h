@@ -9,9 +9,8 @@ struct FactorDamageEvent
 	{
 		octopus::HitPoint * hp = target.try_get_mut<octopus::HitPoint>();
 		octopus::Attack const *atk = attacker.try_get<octopus::Attack>();
-		if(hp && atk)
-		{
-			hp->qty -= atk->cst.damage * (percent + percent_upgrade * level)/100;
+		if(hp && atk) {
+			hp->qty -= atk->cst.damage * (percent + percent_upgrade * level)/octopus::Fixed(100);
 		}
 	}
 };
@@ -23,9 +22,8 @@ struct FactorDamageEventSpecialScaled
 	{
 		octopus::HitPoint * hp = target.try_get_mut<octopus::HitPoint>();
 		octopus::Attack const *atk = attacker.try_get<octopus::Attack>();
-		if(hp && atk)
-		{
-			hp->qty -= atk->cst.damage * (percent + percent_upgrade * get_special_value(attacker))/100;
+		if(hp && atk) {
+			hp->qty -= atk->cst.damage * (percent + percent_upgrade * get_special_value(attacker))/octopus::Fixed(100);
 		}
 	}
 };

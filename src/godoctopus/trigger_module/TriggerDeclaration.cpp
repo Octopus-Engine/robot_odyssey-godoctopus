@@ -198,6 +198,7 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 	declare_trigger_buff<AoeHealConsumeRuneOnHit>(ecs);
 	declare_trigger_buff<AoeHealConsumeRuneOnHitTier2>(ecs);
 	declare_trigger_buff<AoeHealOnAttack>(ecs);
+	declare_trigger_buff<AoeDamageSpecial>(ecs);
 	declare_trigger_buff<AoeDamageConsumeRuneOnAttack>(ecs);
 	declare_trigger_buff<AoeDamageConsumeRuneOnAttackTier2>(ecs);
 	declare_trigger_buff<AoeRuneToEnnemiesOnHit>(ecs);
