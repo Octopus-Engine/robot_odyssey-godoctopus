@@ -14,7 +14,10 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 
 	ecs.system<ProximityCustomSignal, octopus::Position const>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.each([&pos_context, custom_signal_entity](flecs::entity e, ProximityCustomSignal &checker, octopus::Position const &pos) {
+		.each([&pos_context, custom_signal_entity, ecs](flecs::entity e, ProximityCustomSignal &checker, octopus::Position const &pos) {
+			if (checker.refresh_tick > 0 && octopus::get_time_stamp(ecs) % checker.refresh_tick != 0) {
+				return;
+			}
 			if (checker.tree_idx < 0 || size_t(checker.tree_idx) >= pos_context.trees.size()) {
 				print_line("ProximityCustomSignal has invalid tree_idx!");
 				e.remove<ProximityCustomSignal>();

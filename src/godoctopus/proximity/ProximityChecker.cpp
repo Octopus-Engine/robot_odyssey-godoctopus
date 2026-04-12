@@ -40,7 +40,10 @@ void ProximityChecker::setup() {
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
-		.run([this, &pos_context](flecs::iter&) {
+		.run([this, ecs, &pos_context](flecs::iter&) {
+			if (octopus::get_time_stamp(ecs) % 32 != 0) {
+				return;
+			}
 			std::lock_guard<std::mutex> lock(_mutex);
 			checkers.for_each([&pos_context] (Checker &checker) {
 				std::function<bool(int32_t, flecs::entity)> func_l = [&checker, &pos_context](int32_t idx_l, flecs::entity e) -> bool {
