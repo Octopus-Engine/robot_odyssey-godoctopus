@@ -48,12 +48,10 @@ void declare_prefab(flecs::world &ecs) {
 	ecs.prefab("basic_resource")
 		.auto_override<octopus::ResourceStock>()
 		.auto_override<octopus::Caster>()
-		.set<ProximityCustomSignal>(ProximityCustomSignal {
-			octopus::Fixed(20),
-			"basic_resource_proximity",
-			32,
-			2
-		})
+		.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
+	ecs.prefab("advanced_resource")
+		.auto_override<octopus::ResourceStock>()
+		.auto_override<octopus::Caster>()
 		.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
 
 	// Add casting ability for armorbot
