@@ -61,6 +61,7 @@ void InfoNode::setup() {
 					_stats_info->set_special(0.);
 					_stats_info->set_affinity(0.);
 					_stats_info->set_proximity_sensor_activated(false);
+					_stats_info->set_empty(false);
 
 					// query stats
 					auto prefab_type = query_entity.try_get<PrefabType>();
@@ -94,6 +95,12 @@ void InfoNode::setup() {
 					// clear query
 					_stats_info = Ref<StatsInfo>();
 					_query_entities.clear();
+				} else if (_stats_info.is_valid()) {
+					// if we have a stats info but no valid entity, clear it and mark as ready to update display
+					_stats_info->set_empty(true);
+					_stats_info->set_ready(true);
+					this->call_deferred("emit_signal", "is_ready");
+					_stats_info = Ref<StatsInfo>();
 				}
 			}
 
