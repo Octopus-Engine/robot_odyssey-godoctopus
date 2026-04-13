@@ -198,6 +198,7 @@ void NotWaveFunctionCollapseNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_value_at", "x", "y", "value"), &NotWaveFunctionCollapseNode::remove_value_at);
 	ClassDB::bind_method(D_METHOD("get_row", "row"), &NotWaveFunctionCollapseNode::get_row);
 	ClassDB::bind_method(D_METHOD("add_value_oriented_variable_picker", "count", "value"), &NotWaveFunctionCollapseNode::add_value_oriented_variable_picker);
+	ClassDB::bind_method(D_METHOD("interrupt"), &NotWaveFunctionCollapseNode::interrupt);
 	ClassDB::bind_method(D_METHOD("has_pickers"), &NotWaveFunctionCollapseNode::has_pickers);
 
 	ClassDB::bind_method(D_METHOD("run"), &NotWaveFunctionCollapseNode::run);

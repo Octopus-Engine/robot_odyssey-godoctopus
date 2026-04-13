@@ -26,6 +26,12 @@ public:
 	void add_lower_cardinality(TypedArray<int> vars, int value, int lb);
 	void add_upper_cardinality(TypedArray<int> vars, int value, int lb);
 	void add_compatibility_constraint(int variable, int value, int affected_var, int affected_value);
+	void interrupt() {
+		_interrupted = true;
+		if (_thread.joinable()) {
+			_thread.join();
+		}
+	}
 
 	TypedArray<int> get_row(int row);
 
