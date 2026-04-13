@@ -91,6 +91,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<VatLibraryHandle>({unit_prefab->get_track_idx()})
+		.auto_override<octopus::Destroyable>()
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
 	;
@@ -108,7 +109,6 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	if (destroyable) {
 		prefab.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
 			.set_auto_override<octopus::HitPointMax>({unit_prefab->get_hitpoint()})
-			.auto_override<octopus::Destroyable>()
 			.set_auto_override<HealthBar>({
 				unit_prefab->get_health_bar_offset_y(),
 				unit_prefab->get_health_bar_width()});
@@ -197,6 +197,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 	}
 
 	if (unit_prefab->get_has_proximity_sensor()) {
+		// Component to enable BeaconSpawnAbility
 		ProximitySensor sensor;
 		sensor.range = octopus::Fixed(unit_prefab->get_proximity_sensor_range_x10()) / 10;
 		sensor.refresh_rate = unit_prefab->get_proximity_sensor_refresh_rate();
@@ -219,7 +220,17 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		producer.resource_name = unit_prefab->get_producer_resource_name().utf8().get_data();
 		producer.amount = octopus::Fixed(unit_prefab->get_producer_resource_amount_x10()) / 10;
 		producer.interval = unit_prefab->get_producer_resource_interval();
-		prefab.set<ResourceProducer>(producer);
+		prefab.set_auto_override<ResourceProducer>(producer);
+	}
+
+	if (unit_prefab->get_has_proximity_custom_signal()) {
+		// Component to trigger signal
+		ProximityCustomSignal custom_signal;
+		custom_signal.range = octopus::Fixed(unit_prefab->get_proximity_custom_signal_range_x10()) / 10;
+		custom_signal.refresh_tick = unit_prefab->get_proximity_custom_signal_refresh_rate();
+		custom_signal.payload = std::string(unit_prefab->get_prefab_name().utf8().get_data()) + "_proximity_triggered";
+		custom_signal.dies_on_trigger = unit_prefab->get_proximity_custom_signal_dies_on_trigger();
+		prefab.set_auto_override<ProximityCustomSignal>(custom_signal);
 	}
 }
 

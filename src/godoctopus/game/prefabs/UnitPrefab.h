@@ -107,6 +107,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_sensor_range_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_sensor_refresh_rate);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_sensor_check_allies);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_sensor_dies_on_trigger);
 		// Beacon
 		ClassDB::add_property_group("UnitPrefab", "Beacon");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, has_beacon_ability);
@@ -116,6 +117,13 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, producer_resource_name);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, producer_resource_amount_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, producer_resource_interval);
+		// Proximity Custom Signal
+		ClassDB::add_property_group("UnitPrefab", "ProximityCustomSignal");
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, has_proximity_custom_signal);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_custom_signal_range_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_custom_signal_refresh_rate);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_custom_signal_check_allies);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_custom_signal_dies_on_trigger);
 	}
 
 	// General
@@ -186,6 +194,7 @@ public:
 	SET_GET_PARAM_DEF(int, proximity_sensor_range_x10, 50);
 	SET_GET_PARAM_DEF(int, proximity_sensor_refresh_rate, 50);
 	SET_GET_PARAM_DEF(bool, proximity_sensor_check_allies, true);
+	SET_GET_PARAM_DEF(bool, proximity_sensor_dies_on_trigger, false);
 	// Beacon
 	SET_GET_PARAM_DEF(bool, has_beacon_ability, false);
 	SET_GET_PARAM(String, beacon_producer_prefab);
@@ -193,6 +202,12 @@ public:
 	SET_GET_PARAM(String, producer_resource_name);
 	SET_GET_PARAM_DEF(int, producer_resource_amount_x10, 10);
 	SET_GET_PARAM_DEF(int, producer_resource_interval, 50);
+	// Proximity Custom Signal
+	SET_GET_PARAM_DEF(bool, has_proximity_custom_signal, false);
+	SET_GET_PARAM_DEF(int, proximity_custom_signal_range_x10, 50);
+	SET_GET_PARAM_DEF(int, proximity_custom_signal_refresh_rate, 50);
+	SET_GET_PARAM_DEF(bool, proximity_custom_signal_check_allies, true);
+	SET_GET_PARAM_DEF(bool, proximity_custom_signal_dies_on_trigger, false);
 };
 
 }
