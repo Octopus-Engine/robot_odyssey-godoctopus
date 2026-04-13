@@ -14,7 +14,8 @@ struct ProximityCustomSignal {
 	octopus::Fixed range = octopus::Fixed(10);
 	std::string payload = "proximity_triggered";
 	uint16_t refresh_tick = 32;
-	uint8_t tree_idx = 0;
+	bool check_allies = false;
+	bool dies_on_trigger = false;
 };
 
 inline void declare_proximity_custom_signal_component(flecs::world &ecs)
@@ -23,7 +24,8 @@ inline void declare_proximity_custom_signal_component(flecs::world &ecs)
 		.member("range", &ProximityCustomSignal::range)
 		.member("payload", &ProximityCustomSignal::payload)
 		.member("refresh_tick", &ProximityCustomSignal::refresh_tick)
-		.member("tree_idx", &ProximityCustomSignal::tree_idx);
+		.member("check_allies", &ProximityCustomSignal::check_allies)
+		.member("dies_on_trigger", &ProximityCustomSignal::dies_on_trigger);
 }
 
 void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::PositionContext &pos_context);

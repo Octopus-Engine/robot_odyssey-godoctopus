@@ -18,18 +18,25 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 			if (checker.refresh_tick > 0 && octopus::get_time_stamp(ecs) % checker.refresh_tick != 0) {
 				return;
 			}
-			if (checker.tree_idx < 0 || size_t(checker.tree_idx) >= pos_context.trees.size()) {
-				print_line("ProximityCustomSignal has invalid tree_idx!");
-				e.remove<ProximityCustomSignal>();
-				return;
+			size_t tree_idx = 0;
+			size_t team_idx = 0;
+			octopus::Team const *team = e.try_get<octopus::Team>();
+			if (team && team->team < pos_context.trees_team_hp.size()) {
+				team_idx = team->team;
+			}
+			// With only two teams, the ally tree is the enemy tree of the other team.
+			if (checker.check_allies && team_idx != 0) {
+				tree_idx = pos_context.trees_team_hp[(1 + team_idx) % 2];
+			} else if (team_idx != 0) {
+				tree_idx = pos_context.trees_team_hp[team_idx];
 			}
 
 			bool found = false;
 			std::function<bool(int32_t, flecs::entity)> func_l = [&found, e](int32_t, flecs::entity other) -> bool {
 				found = other != e;
-				return false;
+				return !found;
 			};
-			tree_circle_query(pos_context.trees[checker.tree_idx], pos.pos, checker.range, func_l);
+			tree_circle_query(pos_context.trees[tree_idx], pos.pos, checker.range, func_l);
 
 			if (!found) {
 				return;
@@ -44,5 +51,10 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 			};
 			custom_signal_entity.emit<godot::CustomSignalEvent>(custom_signal_event);
 			e.remove<ProximityCustomSignal>();
+
+			// Destroy entity if needed
+			if (checker.dies_on_trigger) {
+				e.add<octopus::Destroyed>();
+			}
 		});
 }
