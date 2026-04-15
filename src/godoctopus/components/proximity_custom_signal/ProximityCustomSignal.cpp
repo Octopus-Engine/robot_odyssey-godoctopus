@@ -7,6 +7,7 @@
 #include "octopus/utils/aabb/aabb_tree.hh"
 
 #include "godoctopus/custom_signal/CustomSignalNode.h"
+#include "godoctopus/components/Static.h"
 
 void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::PositionContext &pos_context)
 {
@@ -33,6 +34,7 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 			bool found = false;
 			std::function<bool(int32_t, flecs::entity)> func_l = [&found, e](int32_t, flecs::entity other) -> bool {
 				found = other != e;
+				found &= !other.has<Static>();
 				return !found;
 			};
 			tree_circle_query(pos_context.trees[tree_idx], pos.pos, checker.range, func_l);

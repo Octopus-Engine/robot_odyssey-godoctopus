@@ -30,6 +30,7 @@
 #include "godoctopus/components/beacon/BeaconSlotOccupied.h"
 #include "godoctopus/components/beacon/BeaconOccupant.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
+#include "godoctopus/components/Static.h"
 #include "godoctopus/game/ability/BeaconSpawnAbility.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
@@ -118,6 +119,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		prefab.set_auto_override<octopus::Move>({unit_prefab->get_speed_x10()/10./TICK_RATE});
 	} else {
 		prefab.set_auto_override<octopus::Move>({0});
+		prefab.add<Static>();
 	}
 	if (unit_prefab->get_exploration()) {
 		prefab.set<Explorator>(Explorator{30});
