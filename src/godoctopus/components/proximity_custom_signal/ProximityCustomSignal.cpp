@@ -19,16 +19,15 @@ void declare_proximity_custom_signal_system(flecs::world &ecs, octopus::Position
 				return;
 			}
 			size_t tree_idx = 0;
-			size_t team_idx = 0;
 			octopus::Team const *team = e.try_get<octopus::Team>();
 			if (team && team->team < pos_context.trees_team_hp.size()) {
-				team_idx = team->team;
-			}
-			// With only two teams, the ally tree is the enemy tree of the other team.
-			if (checker.check_allies && team_idx != 0) {
-				tree_idx = pos_context.trees_team_hp[(1 + team_idx) % 2];
-			} else if (team_idx != 0) {
-				tree_idx = pos_context.trees_team_hp[team_idx];
+				size_t team_idx = team->team;
+				// With only two teams, the ally tree is the enemy tree of the other team.
+				if (checker.check_allies) {
+					tree_idx = pos_context.trees_team_hp[(1 + team_idx) % 2];
+				} else {
+					tree_idx = pos_context.trees_team_hp[team_idx];
+				}
 			}
 
 			bool found = false;

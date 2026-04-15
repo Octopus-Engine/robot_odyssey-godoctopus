@@ -230,6 +230,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		custom_signal.refresh_tick = unit_prefab->get_proximity_custom_signal_refresh_rate();
 		custom_signal.payload = std::string(unit_prefab->get_prefab_name().utf8().get_data()) + "_proximity_triggered";
 		custom_signal.dies_on_trigger = unit_prefab->get_proximity_custom_signal_dies_on_trigger();
+		custom_signal.check_allies = unit_prefab->get_proximity_custom_signal_check_allies();
 		prefab.set_auto_override<ProximityCustomSignal>(custom_signal);
 	}
 }
