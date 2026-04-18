@@ -322,15 +322,13 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	// load level
 	setup(meta_data, *this);
 
-	// set pointers
+	emit_signal("init_done");
 
 	// game loop
 	_init = true;
 	_over = false;
 	delete _loop_thread;
 	_loop_thread = new std::thread(&GameNode::loop, this);
-
-	emit_signal("init_done");
 }
 
 void GameNode::init_load(String file_name, Dictionary const &meta_data)
