@@ -8,36 +8,24 @@
 
 namespace godot {
 
+class InfoProxyNode;
+
 class EntityGroup : public Resource {
 	GDCLASS(EntityGroup, Resource)
 public:
-	static void _bind_methods() {
-		ClassDB::bind_method(D_METHOD("size"), &EntityGroup::size);
-		ClassDB::bind_method(D_METHOD("remove_dead_entities"), &EntityGroup::remove_dead_entities);
-		ClassDB::bind_method(D_METHOD("is_populated"), &EntityGroup::is_populated);
-		ClassDB::bind_method(D_METHOD("get_populated_count"), &EntityGroup::get_populated_count);
-		ClassDB::bind_method(D_METHOD("get_expected_population"), &EntityGroup::get_expected_population);
-		ClassDB::bind_method(D_METHOD("get_should_populate"), &EntityGroup::get_should_populate);
-	}
+	static void _bind_methods();
 
 	std::vector<flecs::entity> const & get_entities() const { return entities; }
 	std::vector<flecs::entity> & get_entities() { return entities; }
 
 	int size() const { return entities.size(); }
-	void remove_dead_entities() {
-		filter_group([](flecs::entity e) {
-			return !e.is_valid() || !e.is_alive() || !e.enabled();
-		});
-	}
 
-	// remove all entities that math to true to the filter
-	void filter_group(std::function<bool(flecs::entity)> filter) {
-		entities.erase(std::remove_if(entities.begin(), entities.end(),
-			[&filter](flecs::entity e) {
-				return filter(e);
-			}
-		), entities.end());
-	}
+	void remove_dead_entities(InfoProxyNode *proxy_node);
+
+	void filter_from_priority(InfoProxyNode *proxy_node, int player, int team);
+
+	// remove all entities that match to true to the filter
+	void filter_group(std::function<bool(flecs::entity)> filter);
 
 	void set_should_populate() {
 		should_populate = true;

@@ -28,6 +28,7 @@ class InfoProxyResource : public Resource {
 
 	SET_GET_PARAM_DEF(String, type, "");
 	SET_GET_PARAM_DEF(int, team, 0);
+	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(double, hp, 0);
 	SET_GET_PARAM_DEF(double, hp_max, 0);
 	SET_GET_PARAM_DEF(double, armor, 0);
@@ -38,6 +39,7 @@ class InfoProxyResource : public Resource {
 	SET_GET_PARAM_DEF(bool, proximity_sensor_activated, false);
 	SET_GET_PARAM_DEF(int, pickable_id, -1);
 	SET_GET_PARAM_DEF(bool, alive, true);
+	SET_GET_PARAM_DEF(bool, building, true);
 public:
 	static void _bind_methods() {
 		ADD_SIMPLE_PROP(InfoProxyResource, VECTOR2, position);
@@ -47,6 +49,7 @@ public:
 
 		ADD_SIMPLE_PROP(InfoProxyResource, STRING, type);
 		ADD_SIMPLE_PROP(InfoProxyResource, INT, team);
+		ADD_SIMPLE_PROP(InfoProxyResource, INT, player);
 		ADD_SIMPLE_PROP(InfoProxyResource, FLOAT, hp);
 		ADD_SIMPLE_PROP(InfoProxyResource, FLOAT, hp_max);
 		ADD_SIMPLE_PROP(InfoProxyResource, FLOAT, armor);
@@ -57,6 +60,7 @@ public:
 		ADD_SIMPLE_PROP(InfoProxyResource, BOOL, proximity_sensor_activated);
 		ADD_SIMPLE_PROP(InfoProxyResource, INT, pickable_id);
 		ADD_SIMPLE_PROP(InfoProxyResource, BOOL, alive);
+		ADD_SIMPLE_PROP(InfoProxyResource, BOOL, building);
 	}
 };
 
@@ -68,6 +72,7 @@ struct InfoProxyData {
 
 	SET_GET_PARAM(std::string, type);
 	SET_GET_PARAM_DEF(int, team, 0);
+	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(double, hp, 0);
 	SET_GET_PARAM_DEF(double, hp_max, 0);
 	SET_GET_PARAM_DEF(double, armor, 0);
@@ -78,6 +83,7 @@ struct InfoProxyData {
 	SET_GET_PARAM_DEF(bool, proximity_sensor_activated, false);
 	SET_GET_PARAM_DEF(int, pickable_id, -1);
 	SET_GET_PARAM_DEF(bool, alive, true);
+	SET_GET_PARAM_DEF(bool, building, true);
 
 public:
 	Ref<InfoProxyResource> duplicate() const {
@@ -89,6 +95,7 @@ public:
 
 		copy->set_type(get_type().c_str());
 		copy->set_team(get_team());
+		copy->set_player(get_player());
 		copy->set_hp(get_hp());
 		copy->set_hp_max(get_hp_max());
 		copy->set_armor(get_armor());
@@ -99,6 +106,7 @@ public:
 		copy->set_proximity_sensor_activated(get_proximity_sensor_activated());
 		copy->set_pickable_id(get_pickable_id());
 		copy->set_alive(get_alive());
+		copy->set_building(get_building());
 		return copy;
 	}
 };

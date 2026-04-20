@@ -205,6 +205,7 @@ godoctopus2_sources = [
     "./src/godoctopus/components/proximity_custom_signal/ProximityCustomSignal.cpp",
     "./src/godoctopus/components/proximity_sensor/ProximitySensor.cpp",
     "./src/godoctopus/components/beacon/BeaconOccupant.cpp",
+    "./src/godoctopus/entity_group/EntityGroup.cpp",
     "./src/godoctopus/entity_group/SelectionGroup.cpp",
     "./src/godoctopus/game/GameNode.cpp",
     "./src/godoctopus/game/ability/ArmorbotBuff.cpp",

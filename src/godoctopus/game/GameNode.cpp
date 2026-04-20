@@ -21,6 +21,7 @@
 #include "godoctopus/components/Explorator.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
+#include "godoctopus/components/building/Building.h"
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/components/special/Special.h"
@@ -96,6 +97,10 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
 	;
+
+	if (unit_prefab->get_is_static()) {
+		prefab.add<Building>();
+	}
 
 	if (attack_enabled) {
 		prefab

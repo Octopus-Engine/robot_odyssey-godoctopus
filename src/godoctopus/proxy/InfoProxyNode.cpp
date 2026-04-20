@@ -3,6 +3,8 @@
 #include "godoctopus/components/proximity_sensor/ProximitySensor.h"
 #include "godoctopus/components/special/Special.h"
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/components/building/Building.h"
+#include "godoctopus/pickable/Pickable.h"
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
@@ -11,7 +13,7 @@
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
-#include "godoctopus/pickable/Pickable.h"
+#include "octopus/world/player/PlayerInfo.hh"
 
 namespace godot {
 
@@ -104,8 +106,8 @@ void InfoProxyNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	// Create Position, Velocity query that matches empty archetypes.
-	flecs::query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*> update_query =
-		ecs.query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*>();
+	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*> update_query =
+		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -121,6 +123,7 @@ void InfoProxyNode::setup() {
 			update_query.each([this](flecs::entity e,
 				Position &pos,
 				PrefabType *prefab_type,
+				PlayerAppartenance *player_appartenance,
 				Team *team,
 				HitPoint *hp,
 				HitPointMax *hp_max,
@@ -144,8 +147,10 @@ void InfoProxyNode::setup() {
 					infos_data.set_target(move_cmd->target);
 				}
 
+				infos_data.set_building(e.has<Building>());
 				if (prefab_type) { infos_data.set_type(prefab_type->name.c_str()); }
 				if (team) { infos_data.set_team(team->team); }
+				if (player_appartenance) { infos_data.set_player(player_appartenance->idx); }
 				if (hp) { infos_data.set_hp(hp->qty.to_double()); }
 				if (hp_max) { infos_data.set_hp_max(hp_max->qty.to_double()); }
 				if (armor) { infos_data.set_armor(armor->qty.to_double()); }
