@@ -79,8 +79,8 @@ TypedArray<bool> PickerNode::index_array_from_texture(Rect2 const &rect_p) const
 		all_added_l.resize(entities.size());
 		all_added_l.fill(false);
 	}
-	for(int32_t x = rect_l.get_position().x ; x <= rect_l.get_position().x + rect_l.get_size().x ; ++ x) {
-		for(int32_t y = rect_l.get_position().y ; y <= rect_l.get_position().y + rect_l.get_size().y ; ++ y) {
+	for(int32_t x = rect_l.get_position().x ; x < rect_l.get_position().x + rect_l.get_size().x ; ++ x) {
+		for(int32_t y = rect_l.get_position().y ; y < rect_l.get_position().y + rect_l.get_size().y ; ++ y) {
 			Color color = safe_color(x, y, image_l);
 			int idx_l = idx_from_color(color);
 			if(idx_l >= 0) {
@@ -201,8 +201,8 @@ Ref<EntityGroup> PickerNode::single_selection_from_texture(Rect2 const &rect_p) 
 	int best_idx = -1;
 	int64_t best_dist2 = 0;
 
-	for (int32_t x = rect_l.get_position().x; x <= rect_l.get_position().x + rect_l.get_size().x; ++x) {
-		for (int32_t y = rect_l.get_position().y; y <= rect_l.get_position().y + rect_l.get_size().y; ++y) {
+	for (int32_t x = rect_l.get_position().x; x < rect_l.get_position().x + rect_l.get_size().x; ++x) {
+		for (int32_t y = rect_l.get_position().y; y < rect_l.get_position().y + rect_l.get_size().y; ++y) {
 			const int idx_l = idx_from_color(safe_color(x, y, image_l));
 			if (idx_l < 0) {
 				continue;
