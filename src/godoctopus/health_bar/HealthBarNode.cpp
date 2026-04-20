@@ -95,10 +95,10 @@ void HealthBarNode::setup() {
 	ecs.system<octopus::Position const, octopus::HitPoint const, octopus::HitPointMax const, HealthBar>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.each([this](flecs::entity e, octopus::Position const &pos, octopus::HitPoint const &hp, octopus::HitPointMax const &hp_max, HealthBar &hp_bar) {
+			std::lock_guard<std::mutex> lock(this->mutex);
 			if(hp_bar.idx_bar < 0) {
-				hp_bar.idx_bar = this->add_health_bar();
+				hp_bar.idx_bar = bars.new_instance(HealthBarData{}).handle();
 			}
-			std	::lock_guard<std::mutex> lock(this->mutex);
 			// sync
 			HealthBarData &hp_data = bars[hp_bar.idx_bar];
 			hp_data.pos = WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), hp_bar.offset, real_t(octopus::to_double(pos.pos.y)));
