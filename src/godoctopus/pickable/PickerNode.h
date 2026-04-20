@@ -12,26 +12,24 @@
 
 namespace godot {
 
+class InfoProxyNode;
+
 class PickerNode : public Node {
 	GDCLASS(PickerNode, Node)
 
+	SET_GET_NODE_PATH(InfoProxyNode, proxy_node);
 	SET_GET_PARAM(Ref<ViewportTexture>, texture);
 public:
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
-	static void _bind_methods() {
-		ADD_OBJECT_PROP(PickerNode, ViewportTexture, texture);
-
-		ClassDB::bind_method(D_METHOD("index_array_from_texture", "rect"), &PickerNode::index_array_from_texture);
-		ClassDB::bind_method(D_METHOD("group_from_texture", "rect"), &PickerNode::group_from_texture);
-		ClassDB::bind_method(D_METHOD("single_selection_from_texture", "rect"), &PickerNode::single_selection_from_texture);
-	}
+	static void _bind_methods();
 	// All nodes
-	void init_nodes() {}
+	void init_nodes();
 
 	TypedArray<bool> index_array_from_texture(Rect2 const &rect_p) const;
 	Ref<EntityGroup> group_from_texture(Rect2 const &rect_p) const;
+	Ref<EntityGroup> group_from_texture_and_world(Rect2 const &rect_p, TypedArray<Vector2> const &world_rect_p) const;
 	Ref<EntityGroup> single_selection_from_texture(Rect2 const &rect_p) const;
 
 	int add_entity(flecs::entity e);

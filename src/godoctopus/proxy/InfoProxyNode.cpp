@@ -11,7 +11,7 @@
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
-#include "octopus/utils/aabb/aabb_tree.hh"
+#include "godoctopus/pickable/Pickable.h"
 
 namespace godot {
 
@@ -104,8 +104,8 @@ void InfoProxyNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	// Create Position, Velocity query that matches empty archetypes.
-	flecs::query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*> update_query =
-		ecs.query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*>();
+	flecs::query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*> update_query =
+		ecs.query<Position, PrefabType*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -129,12 +129,12 @@ void InfoProxyNode::setup() {
 				Special *spec,
 				ProximitySensor *proximity_sensor,
 				MoveCommand *move_cmd,
-				AttackCommand *atk_cmd)
+				AttackCommand *atk_cmd,
+				PickableSetUp *pickable)
 			{
 				InfoProxyData &infos_data = _proxy_map[e.id()];
 
 				infos_data.set_position(pos.pos);
-
 				infos_data.set_has_attack_target(atk_cmd);
 				infos_data.set_has_move_target(move_cmd);
 				if (atk_cmd) {
@@ -159,6 +159,11 @@ void InfoProxyNode::setup() {
 				}
 				if (proximity_sensor) {
 					infos_data.set_proximity_sensor_activated(proximity_sensor->activated);
+				}
+				if (pickable) {
+					infos_data.set_pickable_id(pickable->id);
+				} else {
+					infos_data.set_pickable_id(-1);
 				}
 				infos_data.set_alive(e.is_alive() && e.enabled());
 			});
