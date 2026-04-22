@@ -24,29 +24,34 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 	virtual octopus::UpgradeRequirement get_requirements() const { return {}; }
 	virtual std::unordered_map<std::string, octopus::Fixed> resource_consumption() const { return {}; }
 
-	virtual std::string is_castable(flecs::entity caster, flecs::world const &) const override {
-		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();
-		if (!sensor || !sensor->activated) {
-			return "ALLY_PROXIMITY_SENSOR_NOT_ACTIVATED";
-		}
+	// Allow subclasses to provide a default prefab name when BeaconConfig is unavailable.
+	// Returns empty string by default (no fallback). Subclasses can override to provide variant-specific defaults.
+	virtual std::string get_default_prefab_name() const {
+		return "";
+	}
+
+	// Allow subclasses to add custom castability checks.
+	// Return non-empty string to indicate an error, empty string if check passes.
+	virtual std::string get_additional_castability_errors(flecs::entity, flecs::world const &) const {
+		return "";
+	}
+
+	virtual std::string is_castable(flecs::entity caster, flecs::world const &ecs) const override {
 		BeaconSlotOccupied const *slot = caster.try_get<BeaconSlotOccupied>();
 		if (slot && slot->occupied) {
 			return "BEACON_SLOT_OCCUPIED";
 		}
-		return "";
+
+		return get_additional_castability_errors(caster, ecs);
 	}
 
 	virtual void cast(flecs::entity caster, octopus::Vector, flecs::entity, flecs::world const &ecs, custom_step_manager &) const {
 		octopus::Logger::getDebug() <<"Beacon spawn :: Entering"<<std::endl;
-		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();
-		if (!sensor || !sensor->activated) {
-			return;
-		}
 
 		BeaconConfig const *config = caster.try_get<BeaconConfig>();
-		if (!config) {
-			return;
-		}
+		std::string prefab_name = (config && !config->producer_prefab_name.empty())
+			? config->producer_prefab_name
+			: get_default_prefab_name();
 
 		octopus::Position const *pos = caster.try_get<octopus::Position>();
 		if (!pos) {
@@ -60,17 +65,16 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 		uint16_t player_team = team ? team->team : 0;
 
 		octopus::Position spawn_pos = *pos;
-		std::string producer_prefab_name = config->producer_prefab_name;
 
 		octopus::EntityCreationStep step;
-		step.set_up_function = [spawn_pos, player_idx, player_team, producer_prefab_name, caster](flecs::entity new_ent, flecs::world const &world_p) {
+		step.set_up_function = [spawn_pos, player_idx, player_team, prefab_name, caster](flecs::entity new_ent, flecs::world const &world_p) {
 			auto e = new_ent
 				.set<octopus::Position>(spawn_pos)
 				.set<octopus::Team>({player_team})
 				.set<octopus::PlayerAppartenance>({player_idx})
 				.set<BeaconOccupant>({caster});
-			if (!producer_prefab_name.empty()) {
-				e.is_a(world_p.prefab(producer_prefab_name.c_str()));
+			if (!prefab_name.empty()) {
+				e.is_a(world_p.prefab(prefab_name.c_str()));
 			}
 		};
 

@@ -32,7 +32,7 @@
 #include "godoctopus/components/beacon/BeaconOccupant.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
 #include "godoctopus/components/Static.h"
-#include "godoctopus/game/ability/BeaconSpawnAbility.h"
+#include "godoctopus/game/ability/ProximityBeaconSpawnAbility.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
@@ -293,7 +293,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_proximity_custom_signal_system(ecs, _world.position_context);
 	declare_proximity_sensor_system(ecs, _world.position_context);
 	declare_beacon_occupant_observers(ecs);
-	declare_beacon_spawn_ability(ecs, *this);
+	declare_proximity_beacon_ability(ecs, *this);
 
 	if (_vat_library) {
 		declare_vat_library_systems(ecs, _vat_library);

@@ -17,7 +17,7 @@
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/game/ability/ArmorbotBuff.h"
-#include "godoctopus/game/ability/BeaconSpawnAbility.h"
+#include "godoctopus/game/ability/ProximityBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/EarbotSteam.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
@@ -48,11 +48,11 @@ void declare_prefab(flecs::world &ecs) {
 	ecs.prefab("basic_resource")
 		.auto_override<octopus::ResourceStock>()
 		.auto_override<octopus::Caster>()
-		.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
+		.add<octopus::Caster>(ecs.component(ProximityBeaconSpawnAbility::NAME().c_str()));
 	ecs.prefab("advanced_resource")
 		.auto_override<octopus::ResourceStock>()
 		.auto_override<octopus::Caster>()
-		.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
+		.add<octopus::Caster>(ecs.component(ProximityBeaconSpawnAbility::NAME().c_str()));
 
 	// Add casting ability for armorbot
 	ecs.prefab("armorbot")
