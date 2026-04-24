@@ -68,12 +68,12 @@ struct CircularSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 
 		// Calculate spawn positions in a circle
 		// angle_step = 2π / count, where we approximate 2π as a Fixed value
-		// For Fixed arithmetic: 2π ≈ 6.283185 * 1000 / 1000
-		const octopus::Fixed two_pi = octopus::Fixed(6283185, 1000000); // 2π as fixed point
+		// For Fixed arithmetic: 2π ≈ 6.283185 * 10000 / 10000
+		const octopus::Fixed two_pi = octopus::Fixed(62832, true); // 2π as fixed point
 
 		for (uint32_t i = 0; i < count; ++i) {
-			// Calculate angle for this spawn point: 2π * i / count
-			octopus::Fixed angle = two_pi * octopus::Fixed(i) / octopus::Fixed(count);
+			// Calculate angle for this spawn point: π / count + 2π * i / count
+			octopus::Fixed angle = two_pi / (2 * octopus::Fixed(count)) + two_pi * octopus::Fixed(i) / octopus::Fixed(count);
 
 			// Convert to double for trigonometry (convert back to Fixed after)
 			double angle_double = angle.to_double();

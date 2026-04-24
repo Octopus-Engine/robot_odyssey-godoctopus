@@ -47,7 +47,7 @@ void ActionNode::setup() {
 					double x = spawn_action.position.x;
 					double y = spawn_action.position.y;
 
-					int ray = 1;
+					int ray = number == 1?0:1;
 					int start_circle = 0;
 					int cur_circle = 3;
 					for(int i = 0 ; i < number ; ++ i)
