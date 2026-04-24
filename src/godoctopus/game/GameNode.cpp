@@ -33,6 +33,8 @@
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
 #include "godoctopus/components/Static.h"
 #include "godoctopus/game/ability/ProximityBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/BasicResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/AdvancedResourceProducerBeaconSpawnAbility.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
@@ -222,6 +224,14 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) 
 			.add<octopus::Caster>(ecs.component(BeaconSpawnAbility::NAME().c_str()));
 	}
 
+	for (int i = 0 ; i < unit_prefab->get_beacon_producer_abilities().size(); ++ i) {
+		String ability = unit_prefab->get_beacon_producer_abilities()[i];
+		prefab.set_auto_override<BeaconSlotOccupied>({})
+			.auto_override<octopus::ResourceStock>()
+			.auto_override<octopus::Caster>()
+			.add<octopus::Caster>(ecs.component(ability.utf8().get_data()));
+	}
+
 	if (unit_prefab->get_producer_resource_name().length() > 0) {
 		ResourceProducer producer;
 		producer.resource_name = unit_prefab->get_producer_resource_name().utf8().get_data();
@@ -294,6 +304,8 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_proximity_sensor_system(ecs, _world.position_context);
 	declare_beacon_occupant_observers(ecs);
 	declare_proximity_beacon_ability(ecs, *this);
+	declare_basic_resource_producer_beacon_ability(ecs, *this);
+	declare_advanced_resource_producer_beacon_ability(ecs, *this);
 
 	if (_vat_library) {
 		declare_vat_library_systems(ecs, _vat_library);

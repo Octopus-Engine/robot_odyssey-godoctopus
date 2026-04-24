@@ -113,6 +113,7 @@ public:
 		ClassDB::add_property_group("UnitPrefab", "Beacon");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, has_beacon_ability);
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, beacon_producer_prefab);
+		ADD_ARRAY_OBJECT_PROP(UnitPrefab, String, beacon_producer_abilities);
 		// Resource producer properties
 		ClassDB::add_property_group("UnitPrefab", "ResourceProducer");
 		ADD_SIMPLE_PROP(UnitPrefab, STRING, producer_resource_name);
@@ -200,6 +201,7 @@ public:
 	// Beacon
 	SET_GET_PARAM_DEF(bool, has_beacon_ability, false);
 	SET_GET_PARAM(String, beacon_producer_prefab);
+	SET_GET_PARAM(TypedArray<String>, beacon_producer_abilities);
 	// Resource producer
 	SET_GET_PARAM(String, producer_resource_name);
 	SET_GET_PARAM_DEF(int, producer_resource_amount_x10, 10);

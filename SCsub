@@ -211,6 +211,8 @@ godoctopus2_sources = [
     "./src/godoctopus/game/ability/ArmorbotBuff.cpp",
     "./src/godoctopus/game/ability/BeaconSpawnAbility.cpp",
     "./src/godoctopus/game/ability/ProximityBeaconSpawnAbility.cpp",
+    "./src/godoctopus/game/ability/BasicResourceProducerBeaconSpawnAbility.cpp",
+    "./src/godoctopus/game/ability/AdvancedResourceProducerBeaconSpawnAbility.cpp",
     "./src/godoctopus/game/ability/EarbotSteam.cpp",
     "./src/godoctopus/game/levels/AttackMoveDemoNode.cpp",
     "./src/godoctopus/health_bar/HealthBarNode.cpp",
