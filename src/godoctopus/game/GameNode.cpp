@@ -32,9 +32,9 @@
 #include "godoctopus/components/beacon/BeaconOccupant.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
 #include "godoctopus/components/Static.h"
-#include "godoctopus/game/ability/ProximityBeaconSpawnAbility.h"
-#include "godoctopus/game/ability/BasicResourceProducerBeaconSpawnAbility.h"
-#include "godoctopus/game/ability/AdvancedResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/ProximityBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/BasicResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
