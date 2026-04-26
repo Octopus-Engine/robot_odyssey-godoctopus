@@ -47,9 +47,10 @@ public:
 	void remove_value_at(int x, int y, int value);
 
 	void add_value_oriented_variable_picker(int count, int value);
+	void add_value_oriented_variable_picker_for_subset(int count, int value, TypedArray<int> subset);
 	bool has_pickers();
 
-	void run();
+	void run(bool only_pickers);
 	bool advance();
 	float get_progress() const;
 	bool is_done() const;

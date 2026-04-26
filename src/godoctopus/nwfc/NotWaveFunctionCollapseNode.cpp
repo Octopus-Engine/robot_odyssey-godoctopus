@@ -120,21 +120,29 @@ void NotWaveFunctionCollapseNode::add_value_oriented_variable_picker(int count, 
 	pickers.push_back(std::make_unique<nwfc::ValueOrientedVariablePicker>(count, value));
 }
 
+void NotWaveFunctionCollapseNode::add_value_oriented_variable_picker_for_subset(int count, int value, TypedArray<int> subset) {
+	auto vars = convert(subset);
+	pickers.push_back(std::make_unique<nwfc::ValueOrientedVariablePicker>(count, value, vars));
+}
+
 bool NotWaveFunctionCollapseNode::has_pickers() {
 	return !pickers.empty();
 }
 
-void NotWaveFunctionCollapseNode::run() {
+void NotWaveFunctionCollapseNode::run(bool only_pickers) {
 	if (!state || _thread.joinable()) {
 		return;
 	}
 	_solving_done = false;
-	_thread = std::thread([this]() {
+	_thread = std::thread([this, only_pickers]() {
 		while (_interrupted.load() == false) {
 			bool done;
 			{
 				std::lock_guard<std::mutex> lock(_mutex);
 				done = advance();
+			}
+			if (only_pickers) {
+				done = !has_pickers();
 			}
 			if (done) {
 				_solving_done = true;
@@ -198,10 +206,11 @@ void NotWaveFunctionCollapseNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_value_at", "x", "y", "value"), &NotWaveFunctionCollapseNode::remove_value_at);
 	ClassDB::bind_method(D_METHOD("get_row", "row"), &NotWaveFunctionCollapseNode::get_row);
 	ClassDB::bind_method(D_METHOD("add_value_oriented_variable_picker", "count", "value"), &NotWaveFunctionCollapseNode::add_value_oriented_variable_picker);
+	ClassDB::bind_method(D_METHOD("add_value_oriented_variable_picker_for_subset", "count", "value", "subset"), &NotWaveFunctionCollapseNode::add_value_oriented_variable_picker_for_subset);
 	ClassDB::bind_method(D_METHOD("interrupt"), &NotWaveFunctionCollapseNode::interrupt);
 	ClassDB::bind_method(D_METHOD("has_pickers"), &NotWaveFunctionCollapseNode::has_pickers);
 
-	ClassDB::bind_method(D_METHOD("run"), &NotWaveFunctionCollapseNode::run);
+	ClassDB::bind_method(D_METHOD("run", "only_pickers"), &NotWaveFunctionCollapseNode::run);
 	ClassDB::bind_method(D_METHOD("advance"), &NotWaveFunctionCollapseNode::advance);
 	ClassDB::bind_method(D_METHOD("get_progress"), &NotWaveFunctionCollapseNode::get_progress);
 	ClassDB::bind_method(D_METHOD("is_done"), &NotWaveFunctionCollapseNode::is_done);
