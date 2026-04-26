@@ -17,6 +17,13 @@
 
 namespace godot {
 
+InfoProxyNodeDataLocker::InfoProxyNodeDataLocker(InfoProxyNode *node_p, std::mutex &mutex_p) :
+	proxy_map(node_p->_proxy_map), node(node_p), lock(mutex_p) {}
+
+bool InfoProxyNodeDataLocker::is_up_to_date(EntityGroup *group) const {
+	// Check if the group's timestamp is up to date
+	return group->get_timestamp() != -1 && node->_last_refresh_time > group->get_timestamp();
+}
 // Will be called by Godot when the class is registered
 // Use this to add properties to your class
 void InfoProxyNode::_bind_methods() {
@@ -116,6 +123,8 @@ void InfoProxyNode::setup() {
 				return;
 			}
 			std::lock_guard<std::mutex> lock(_mutex);
+
+			_last_refresh_time = octopus::get_time_stamp(ecs);
 
 			// reset proxy map to avoid keeping data of entities that are no longer valid
 			_proxy_map.clear();

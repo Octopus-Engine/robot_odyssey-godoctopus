@@ -19,6 +19,9 @@ void EntityGroup::remove_dead_entities(InfoProxyNode *proxy_node) {
 		return;
 	}
 	auto data_locker = proxy_node->get_data_locker();
+	if (!data_locker.is_up_to_date(this)) {
+		return;
+	}
 	filter_group([&data_locker](flecs::entity e) {
 		auto it = data_locker.proxy_map.find(e.id());
 		return  it == data_locker.proxy_map.end() || !it->second.get_alive();

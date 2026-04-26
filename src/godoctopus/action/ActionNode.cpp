@@ -81,7 +81,7 @@ void ActionNode::setup() {
 							;
 							// update group if available
 							if (spawn_action.group.is_valid()) {
-								spawn_action.group->increase_populated();
+								spawn_action.group->increase_populated(octopus::get_time_stamp(ecs));
 								spawn_action.group->get_entities().push_back(new_ent);
 							}
 						};

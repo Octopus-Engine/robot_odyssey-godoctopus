@@ -35,9 +35,14 @@ public:
 		expected_population += exp;
 	}
 
-	void increase_populated() {
+	void increase_populated(int64_t current_timestamp) {
 		++populated_count;
+		if (timestamp == -1) {
+			timestamp = current_timestamp;
+		}
 	}
+
+	int64_t get_timestamp() const { return timestamp; }
 
 	bool is_populated() const {
 		return !should_populate || populated_count == expected_population;
@@ -52,6 +57,8 @@ private:
 	uint32_t populated_count = 0;
 	uint32_t expected_population = 0;
 	bool should_populate = false;
+	// the timestamp at which the group was first populated
+	int64_t timestamp = -1;
 };
 
 }

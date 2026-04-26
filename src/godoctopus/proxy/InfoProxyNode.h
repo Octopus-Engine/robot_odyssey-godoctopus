@@ -16,11 +16,16 @@
 
 namespace godot {
 
+class InfoProxyNode;
+
 struct InfoProxyNodeDataLocker {
-	InfoProxyNodeDataLocker(std::unordered_map<flecs::entity_t, InfoProxyData> &proxy_map_p, std::mutex &mutex_p) : proxy_map(proxy_map_p), lock(mutex_p) {}
+	InfoProxyNodeDataLocker(InfoProxyNode *node_p, std::mutex &mutex_p);
 
 	std::unordered_map<flecs::entity_t, InfoProxyData> const &proxy_map;
+
+	bool is_up_to_date(EntityGroup *group) const;
 private:
+	InfoProxyNode *node;
 	std::lock_guard<std::mutex> lock;
 };
 
@@ -50,7 +55,7 @@ public:
 	/// @brief Get a locker for the proxy data. The locker will lock the mutex for the duration of its lifetime, and will provide access to the proxy data map.
 	/// @note This can be used to perform multiple queries on the proxy data without having to lock and unlock the mutex multiple times.
 	InfoProxyNodeDataLocker get_data_locker() {
-		return InfoProxyNodeDataLocker(_proxy_map, _mutex);
+		return InfoProxyNodeDataLocker(this, _mutex);
 	}
 
 protected:
@@ -59,6 +64,9 @@ private:
 	mutable std::mutex _mutex;
 
 	std::unordered_map<flecs::entity_t, InfoProxyData> _proxy_map;
+	int64_t _last_refresh_time = 0;
+
+	friend struct InfoProxyNodeDataLocker;
 };
 
 }
