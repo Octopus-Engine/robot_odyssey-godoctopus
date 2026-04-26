@@ -4,7 +4,6 @@
 
 void declare_circular_spawn_ability(flecs::world &ecs, godot::GameNode &)
 {
-	auto &ability_library = ecs.get_mut<octopus::AbilityTemplateLibrary<custom_step_manager>>();
 	// Note: CircularSpawnAbility is abstract, so no direct instantiation here
 	// Only concrete subclasses are registered
 
