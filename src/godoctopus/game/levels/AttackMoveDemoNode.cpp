@@ -113,7 +113,7 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	declare_basic_projectile_systems(ecs, _particules, _particule_orchestrator);
+	declare_basic_projectile_systems(ecs, _particules, _particule_orchestrator, game.get_world());
 	declare_attack_particule_systems(ecs, _vat_library, _particules);
 	declare_windup_projectile_systems(ecs, _vat_library, _particules);
 	declare_death_particle_systems(ecs, _particules);

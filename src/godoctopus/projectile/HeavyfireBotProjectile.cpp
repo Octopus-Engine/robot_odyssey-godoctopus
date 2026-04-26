@@ -14,7 +14,7 @@ void declare_heavyfire_bot_projectile_systems(flecs::world &ecs, octopus::Positi
 		.kind(ecs.entity(EndUpdatePhase))
 		.each([&manager, &ctx](flecs::entity e, ProjectileTrigger const& trigger, Projectile const &proj, HeavyfireBotProjectile const &heavy_proj, Team const &team) {
 			if (trigger.target) {
-				manager.get_last_layer().back().get<HitPointStep>().add_step(trigger.target, {-get_damage_after_armor(trigger.target, proj.damage) + heavy_proj.aoe_damage});
+				manager.get_last_layer().back().get<HitPointStep>().add_step(trigger.target, {-proj.damage + heavy_proj.aoe_damage});
 			}
 
 			std::function<bool(int32_t, flecs::entity)> func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {

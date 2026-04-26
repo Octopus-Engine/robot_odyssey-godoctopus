@@ -6,7 +6,8 @@
 
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/display/particule/ParticleOrchestrator.h"
-
+#include "octopus/world/WorldContext.hh"
+#include "octopus_types.h"
 
 struct CustomBasicProjectile {
 	struct Impact {
@@ -58,4 +59,4 @@ struct WindupEffect {
 
 void declare_windup_projectile_systems(flecs::world &ecs, godot::VatLibrary *library, godot::ParticuleSmartMMesh *particules);
 
-void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator);
+void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator, octopus::WorldContext<custom_step_manager> &world_context);

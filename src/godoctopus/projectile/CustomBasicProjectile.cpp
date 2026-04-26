@@ -88,7 +88,7 @@ void declare_attack_particule_systems(flecs::world &ecs, godot::VatLibrary *libr
 		});
 }
 
-void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator) {
+void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMMesh *particules, godot::ParticleOrchestrator *particule_orchestrator, octopus::WorldContext<custom_step_manager> &world_context) {
     // Register reflection for std::vector<float>
     ecs.component<std::vector<float>>()
         .opaque(std_vector_support<float>);
@@ -117,7 +117,7 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 	;
 
 	octopus::set_up_basic_projectile_basis(ecs);
-	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs);
+	octopus::set_up_basic_projectile_systems<CustomBasicProjectile>(ecs, world_context);
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const, octopus::Position const>()
 			.event(flecs::OnSet)
