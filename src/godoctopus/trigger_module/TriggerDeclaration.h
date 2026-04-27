@@ -39,8 +39,10 @@ struct LifestealRune { int32_t level = 0; };
 struct LifestealRuneCore { int32_t level = 0; };
 struct LifestealRuneSpecial { int32_t level = 0; };
 struct LifestealRuneConsumeRuneOnTarget { int32_t level = 0; };
-struct AoeDamageOnDeath { int32_t level = 0; };
-struct AoeHealOnDeath { int32_t level = 0; };
+struct AoeDamageBasedOnHitpointOnDeath { int32_t level = 0; };
+struct AoeHealBasedOnHitpointOnDeath { int32_t level = 0; };
+struct AoeDamageBasedOnDamageOnDeath { int32_t level = 0; };
+struct AoeHealBasedOnDamageOnDeath { int32_t level = 0; };
 struct AoeDamageConsumeRuneOnDeath { int32_t level = 0; };
 struct AoeHealConsumeRuneOnDeath { int32_t level = 0; };
 struct AddAoeRuneLoadToEnemiesOnDeath { int32_t level = 0; };
@@ -84,6 +86,16 @@ struct HitPointBuffRuneSpecial : SpecialScaledBuff<HitPointBuffRuneSpecial, Leve
 struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledArmorBuff<40, 2>, octopus::Armor> { int32_t level = 0; };
 struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
 struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
+
+// Periodic pulse runes - heal/damage allies/enemies every TICK_RATE based on max HP or damage
+struct AoePulseHealBasedOnHitpoint { int32_t level = 0; };
+struct AoePulseHealBasedOnHitpointTier2 { int32_t level = 0; };
+struct AoePulseHealBasedOnDamage { int32_t level = 0; };
+struct AoePulseHealBasedOnDamageTier2 { int32_t level = 0; };
+struct AoePulseDamageBasedOnHitpoint { int32_t level = 0; };
+struct AoePulseDamageBasedOnHitpointTier2 { int32_t level = 0; };
+struct AoePulseDamageBasedOnDamage { int32_t level = 0; };
+struct AoePulseDamageBasedOnDamageTier2 { int32_t level = 0; };
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx);
 

@@ -1,5 +1,8 @@
 #pragma once
 
+#include "octopus/components/basic/timestamp/TimeStamp.hh"
+#include "octopus_types.h"
+
 /// @brief Make an event occur when a trigger happens and a condition is met
 /// @tparam Trigger The trigger triggering the event
 /// @tparam Condition The condition to check before running the event
@@ -101,6 +104,39 @@ void declare_attack_area_trigger_target_condition_system(flecs::world &ecs, octo
 			if(pos && team && Condition::check(trigger.target))
 			{
 				Event::apply(e, pos->pos, team->team, ctx, rune.level);
+			}
+		});
+}
+
+/// @brief Tracking component for periodic trigger timing
+template<typename Rune>
+struct PulseRuneTriggerTime
+{
+	int64_t last_trigger_time = -TICK_RATE;  // Initialize to trigger on first check
+};
+
+/// @brief Periodic trigger system that applies an AoE effect every N ticks
+/// Requires the entity to have the Rune component, and will check conditions and apply events on intervals
+template<typename Rune, typename Condition, typename Event>
+void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionContext const &ctx, int64_t tick_interval = TICK_RATE)
+{
+	// Register timing tracking component
+	ecs.component<PulseRuneTriggerTime<Rune>>();
+
+	ecs.system<Rune, octopus::Position, octopus::Team, PulseRuneTriggerTime<Rune>>()
+		.each([&ctx, tick_interval](flecs::entity e, Rune const &rune, octopus::Position const &pos, octopus::Team const &team, PulseRuneTriggerTime<Rune> &trigger_time) {
+			if(!Condition::check(e))
+			{
+				return;
+			}
+
+			int64_t current_time = octopus::get_time_stamp(e.world());
+			
+			// Check if enough ticks have passed since last trigger
+			if(current_time - trigger_time.last_trigger_time >= tick_interval)
+			{
+				trigger_time.last_trigger_time = current_time;
+				Event::apply(e, pos.pos, team.team, ctx, rune.level);
 			}
 		});
 }

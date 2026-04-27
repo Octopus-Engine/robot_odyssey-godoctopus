@@ -124,112 +124,24 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 
 	declare_trigger_system<AddRuneLoadOnAttack, trigger_module::DamageDealt, AlwaysCondition, RuneEvent<DefaultRune, 1>>(ecs);
 	declare_attack_trigger_system<AddRuneLoadOnTargetOnAttack, trigger_module::DamageDealt, AlwaysCondition, TargetEvent<RuneEvent<DefaultRune, 1>>>(ecs);
-
-	declare_trigger_system<HealAndConsumeRuneLoadOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, HitpointEvent<5,1>>(ecs);
-	declare_trigger_system<HealAndConsumeRuneLoadOnAttack, trigger_module::Attack, RuneCondition<1, DefaultRune>, HitpointEvent<5,1>>(ecs);
-	declare_trigger_system<HealAndConsumeRuneLoadOnAttackTier2, trigger_module::Attack, RuneCondition<2, DefaultRune>, HitpointEvent<10,2>>(ecs);
-
-	declare_attack_trigger_system<BonusDamageConsumeRuneOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, FactorDamageEvent<20, 2>>(ecs);
-	declare_attack_trigger_system<BonusDamageRune, trigger_module::DamageDealt, AlwaysCondition, FactorDamageEventSpecialScaled<10, 1>>(ecs);
-	declare_attack_trigger_system<HasLowHpDoubleDamageRune, trigger_module::DamageDealt, HitPointUnderPercentCondition<25>, FactorDamageEvent<100, 25>>(ecs);
-	declare_attack_trigger_system<HasHighHpBonusDamageRune, trigger_module::DamageDealt, HitPointOverPercentCondition<75>, FactorDamageEvent<50, 25>>(ecs);
-
-	declare_attack_trigger_system<BonusDamageSelfDamage, trigger_module::DamageDealt, HitPointCostCondition<2>, FactorDamageEvent<150, 50>>(ecs);
-
-	declare_area_trigger_system<AoeDamageOnHit, trigger_module::DamageReceived, AlwaysCondition, DamageAreaEvent<1, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageOnHitLevel, trigger_module::DamageReceived, AlwaysCondition, DamageAreaEvent<1, 5, 1>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeDamageConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, DamageAreaEventSpecialScaled<2, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageConsumeRuneOnHitTier2, trigger_module::DamageReceived, RuneCondition<2, DefaultRune>, DamageAreaEvent<4, 5, 2>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeHealOnHit, trigger_module::DamageReceived, AlwaysCondition, HealAreaEvent<2, 5, 1>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeHealConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, HealAreaEventSpecialScaled<4, 5, 2>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealConsumeRuneOnHitTier2, trigger_module::DamageReceived, RuneCondition<2, DefaultRune>, HealAreaEvent<8, 5, 4>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeHealOnAttack, trigger_module::DamageDealt, AlwaysCondition, HealAreaEvent<8, 2, 4>>(ecs, ctx);
-
-	declare_attack_area_trigger_system<AoeDamageSpecial, trigger_module::DamageDealt, AlwaysCondition, DamageAreaEventSpecialScaled<10, 5, 1>>(ecs, ctx);
-	declare_attack_area_trigger_system<AoeDamageConsumeRuneOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, DamageAreaEvent<2, 5, 1>>(ecs, ctx);
-	declare_attack_area_trigger_system<AoeDamageConsumeRuneOnAttackTier2, trigger_module::DamageDealt, RuneCondition<2, DefaultRune>, DamageAreaEvent<4, 5, 2>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeRuneToEnnemiesOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneAreaEvent<DefaultRune, 1, 5, false>>(ecs, ctx);
-
-	declare_area_trigger_system<AoeRuneToAlliesOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneAreaEvent<DefaultRune, 1, 5, true>>(ecs, ctx);
-
 	declare_trigger_system<AddRuneLoadOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneEvent<DefaultRune, 1>>(ecs);
 
-	declare_attack_trigger_target_condition_system<TargetHasHighHpBonusDamageRune, trigger_module::DamageDealt, HitPointOverPercentCondition<75>, FactorDamageEvent<50, 10>>(ecs);
-	declare_attack_trigger_target_condition_system<TargetHasHighHpBonusDamageRuneTier2, trigger_module::DamageDealt, HitPointOverPercentCondition<75>, FactorDamageEvent<100, 20>>(ecs);
-	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, FactorDamageEvent<30, 3>>(ecs);
-	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttackTier2, trigger_module::DamageDealt, RuneCondition<2, DefaultRune>, FactorDamageEvent<200, 50>>(ecs);
-	declare_attack_trigger_target_condition_system<BonusDamageConsumeRuneOnTargetOnAttackTier3, trigger_module::DamageDealt, RuneCondition<3, DefaultRune>, FactorDamageEvent<300, 100>>(ecs);
-
-	declare_attack_area_trigger_target_condition_system<AoeDamageConsumeRuneOnTargetOnAttack, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, DamageAreaEvent<2, 5, 1>>(ecs, ctx);
-	declare_attack_area_trigger_target_condition_system<AoeDamageConsumeRuneOnTargetOnAttackTier2, trigger_module::DamageDealt, RuneCondition<2, DefaultRune>, DamageAreaEvent<4, 5, 2>>(ecs, ctx);
-
-	declare_attack_trigger_system<LifestealRuneCore, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled<5, 1> >(ecs);
 	declare_attack_trigger_system<LifestealRuneSpecial, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled<10, 2> >(ecs);
-	declare_attack_trigger_target_condition_system<LifestealRuneConsumeRuneOnTarget, trigger_module::DamageDealt, RuneCondition<1, DefaultRune>, LifestealEvent<20, 4> >(ecs);
 
-	declare_area_trigger_system<AoeDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled<19, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEvent<10, 5, 5>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageConsumeRuneOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEvent<8, 5, 8>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealConsumeRuneOnDeath, trigger_module::Death, RuneCondition<1, DefaultRune>, HealAreaEvent<15, 5, 10>>(ecs, ctx);
-	declare_area_trigger_system<AddAoeRuneLoadToEnemiesOnDeath, trigger_module::Death, RuneCondition<1, DefaultRune>, RuneAreaEvent<DefaultRune, 1, 5, false>>(ecs, ctx);
-	declare_area_trigger_system<AddAoeRuneLoadToAlliesOnDeath, trigger_module::Death, AlwaysCondition, RuneAreaEvent<DefaultRune, 1, 5, true>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled<19, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventDamageBasedSpecialScaled<19, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventHitpointBasedSpecialScaled<10, 5, 5>>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventDamageBasedSpecialScaled<10, 5, 5>>(ecs, ctx);
 
 	// declare all trigger buff systems
 	declare_trigger_buff<AddRuneLoadOnAttack>(ecs);
 	declare_trigger_buff<AddRuneLoadOnTargetOnAttack>(ecs);
-	declare_trigger_buff<HealAndConsumeRuneLoadOnHit>(ecs);
-	declare_trigger_buff<HealAndConsumeRuneLoadOnAttack>(ecs);
-	declare_trigger_buff<HealAndConsumeRuneLoadOnAttackTier2>(ecs);
-	declare_trigger_buff<BonusDamageConsumeRuneOnAttack>(ecs);
-	declare_trigger_buff<BonusDamageRune>(ecs);
-	declare_trigger_buff<HasLowHpDoubleDamageRune>(ecs);
-	declare_trigger_buff<HasHighHpBonusDamageRune>(ecs);
-	declare_trigger_buff<BonusDamageSelfDamage>(ecs);
-	declare_trigger_buff<AoeDamageOnHit>(ecs);
-	declare_trigger_buff<AoeDamageOnHitLevel>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnHit>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnHitTier2>(ecs);
-	declare_trigger_buff<AoeHealOnHit>(ecs);
-	declare_trigger_buff<AoeHealConsumeRuneOnHit>(ecs);
-	declare_trigger_buff<AoeHealConsumeRuneOnHitTier2>(ecs);
-	declare_trigger_buff<AoeHealOnAttack>(ecs);
-	declare_trigger_buff<AoeDamageSpecial>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnAttack>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnAttackTier2>(ecs);
-	declare_trigger_buff<AoeRuneToEnnemiesOnHit>(ecs);
-	declare_trigger_buff<AoeRuneToAlliesOnHit>(ecs);
 	declare_trigger_buff<AddRuneLoadOnHit>(ecs);
-	declare_trigger_buff<TargetHasHighHpBonusDamageRune>(ecs);
-	declare_trigger_buff<TargetHasHighHpBonusDamageRuneTier2>(ecs);
-	declare_trigger_buff<BonusDamageConsumeRuneOnTargetOnAttack>(ecs);
-	declare_trigger_buff<BonusDamageConsumeRuneOnTargetOnAttackTier2>(ecs);
-	declare_trigger_buff<BonusDamageConsumeRuneOnTargetOnAttackTier3>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnTargetOnAttack>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnTargetOnAttackTier2>(ecs);
-	declare_trigger_buff<LifestealRune>(ecs);
-	declare_trigger_buff<LifestealRuneConsumeRuneOnTarget>(ecs);
-	declare_trigger_buff<AoeDamageOnDeath>(ecs);
-	declare_trigger_buff<AoeHealOnDeath>(ecs);
-	declare_trigger_buff<AoeDamageConsumeRuneOnDeath>(ecs);
-	declare_trigger_buff<AoeHealConsumeRuneOnDeath>(ecs);
-	declare_trigger_buff<AddAoeRuneLoadToEnemiesOnDeath>(ecs);
-	declare_trigger_buff<AddAoeRuneLoadToAlliesOnDeath>(ecs);
-
-	// declare all classic buffs
-	// declare_classic_buff<HitPointBuffRune, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	// declare_classic_buff<HitPointBuffRuneTier2, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	// declare_classic_buff<HitPointBuffRuneTier3, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	// declare_classic_buff<DamageBuffRune, octopus::Attack>(ecs);
-	// declare_classic_buff<DamageBuffRuneTier2, octopus::Attack>(ecs);
-	// declare_classic_buff<DamageBuffRuneTier3, octopus::Attack>(ecs);
-	// declare_classic_buff<AttackSpeedBuffRune, octopus::Attack>(ecs);
-	// declare_classic_buff<AttackSpeedBuffRuneTier2, octopus::Attack>(ecs);
-	// declare_classic_buff<AttackSpeedBuffRuneTier3, octopus::Attack>(ecs);
+	declare_trigger_buff<LifestealRuneSpecial>(ecs);
+	declare_trigger_buff<AoeDamageBasedOnHitpointOnDeath>(ecs);
+	declare_trigger_buff<AoeDamageBasedOnDamageOnDeath>(ecs);
+	declare_trigger_buff<AoeHealBasedOnHitpointOnDeath>(ecs);
+	declare_trigger_buff<AoeHealBasedOnDamageOnDeath>(ecs);
 
 	// declare scaling buffs
 	// regulars
@@ -249,6 +161,29 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 	declare_updatable_buff<ArmorBuffRuneSpecial, octopus::Armor>(ecs);
 	declare_updatable_buff<DamageBuffRuneSpecial, octopus::Attack>(ecs);
 	declare_updatable_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
+
+	// declare periodic pulse rune buff systems
+	declare_trigger_buff<AoePulseHealBasedOnHitpoint>(ecs);
+	declare_trigger_buff<AoePulseHealBasedOnHitpointTier2>(ecs);
+	declare_trigger_buff<AoePulseHealBasedOnDamage>(ecs);
+	declare_trigger_buff<AoePulseHealBasedOnDamageTier2>(ecs);
+	declare_trigger_buff<AoePulseDamageBasedOnHitpoint>(ecs);
+	declare_trigger_buff<AoePulseDamageBasedOnHitpointTier2>(ecs);
+	declare_trigger_buff<AoePulseDamageBasedOnDamage>(ecs);
+	declare_trigger_buff<AoePulseDamageBasedOnDamageTier2>(ecs);
+
+	// declare periodic area trigger systems for pulse runes
+	// Tier 1: base stats (5% base, 3% per level)
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpoint, AlwaysCondition, HealAreaEventPeriodicHitpointBased<5, 3, 3>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamage, AlwaysCondition, HealAreaEventPeriodicDamageBased<5, 3, 3>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpoint, AlwaysCondition, DamageAreaEventPeriodicHitpointBased<5, 3, 3>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamage, AlwaysCondition, DamageAreaEventPeriodicDamageBased<5, 3, 3>>(ecs, ctx);
+
+	// Tier 2: enhanced stats (10% base, 5% per level)
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpointTier2, AlwaysCondition, HealAreaEventPeriodicHitpointBased<10, 3, 5>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamageTier2, AlwaysCondition, HealAreaEventPeriodicDamageBased<10, 3, 5>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpointTier2, AlwaysCondition, DamageAreaEventPeriodicHitpointBased<10, 3, 5>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamageTier2, AlwaysCondition, DamageAreaEventPeriodicDamageBased<10, 3, 5>>(ecs, ctx);
 }
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
@@ -472,11 +407,17 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	else if (rune_name == "LifestealRuneConsumeRuneOnTarget") {
 		mod_rune_type<false, octopus::BuffAddComponent<LifestealRuneConsumeRuneOnTarget>>(e, add, type, level);
 	}
-	else if (rune_name == "AoeDamageOnDeath") {
-		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageOnDeath>>(e, add, type, level);
+	else if (rune_name == "AoeDamageBasedOnHitpointOnDeath") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageBasedOnHitpointOnDeath>>(e, add, type, level);
 	}
-	else if (rune_name == "AoeHealOnDeath") {
-		mod_rune_type<false, octopus::BuffAddComponent<AoeHealOnDeath>>(e, add, type, level);
+	else if (rune_name == "AoeHealBasedOnHitpointOnDeath") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoeHealBasedOnHitpointOnDeath>>(e, add, type, level);
+	}
+	else if (rune_name == "AoeDamageBasedOnDamageOnDeath") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageBasedOnDamageOnDeath>>(e, add, type, level);
+	}
+	else if (rune_name == "AoeHealBasedOnDamageOnDeath") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoeHealBasedOnDamageOnDeath>>(e, add, type, level);
 	}
 	else if (rune_name == "AoeDamageConsumeRuneOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoeDamageConsumeRuneOnDeath>>(e, add, type, level);
@@ -489,6 +430,30 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "AddAoeRuneLoadToAlliesOnDeath") {
 		mod_rune_type<false, octopus::BuffAddComponent<AddAoeRuneLoadToAlliesOnDeath>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseHealBasedOnHitpoint") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseHealBasedOnHitpoint>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseHealBasedOnHitpointTier2") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseHealBasedOnHitpointTier2>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseHealBasedOnDamage") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseHealBasedOnDamage>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseHealBasedOnDamageTier2") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseHealBasedOnDamageTier2>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseDamageBasedOnHitpoint") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseDamageBasedOnHitpoint>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseDamageBasedOnHitpointTier2") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseDamageBasedOnHitpointTier2>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseDamageBasedOnDamage") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseDamageBasedOnDamage>>(e, add, type, level);
+	}
+	else if (rune_name == "AoePulseDamageBasedOnDamageTier2") {
+		mod_rune_type<false, octopus::BuffAddComponent<AoePulseDamageBasedOnDamageTier2>>(e, add, type, level);
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());
