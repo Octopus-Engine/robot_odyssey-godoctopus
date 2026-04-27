@@ -51,7 +51,7 @@ public:
 		ClassDB::bind_method(D_METHOD("set_bar_ratio", "idx", "ratio"), &HealthBarNode::set_bar_ratio);
 		ClassDB::bind_method(D_METHOD("setup"), &HealthBarNode::setup);
 
-		ClassDB::bind_method(D_METHOD("set_display_mode"), &HealthBarNode::set_display_mode);
+		ClassDB::bind_method(D_METHOD("set_display_mode", "display_mode"), &HealthBarNode::set_display_mode);
 		ClassDB::bind_method(D_METHOD("get_display_mode"), &HealthBarNode::get_display_mode);
 		ADD_PROPERTY(PropertyInfo(Variant::INT, "display_mode", PROPERTY_HINT_ENUM, "Always,Damaged,Never"), "set_display_mode", "get_display_mode");
 	}
