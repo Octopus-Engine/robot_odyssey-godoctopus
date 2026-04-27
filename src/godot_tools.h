@@ -5,6 +5,7 @@ public:\
 	void set_ref_##var_name(NodePath const &node_path) { _ref_##var_name = node_path; }\
 	NodePath get_ref_##var_name() const { return _ref_##var_name; }\
 \
+	void set_##var_name(type * val) { _##var_name = val; }\
 	type * get_##var_name() { return _##var_name; }\
 private:\
 	NodePath _ref_##var_name;\

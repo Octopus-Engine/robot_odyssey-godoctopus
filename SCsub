@@ -241,8 +241,11 @@ godoctopus2_sources = [
     "./src/vat/VatMultiMeshInstance.cpp",
 ]
 
+
+
 env_octopus2 = env_modules.Clone()
 
+env_octopus2.add_source_files(env.modules_sources, "src/testing/*.cpp")
 env_octopus2.add_source_files(env.modules_sources, flecs_sources)
 env_octopus2.add_source_files(env.modules_sources, octopus2_sources)
 env_octopus2.add_source_files(env.modules_sources, godoctopus2_sources)

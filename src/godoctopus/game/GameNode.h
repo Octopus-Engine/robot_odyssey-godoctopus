@@ -53,6 +53,7 @@ public:
 	void init_from_level(Dictionary const &meta_data);
 
 	void stop();
+	void tick() { ++_ticks; while(_ticks > 0) { std::this_thread::yield(); } }
 
 	// All nodes
 	void init_nodes();
