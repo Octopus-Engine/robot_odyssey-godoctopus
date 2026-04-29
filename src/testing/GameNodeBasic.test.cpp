@@ -137,14 +137,14 @@ void test_gamenode_units_take_damage() {
 void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	// Create a no-damage unit prefab for both teams
 	auto no_damage_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
-	no_damage_prefab->set_prefab_name("no_damage_unit");
+	no_damage_prefab->set_prefab_name("rambot");
 	no_damage_prefab->set_attack_enabled(false);
 	no_damage_prefab->set_hitpoint(100);  // Give sufficient HP for damage calculation
 	no_damage_prefab->set_range_x10(30);  // Set reasonable attack range
 
 	GameNodeTestContextWithCustomPrefab context(no_damage_prefab);
 
-	StringName unit_name = "no_damage_unit";
+	StringName unit_name = "rambot";
 
 	// Spawn a unit for team 1 at position (100, 100) - the target
 	context.action_node->spawn_units(unit_name, Vector2(100, 100), 1, 1);
@@ -157,8 +157,6 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 
 	// Get initial HP values
 	double team1_initial_hp = 0;
-	double team0_initial_hp = 0;
-	uint32_t team0_entity_id = 0;
 	{
 		auto locker = context.proxy_node->get_data_locker();
 		auto const &proxy_map = locker.proxy_map;
@@ -167,26 +165,22 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 		for (auto const &[entity_id, proxy_data] : proxy_map) {
 			if (proxy_data.get_team() == 1) {
 				team1_initial_hp = proxy_data.get_hp();
-			} else if (proxy_data.get_team() == 0) {
-				team0_initial_hp = proxy_data.get_hp();
-				team0_entity_id = entity_id;
 			}
 		}
 	}
 
-	// Apply AoePulseDamageBasedOnHitpoint rune level 1 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("no_damage_unit", "AoePulseDamageBasedOnHitpoint", 0, 1, true);
+	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
+	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, 0, true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow the AoE pulse to trigger
 	// The rune deals damage periodically, so we need enough ticks for it to trigger
-	for (int i = 0; i < 100; ++i) {
+	for (int i = 0; i < 10; ++i) {
 		context.game_node->tick();
 	}
 
 	// Get final HP values and verify the target took damage
 	double team1_final_hp = 0;
-	double team0_final_hp = 0;
 	{
 		auto locker = context.proxy_node->get_data_locker();
 		auto const &proxy_map = locker.proxy_map;
@@ -194,8 +188,6 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 		for (auto const &[entity_id, proxy_data] : proxy_map) {
 			if (proxy_data.get_team() == 1) {
 				team1_final_hp = proxy_data.get_hp();
-			} else if (proxy_data.get_team() == 0) {
-				team0_final_hp = proxy_data.get_hp();
 			}
 		}
 	}
@@ -203,6 +195,7 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	// Verify that team 1 (the target) took damage from the AoE effect
 	// even though team 0 (the source) has zero base damage
 	double team1_damage = team1_initial_hp - team1_final_hp;
-	CHECK(team1_damage > 0);
+	// Damage is 5% of 100 hp
+	CHECK(team1_damage == 5);
 }
 

@@ -123,19 +123,23 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 	// Register timing tracking component
 	ecs.component<PulseRuneTriggerTime<Rune>>();
 
-	ecs.system<Rune, octopus::Position, octopus::Team, PulseRuneTriggerTime<Rune>>()
-		.each([&ctx, tick_interval](flecs::entity e, Rune const &rune, octopus::Position const &pos, octopus::Team const &team, PulseRuneTriggerTime<Rune> &trigger_time) {
+	ecs.system<Rune, octopus::Position, octopus::Team, PulseRuneTriggerTime<Rune> *>()
+		.kind(ecs.entity(UpdatePhase))
+		.each([&ctx, tick_interval](flecs::entity e, Rune const &rune, octopus::Position const &pos, octopus::Team const &team, PulseRuneTriggerTime<Rune> *trigger_time) {
 			if(!Condition::check(e))
 			{
 				return;
 			}
 
 			int64_t current_time = octopus::get_time_stamp(e.world());
-			
+
 			// Check if enough ticks have passed since last trigger
-			if(current_time - trigger_time.last_trigger_time >= tick_interval)
-			{
-				trigger_time.last_trigger_time = current_time;
+			if(!trigger_time || current_time - trigger_time->last_trigger_time >= tick_interval) {
+				if(trigger_time) {
+					trigger_time->last_trigger_time = current_time;
+				} else {
+					e.set<PulseRuneTriggerTime<Rune>>({current_time});
+				}
 				Event::apply(e, pos.pos, team.team, ctx, rune.level);
 			}
 		});
