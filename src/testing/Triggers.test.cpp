@@ -217,3 +217,72 @@ void test_gamenode_trigger_damage_buff_area() {
 	// Unit C (at 112,120, ~14 units away, outside range 5) should not have the buff
 	CHECK(unit_c_damage == 0);
 }
+
+void test_gamenode_trigger_attack_speed_debuff_area() {
+	// Create a unit prefab for testing
+	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
+	prefab->set_prefab_name("rambot");
+	prefab->set_damage_x10(0);  // Set base damage to 0 for testing
+	prefab->set_hitpoint(1000);
+	prefab->set_windup_x10(1); // 0.1 seconds = 5 ticks with tickrate 50
+	prefab->set_reload_x10(1); // 0.1 seconds = 5 ticks with tickrate 50
+	prefab->set_range_x10(30);
+
+	GameNodeTestContextWithCustomPrefab context(prefab);
+
+	StringName unit_name = "rambot";
+
+	// Spawn unit A at (100, 100) - team 0, will apply the debuff rune and attack
+	context.action_node->spawn_units(unit_name, Vector2(101, 100), 0, 1);
+	context.game_node->tick();
+
+	// Spawn enemy E1 at (102, 100) - team 1, for unit A to attack (and be debuffed)
+	context.action_node->spawn_units(unit_name, Vector2(102, 100), 1, 1);
+	context.game_node->tick();
+
+	// Spawn enemy E2 at (111, 120) - team 1, outside debuff area range (~14 units from A)
+	context.action_node->spawn_units(unit_name, Vector2(111, 120), 1, 1);
+	context.game_node->tick();
+
+	// Spawn unit B at (103, 100) - team 0, ally within area range (~3 units from A)
+	context.action_node->spawn_units(unit_name, Vector2(103, 100), 0, 1);
+	context.game_node->tick();
+
+	// Apply ApplyAttackSpeedDebuffAreaOnRuneLoad rune to rambot (all instances)
+	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, 0, true);
+	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
+	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, 0, true);
+	context.game_node->tick();
+
+	// Tick the game multiple times to allow unit A to attack and reach rune load 3
+	for (int i = 0; i < 50; ++i) {
+		context.game_node->tick();
+	}
+
+	// Verify rune load accumulation
+	double unit_a_rune_load = 0;
+	int unit_count = 0;
+
+	auto locker = context.proxy_node->get_data_locker();
+	auto const &proxy_map = locker.proxy_map;
+
+	std::vector<double> enemy_reload_times;
+	std::vector<double> ally_reload_times;
+	for (auto const &[entity_id, proxy_data] : proxy_map) {
+		unit_count++;
+		if (proxy_data.get_team() == 0 && unit_a_rune_load == 0) {
+			unit_a_rune_load = proxy_data.get_rune_loads();
+		}
+		if (proxy_data.get_team() == 1) {
+			enemy_reload_times.push_back(proxy_data.get_reload_time());
+		} else {
+			ally_reload_times.push_back(proxy_data.get_reload_time());
+		}
+	}
+
+	CHECK(enemy_reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
+	CHECK(enemy_reload_times[1] == 0.7); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50
+	CHECK(ally_reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
+	CHECK(ally_reload_times[1] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
+
+}

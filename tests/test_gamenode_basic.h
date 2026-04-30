@@ -32,4 +32,8 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Damage Buff A
 	test_gamenode_trigger_damage_buff_area();
 }
 
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Attack Speed Debuff Area rune") {
+	test_gamenode_trigger_attack_speed_debuff_area();
+}
+
 } // namespace godoctopus2_tests
