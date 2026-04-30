@@ -280,8 +280,8 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 		}
 	}
 
-	CHECK(enemy_reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
-	CHECK(enemy_reload_times[1] == 0.7); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50
+	CHECK(enemy_reload_times[0] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50
+	CHECK(enemy_reload_times[1] == 0.1); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50
 	CHECK(ally_reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
 	CHECK(ally_reload_times[1] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
 
