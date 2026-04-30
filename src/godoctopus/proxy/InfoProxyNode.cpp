@@ -4,6 +4,7 @@
 #include "godoctopus/components/special/Special.h"
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/building/Building.h"
+#include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
@@ -113,8 +114,8 @@ void InfoProxyNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	// Create Position, Velocity query that matches empty archetypes.
-	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*> update_query =
-		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*>();
+	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*> update_query =
+		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -142,7 +143,8 @@ void InfoProxyNode::setup() {
 				ProximitySensor *proximity_sensor,
 				MoveCommand *move_cmd,
 				AttackCommand *atk_cmd,
-				PickableSetUp *pickable)
+				PickableSetUp *pickable,
+				RuneLoad<DefaultRune> *rune_load)
 			{
 				InfoProxyData &infos_data = _proxy_map[e.id()];
 
@@ -180,6 +182,11 @@ void InfoProxyNode::setup() {
 					infos_data.set_pickable_id(-1);
 				}
 				infos_data.set_alive(e.is_alive() && e.enabled());
+				if (rune_load) {
+					infos_data.set_rune_loads(rune_load->qty);
+				} else {
+					infos_data.set_rune_loads(0);
+				}
 			});
 		});
 }
