@@ -5,6 +5,8 @@
 
 #include "octopus/systems/player/buff/PlayerBuffSystems.hh"
 #include "octopus/systems/phases/Phases.hh"
+#include "octopus/components/advanced/buff/BuffSystem.hh"
+#include "octopus/components/step/BuffComponentStep.hh"
 
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
@@ -19,6 +21,7 @@
 #include "godoctopus/trigger_module/events/UtilsEvent.h"
 #include "godoctopus/trigger_module/trigger_systems/AttackTriggerSystem.h"
 #include "godoctopus/trigger_module/trigger_systems/LifeTriggerSystem.h"
+#include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 
 template<typename BuffType, typename... ComponentType>
 struct BuffDeclarer {
@@ -109,7 +112,7 @@ void declare_updatable_buff(flecs::world &ecs)
 	for_each_bot_type(UpdateableBuffSystemDeclarer<BuffType, ComponentType...>{ecs});
 }
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager)
 {
 	ecs.component<trigger_module::Death>();
 	ecs.component<trigger_module::Attack>();
@@ -184,6 +187,21 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx)
 	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamageTier2, AlwaysCondition, HealAreaEventPeriodicDamageBased<10, 3, 5>>(ecs, ctx);
 	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpointTier2, AlwaysCondition, DamageAreaEventPeriodicHitpointBased<10, 3, 5>>(ecs, ctx);
 	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamageTier2, AlwaysCondition, DamageAreaEventPeriodicDamageBased<10, 3, 5>>(ecs, ctx);
+
+	// declare temporary buff rune buff systems
+	declare_trigger_buff<ApplyHealthBuffOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyArmorBuffOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyDamageBuffOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyAttackSpeedBuffOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyHealthBuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyArmorBuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyDamageBuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyAttackSpeedBuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyArmorDebuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyDamageDebuffAreaOnRuneLoad>(ecs);
+	declare_trigger_buff<ApplyAttackSpeedDebuffAreaOnRuneLoad>(ecs);
+
+	declare_temporary_buff_triggers(ecs, manager, ctx);
 }
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
@@ -454,6 +472,39 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "AoePulseDamageBasedOnDamageTier2") {
 		mod_rune_type<false, octopus::BuffAddComponent<AoePulseDamageBasedOnDamageTier2>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyHealthBuffOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyHealthBuffOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyArmorBuffOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyArmorBuffOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyDamageBuffOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyDamageBuffOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyAttackSpeedBuffOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyAttackSpeedBuffOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyHealthBuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyHealthBuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyArmorBuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyArmorBuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyDamageBuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyDamageBuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyAttackSpeedBuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyAttackSpeedBuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyArmorDebuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyArmorDebuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyDamageDebuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyDamageDebuffAreaOnRuneLoad>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyAttackSpeedDebuffAreaOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyAttackSpeedDebuffAreaOnRuneLoad>>(e, add, type, level);
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());

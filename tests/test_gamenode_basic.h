@@ -1,6 +1,7 @@
 #pragma once
 
 #include "testing/GameNodeBasic.test.h"
+#include "testing/Triggers.test.h"
 
 namespace godoctopus2_tests {
 
@@ -21,6 +22,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode units take damage") {
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode AoePulseDamageBasedOnHitpoint rune") {
 	test_gamenode_aoe_pulse_damage_based_on_hitpoint();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Armor Buff rune") {
+	test_gamenode_trigger_armor_buff();
 }
 
 } // namespace godoctopus2_tests

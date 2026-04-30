@@ -9,6 +9,9 @@
 #include "godoctopus/trigger_module/buffs/HitPointBuff.h"
 #include "godoctopus/trigger_module/buffs/SpecialBuff.h"
 #include "godoctopus/trigger_module/buffs/ScalingBuff.h"
+#include "godoctopus/trigger_module/buffs/TemporaryStatsBuff.h"
+
+#include "octopus_types.h"
 
 struct AddRuneLoadOnAttack { int32_t level = 0; };
 struct AddRuneLoadOnTargetOnAttack { int32_t level = 0; };
@@ -97,6 +100,6 @@ struct AoePulseDamageBasedOnHitpointTier2 { int32_t level = 0; };
 struct AoePulseDamageBasedOnDamage { int32_t level = 0; };
 struct AoePulseDamageBasedOnDamageTier2 { int32_t level = 0; };
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx);
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager);
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, int level);

@@ -15,9 +15,9 @@ struct RuneCondition
 		RuneLoad<type> * rune_load = e.try_get_mut<RuneLoad<type>>();
 		if(rune_load && rune_load->qty >= requirement)
 		{
-			rune_load->qty -= requirement;
 			if(requirement > 0 && consume)
 			{
+				rune_load->qty -= requirement;
 				e.world().event<trigger_module::RuneConsumed<type>>()
 					.template id<RuneLoad<type>>()
 					.entity(e)

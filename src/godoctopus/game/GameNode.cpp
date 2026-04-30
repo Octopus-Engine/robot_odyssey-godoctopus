@@ -377,7 +377,7 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 			print_line("No level node to setup - basic setup");
 			game.get_world().ecs.entity().set<octopus::PlayerInfo>({0, 0});
 			game.get_world().ecs.entity().set<octopus::PlayerInfo>({1, 1});
-			declare_triggers(game.get_world().ecs, game.get_world().position_context);
+			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager);
 		});
 	}
 	else

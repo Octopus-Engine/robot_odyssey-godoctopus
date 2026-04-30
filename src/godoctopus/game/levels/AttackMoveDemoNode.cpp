@@ -117,7 +117,7 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 	declare_attack_particule_systems(ecs, _vat_library, _particules);
 	declare_windup_projectile_systems(ecs, _vat_library, _particules);
 	declare_death_particle_systems(ecs, _particules);
-	declare_triggers(ecs, game.get_world().position_context);
+	declare_triggers(ecs, game.get_world().position_context, game.get_step_context().step_manager);
 }
 
 }
