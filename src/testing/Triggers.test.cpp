@@ -149,3 +149,71 @@ void test_gamenode_trigger_armor_buff() {
 	// Expected 1 armor from the buff
 	CHECK(armor == 1);
 }
+
+void test_gamenode_trigger_damage_buff_area() {
+	// Create a unit prefab for testing
+	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
+	prefab->set_prefab_name("rambot");
+	prefab->set_damage_x10(0);  // Set base damage to 0 for testing
+	prefab->set_hitpoint(1000);
+	prefab->set_windup_x10(1);
+	prefab->set_reload_x10(1);
+	prefab->set_range_x10(30);
+
+	GameNodeTestContextWithCustomPrefab context(prefab);
+
+	StringName unit_name = "rambot";
+
+	// Spawn unit A at (100, 100) - team 0, will apply the rune and attack
+	context.action_node->spawn_units(unit_name, Vector2(100, 100), 0, 1);
+	context.game_node->tick();
+
+	// Spawn a target at (102, 100) - team 1, for unit A to attack
+	context.action_node->spawn_units(unit_name, Vector2(102, 100), 1, 1);
+	context.game_node->tick();
+
+	// Spawn unit B at (103, 100) - team 0, within area range (~3 units from A)
+	context.action_node->spawn_units(unit_name, Vector2(103, 100), 0, 1);
+	context.game_node->tick();
+
+	// Spawn unit C at (112, 120) - team 0, outside area range (~14 units from A)
+	context.action_node->spawn_units(unit_name, Vector2(112, 120), 0, 1);
+	context.game_node->tick();
+
+	// Apply ApplyDamageBuffAreaOnRuneLoad rune to rambot
+	context.action_node->mod_rune("rambot", "ApplyDamageBuffAreaOnRuneLoad", 0, 0, true);
+	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
+	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, 0, true);
+	context.game_node->tick();
+
+	// Tick the game multiple times to allow unit A to attack and reach rune load 3
+	for (int i = 0; i < 50; ++i) {
+		context.game_node->tick();
+	}
+
+	// Verify buff is applied to team 0 units based on range
+	double unit_a_damage = 0;
+	double unit_b_damage = 0;
+	double unit_c_damage = 0;
+	{
+		auto locker = context.proxy_node->get_data_locker();
+		auto const &proxy_map = locker.proxy_map;
+
+		std::vector<double> damages;
+		for (auto const &[entity_id, proxy_data] : proxy_map) {
+			if (proxy_data.get_team() == 0) {
+				damages.push_back(proxy_data.get_damage());
+			}
+		}
+		CHECK(damages.size() == 3);
+		unit_a_damage = damages[0];
+		unit_b_damage = damages[1];
+		unit_c_damage = damages[2];
+	}
+
+	// Unit A (source at 100,100) and Unit B (at 103,100, within range 5) should have +20 damage buff
+	CHECK(unit_a_damage == 20);
+	CHECK(unit_b_damage == 20);
+	// Unit C (at 112,120, ~14 units away, outside range 5) should not have the buff
+	CHECK(unit_c_damage == 0);
+}

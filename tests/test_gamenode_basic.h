@@ -28,4 +28,8 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Armor Buff ru
 	test_gamenode_trigger_armor_buff();
 }
 
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Damage Buff Area rune") {
+	test_gamenode_trigger_damage_buff_area();
+}
+
 } // namespace godoctopus2_tests
