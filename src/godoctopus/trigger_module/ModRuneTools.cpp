@@ -312,6 +312,24 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	else if (rune_name == "ApplyAttackSpeedDebuffAreaOnRuneLoad") {
 		mod_rune_type<false, octopus::BuffAddComponent<ApplyAttackSpeedDebuffAreaOnRuneLoad>>(e, add, type, level);
 	}
+	else if (rune_name == "ConditionalArmorBuffLowLifeRuneTier1") {
+		mod_rune_type<true, ConditionalArmorBuffLowLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ConditionalArmorBuffLowLifeRuneTier2") {
+		mod_rune_type<true, ConditionalArmorBuffLowLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ConditionalDamageBuffLowLifeRuneTier1") {
+		mod_rune_type<true, ConditionalDamageBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ConditionalDamageBuffLowLifeRuneTier2") {
+		mod_rune_type<true, ConditionalDamageBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ConditionalReloadBuffLowLifeRuneTier1") {
+		mod_rune_type<true, ConditionalReloadBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "ConditionalReloadBuffLowLifeRuneTier2") {
+		mod_rune_type<true, ConditionalReloadBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());
 	}

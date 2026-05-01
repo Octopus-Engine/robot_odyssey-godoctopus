@@ -2,6 +2,7 @@
 
 #include "testing/GameNodeBasic.test.h"
 #include "testing/Triggers.test.h"
+#include "testing/ConditionalLowLifeBuffRunes.test.h"
 
 namespace godoctopus2_tests {
 
@@ -34,6 +35,18 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Damage Buff A
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Attack Speed Debuff Area rune") {
 	test_gamenode_trigger_attack_speed_debuff_area();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Armor Buff Low Life Tier1 rune") {
+	test_gamenode_conditional_armor_buff_low_life_tier1();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Damage Buff Low Life Tier1 rune") {
+	test_gamenode_conditional_damage_buff_low_life_tier1();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Reload Buff Low Life Tier1 rune") {
+	test_gamenode_conditional_reload_buff_low_life_tier1();
 }
 
 } // namespace godoctopus2_tests

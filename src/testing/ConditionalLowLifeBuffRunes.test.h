@@ -1,0 +1,5 @@
+#pragma once
+
+void test_gamenode_conditional_armor_buff_low_life_tier1();
+void test_gamenode_conditional_damage_buff_low_life_tier1();
+void test_gamenode_conditional_reload_buff_low_life_tier1();

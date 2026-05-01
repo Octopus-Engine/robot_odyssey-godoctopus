@@ -22,12 +22,18 @@ struct LeveledAttackSpeedBuff
 {
 	int32_t quantity = base_quantity;
 
-	void apply(flecs::entity, octopus::Fixed const &level, octopus::Attack &atk) const
+	// Template parameters are used to allow passing extra components that can be
+	// used for the condition of the buff, but they are not used
+	template<typename... Components>
+	void apply(flecs::entity, octopus::Fixed const &level, octopus::Attack &atk, Components&... components) const
 	{
 		atk.cst.reload_time -= quantity + octopus::Fixed(level * level_gain).to_int();
 	}
 
-	void revert(flecs::entity, octopus::Fixed const &level, octopus::Attack &atk) const
+	// Template parameters are used to allow passing extra components that can be
+	// used for the condition of the buff, but they are not used
+	template<typename... Components>
+	void revert(flecs::entity, octopus::Fixed const &level, octopus::Attack &atk, Components&... components) const
 	{
 		atk.cst.reload_time += quantity + octopus::Fixed(level * level_gain).to_int();
 	}

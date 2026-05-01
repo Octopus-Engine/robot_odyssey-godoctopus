@@ -9,6 +9,7 @@
 #include "godoctopus/trigger_module/buffs/HitPointBuff.h"
 #include "godoctopus/trigger_module/buffs/SpecialBuff.h"
 #include "godoctopus/trigger_module/buffs/ScalingBuff.h"
+#include "godoctopus/trigger_module/buffs/ScalingConditionalBuff.h"
 #include "godoctopus/trigger_module/buffs/TemporaryStatsBuff.h"
 
 #include "octopus_types.h"
@@ -89,6 +90,21 @@ struct HitPointBuffRuneSpecial : SpecialScaledBuff<HitPointBuffRuneSpecial, Leve
 struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledArmorBuff<40, 2>, octopus::Armor> { int32_t level = 0; };
 struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
 struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
+
+// Conditional Special buff runes
+using ConditionalArmorBuffLowLifeRuneTier1 = ConditionalArmorBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* armor_x10_base = */ 20, /* armor_x10_per_special = */ 2>;
+using ConditionalArmorBuffLowLifeRuneTier2 = ConditionalArmorBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* armor_x10_base = */ 50, /* armor_x10_per_special = */ 5>;
+using ConditionalDamageBuffLowLifeRuneTier1 = ConditionalDamageBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* damage_base = */ 8, /* damage_per_special = */ 1>;
+using ConditionalDamageBuffLowLifeRuneTier2 = ConditionalDamageBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* damage_base = */ 15, /* damage_per_special = */ 2>;
+using ConditionalReloadBuffLowLifeRuneTier1 = ConditionalReloadBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* reload_x10_base = */ 20, /* reload_x10_per_special = */ 2>;
+using ConditionalReloadBuffLowLifeRuneTier2 = ConditionalReloadBuffLowLifeRune</* under = */ true, /* percent = */ 25, /* reload_x10_base = */ 40, /* reload_x10_per_special = */ 4>;
+
+using ConditionalArmorBuffHighLifeRuneTier1 = ConditionalArmorBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* armor_x10_base = */ 10, /* armor_x10_per_special = */ 1>;
+using ConditionalArmorBuffHighLifeRuneTier2 = ConditionalArmorBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* armor_x10_base = */ 30, /* armor_x10_per_special = */ 3>;
+using ConditionalDamageBuffHighLifeRuneTier1 = ConditionalDamageBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* damage_base = */ 4, /* damage_per_special = */ 1>;
+using ConditionalDamageBuffHighLifeRuneTier2 = ConditionalDamageBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* damage_base = */ 8, /* damage_per_special = */ 2>;
+using ConditionalReloadBuffHighLifeRuneTier1 = ConditionalReloadBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* reload_x10_base = */ 10, /* reload_x10_per_special = */ 2>;
+using ConditionalReloadBuffHighLifeRuneTier2 = ConditionalReloadBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* reload_x10_base = */ 20, /* reload_x10_per_special = */ 4>;
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager);
 

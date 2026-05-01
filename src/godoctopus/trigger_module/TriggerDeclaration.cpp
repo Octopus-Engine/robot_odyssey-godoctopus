@@ -77,7 +77,7 @@ struct UpdateableBuffSystemDeclarer {
 
 		ecs.component<SpecialUpdate<BuffType>>()
 			.member("old_special", &SpecialUpdate<BuffType>::old_special)
-			.member("init", &SpecialUpdate<BuffType>::init);
+			.member("active", &SpecialUpdate<BuffType>::active);
 
 		// Lazy set up of component
 		ecs.system<octopus::PlayerAppartenance const, ComponentTypes...>()
@@ -165,6 +165,21 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_updatable_buff<ArmorBuffRuneSpecial, octopus::Armor>(ecs);
 	declare_updatable_buff<DamageBuffRuneSpecial, octopus::Attack>(ecs);
 	declare_updatable_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
+
+	// Conditional armor buff
+	declare_updatable_buff<ConditionalArmorBuffLowLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalArmorBuffLowLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalDamageBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalDamageBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalReloadBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalReloadBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+
+	declare_updatable_buff<ConditionalArmorBuffHighLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalArmorBuffHighLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalDamageBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalDamageBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalReloadBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
 	// declare periodic pulse rune buff systems
 	declare_trigger_buff<AoePulseHealBasedOnHitpoint>(ecs);
