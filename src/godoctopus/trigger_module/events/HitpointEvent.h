@@ -209,7 +209,7 @@ struct HealAreaEventSpecialScaled
 template<int32_t base, int32_t range, int32_t upgrade>
 struct HealAreaEventPeriodicHitpointBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 		HitPointMax const * hp_max = source.try_get<octopus::HitPointMax>();
@@ -217,7 +217,7 @@ struct HealAreaEventPeriodicHitpointBased
 		{
 			return;
 		}
-		auto const aoe_heal = hp_max->qty * (upgrade * level + base) / 100;
+		auto const aoe_heal = hp_max->qty * (upgrade * get_special_value(source) + base) / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team == team && ent.try_get<HitPoint>())
@@ -235,7 +235,7 @@ struct HealAreaEventPeriodicHitpointBased
 template<int32_t base, int32_t range, int32_t upgrade>
 struct HealAreaEventPeriodicDamageBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 		Attack const * attack = source.try_get<octopus::Attack>();
@@ -243,7 +243,7 @@ struct HealAreaEventPeriodicDamageBased
 		{
 			return;
 		}
-		auto const aoe_heal = attack->cst.damage * (upgrade * level + base) / 100;
+		auto const aoe_heal = attack->cst.damage * (upgrade * get_special_value(source) + base) / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team == team && ent.try_get<HitPoint>())
@@ -261,7 +261,7 @@ struct HealAreaEventPeriodicDamageBased
 template<int32_t base, int32_t range, int32_t upgrade>
 struct DamageAreaEventPeriodicHitpointBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 		HitPointMax const * hp_max = source.try_get<octopus::HitPointMax>();
@@ -269,7 +269,7 @@ struct DamageAreaEventPeriodicHitpointBased
 		{
 			return;
 		}
-		auto const aoe_dmg = hp_max->qty * (upgrade * level + base) / 100;
+		auto const aoe_dmg = hp_max->qty * (upgrade * get_special_value(source) + base) / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())
@@ -287,7 +287,7 @@ struct DamageAreaEventPeriodicHitpointBased
 template<int32_t base, int32_t range, int32_t upgrade>
 struct DamageAreaEventPeriodicDamageBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 		Attack const * attack = source.try_get<octopus::Attack>();
@@ -295,7 +295,7 @@ struct DamageAreaEventPeriodicDamageBased
 		{
 			return;
 		}
-		auto const aoe_dmg = attack->cst.damage * (upgrade * level + base) / 100;
+		auto const aoe_dmg = attack->cst.damage * (upgrade * get_special_value(source) + base) / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())

@@ -7,14 +7,16 @@
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 
+#include "godoctopus/components/special/Special.h"
+
 // Base temporary buff event - applies buff to single entity
 template<typename BuffType>
 struct ApplyTemporaryBuffEvent
 {
-	static void apply(flecs::entity source, int32_t level)
+	static void apply(flecs::entity source, int32_t)
 	{
 		// Apply buff directly to the entity
-		source.set<octopus::BuffComponent<BuffType>>({BuffType(), octopus::get_time_stamp(source.world()), BuffType::DURATION_TICKS, false});
+		source.set<octopus::BuffComponent<BuffType>>({BuffType({BuffType::BASE_QUANTITY + get_special_value(source) * BuffType::UPGRADE_QUANTITY}), octopus::get_time_stamp(source.world()), BuffType::DURATION_TICKS, false});
 	}
 };
 
@@ -22,14 +24,14 @@ struct ApplyTemporaryBuffEvent
 template<typename BuffType, int32_t range>
 struct ApplyTemporaryBuffAreaEvent
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 
 		auto func_l = [team](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team == team && ent.try_get<HitPoint>())
 			{
-				ent.set<octopus::BuffComponent<BuffType>>({BuffType(), octopus::get_time_stamp(ent.world()), BuffType::DURATION_TICKS, false});
+				ent.set<octopus::BuffComponent<BuffType>>({BuffType({BuffType::BASE_QUANTITY + get_special_value(ent) * BuffType::UPGRADE_QUANTITY}), octopus::get_time_stamp(ent.world()), BuffType::DURATION_TICKS, false});
 			}
 			return true;
 		};
@@ -42,14 +44,14 @@ struct ApplyTemporaryBuffAreaEvent
 template<typename BuffType, int32_t range>
 struct ApplyTemporaryDebuffAreaEvent
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
 	{
 		using namespace octopus;
 
 		auto func_l = [team](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())
 			{
-				ent.set<octopus::BuffComponent<BuffType>>({BuffType(), octopus::get_time_stamp(ent.world()), BuffType::DURATION_TICKS, false});
+				ent.set<octopus::BuffComponent<BuffType>>({BuffType({BuffType::BASE_QUANTITY + get_special_value(ent) * BuffType::UPGRADE_QUANTITY}), octopus::get_time_stamp(ent.world()), BuffType::DURATION_TICKS, false});
 			}
 			return true;
 		};
