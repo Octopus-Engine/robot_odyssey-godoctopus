@@ -90,16 +90,6 @@ struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledArm
 struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledDamageBuff<10, 2>, octopus::Attack> { int32_t level = 0; };
 struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledAttackSpeedBuff<20, 2>, octopus::Attack> { int32_t level = 0; };
 
-// Periodic pulse runes - heal/damage allies/enemies every TICK_RATE based on max HP or damage
-struct AoePulseHealBasedOnHitpoint { int32_t level = 0; };
-struct AoePulseHealBasedOnHitpointTier2 { int32_t level = 0; };
-struct AoePulseHealBasedOnDamage { int32_t level = 0; };
-struct AoePulseHealBasedOnDamageTier2 { int32_t level = 0; };
-struct AoePulseDamageBasedOnHitpoint { int32_t level = 0; };
-struct AoePulseDamageBasedOnHitpointTier2 { int32_t level = 0; };
-struct AoePulseDamageBasedOnDamage { int32_t level = 0; };
-struct AoePulseDamageBasedOnDamageTier2 { int32_t level = 0; };
-
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager);
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, int level);
