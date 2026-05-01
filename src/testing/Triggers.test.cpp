@@ -2,8 +2,9 @@
 #include "tests/test_macros.h"
 #include "scene/main/node.h"
 #include "scene/main/window.h"
-#include "godoctopus/game/GameNode.h"
 #include "godoctopus/action/ActionNode.h"
+#include "godoctopus/entity_group/EntityGroup.h"
+#include "godoctopus/game/GameNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
 #include "testing/GameNodeBasic.test.h"
 
@@ -164,20 +165,25 @@ void test_gamenode_trigger_damage_buff_area() {
 
 	StringName unit_name = "rambot";
 
+	std::vector<Ref<godot::EntityGroup>> groups;
 	// Spawn unit A at (100, 100) - team 0, will apply the rune and attack
-	context.action_node->spawn_units(unit_name, Vector2(100, 100), 0, 1);
+	groups.push_back(memnew(godot::EntityGroup));
+	context.action_node->spawn_units_in_group(unit_name, Vector2(100, 100), 0, 1, groups.back());
 	context.game_node->tick();
 
 	// Spawn a target at (102, 100) - team 1, for unit A to attack
-	context.action_node->spawn_units(unit_name, Vector2(102, 100), 1, 1);
+	groups.push_back(memnew(godot::EntityGroup));
+	context.action_node->spawn_units_in_group(unit_name, Vector2(102, 100), 1, 1, groups.back());
 	context.game_node->tick();
 
 	// Spawn unit B at (103, 100) - team 0, within area range (~3 units from A)
-	context.action_node->spawn_units(unit_name, Vector2(103, 100), 0, 1);
+	groups.push_back(memnew(godot::EntityGroup));
+	context.action_node->spawn_units_in_group(unit_name, Vector2(103, 100), 0, 1, groups.back());
 	context.game_node->tick();
 
 	// Spawn unit C at (112, 120) - team 0, outside area range (~14 units from A)
-	context.action_node->spawn_units(unit_name, Vector2(112, 120), 0, 1);
+	groups.push_back(memnew(godot::EntityGroup));
+	context.action_node->spawn_units_in_group(unit_name, Vector2(112, 120), 0, 1, groups.back());
 	context.game_node->tick();
 
 	// Apply ApplyDamageBuffAreaOnRuneLoad rune to rambot
@@ -191,31 +197,19 @@ void test_gamenode_trigger_damage_buff_area() {
 		context.game_node->tick();
 	}
 
-	// Verify buff is applied to team 0 units based on range
-	double unit_a_damage = 0;
-	double unit_b_damage = 0;
-	double unit_c_damage = 0;
-	{
-		auto locker = context.proxy_node->get_data_locker();
-		auto const &proxy_map = locker.proxy_map;
 
-		std::vector<double> damages;
-		for (auto const &[entity_id, proxy_data] : proxy_map) {
-			if (proxy_data.get_team() == 0) {
-				damages.push_back(proxy_data.get_damage());
-			}
-		}
-		CHECK(damages.size() == 3);
-		unit_a_damage = damages[0];
-		unit_b_damage = damages[1];
-		unit_c_damage = damages[2];
+	double damage[4];
+	for (size_t i = 0 ; i < groups.size() ; ++ i) {
+		damage[i] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groups[i])[0])->get_damage();
 	}
 
 	// Unit A (source at 100,100) and Unit B (at 103,100, within range 5) should have +20 damage buff
-	CHECK(unit_a_damage == 20);
-	CHECK(unit_b_damage == 20);
+	CHECK(damage[0] == 20);
+	CHECK(damage[2] == 20);
 	// Unit C (at 112,120, ~14 units away, outside range 5) should not have the buff
-	CHECK(unit_c_damage == 0);
+	CHECK(damage[3] == 0);
+	// enemy unnafected
+	CHECK(damage[1] == 0);
 }
 
 void test_gamenode_trigger_attack_speed_debuff_area() {
@@ -233,19 +227,23 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	StringName unit_name = "rambot";
 
 	// Spawn unit A at (100, 100) - team 0, will apply the debuff rune and attack
-	context.action_node->spawn_units(unit_name, Vector2(101, 100), 0, 1);
+	Ref<godot::EntityGroup> groupA = memnew(godot::EntityGroup);
+	context.action_node->spawn_units_in_group(unit_name, Vector2(101, 100), 0, 1, groupA);
 	context.game_node->tick();
 
 	// Spawn enemy E1 at (102, 100) - team 1, for unit A to attack (and be debuffed)
-	context.action_node->spawn_units(unit_name, Vector2(102, 100), 1, 1);
+	Ref<godot::EntityGroup> groupB = memnew(godot::EntityGroup);
+	context.action_node->spawn_units_in_group(unit_name, Vector2(102, 100), 1, 1, groupB);
 	context.game_node->tick();
 
 	// Spawn enemy E2 at (111, 120) - team 1, outside debuff area range (~14 units from A)
-	context.action_node->spawn_units(unit_name, Vector2(111, 120), 1, 1);
+	Ref<godot::EntityGroup> groupC = memnew(godot::EntityGroup);
+	context.action_node->spawn_units_in_group(unit_name, Vector2(111, 120), 1, 1, groupC);
 	context.game_node->tick();
 
 	// Spawn unit B at (103, 100) - team 0, ally within area range (~3 units from A)
-	context.action_node->spawn_units(unit_name, Vector2(103, 100), 0, 1);
+	Ref<godot::EntityGroup> groupD = memnew(godot::EntityGroup);
+	context.action_node->spawn_units_in_group(unit_name, Vector2(103, 100), 0, 1, groupD);
 	context.game_node->tick();
 
 	// Apply ApplyAttackSpeedDebuffAreaOnRuneLoad rune to rambot (all instances)
@@ -261,28 +259,15 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 
 	// Verify rune load accumulation
 	double unit_a_rune_load = 0;
-	int unit_count = 0;
 
-	auto locker = context.proxy_node->get_data_locker();
-	auto const &proxy_map = locker.proxy_map;
+	double reload_times[4];
+	reload_times[0] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupA)[0])->get_reload_time();
+	reload_times[1] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupB)[0])->get_reload_time();
+	reload_times[2] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupC)[0])->get_reload_time();
+	reload_times[3] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupD)[0])->get_reload_time();
 
-	std::vector<double> enemy_reload_times;
-	std::vector<double> ally_reload_times;
-	for (auto const &[entity_id, proxy_data] : proxy_map) {
-		unit_count++;
-		if (proxy_data.get_team() == 0 && unit_a_rune_load == 0) {
-			unit_a_rune_load = proxy_data.get_rune_loads();
-		}
-		if (proxy_data.get_team() == 1) {
-			enemy_reload_times.push_back(proxy_data.get_reload_time());
-		} else {
-			ally_reload_times.push_back(proxy_data.get_reload_time());
-		}
-	}
-
-	CHECK(enemy_reload_times[0] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50
-	CHECK(enemy_reload_times[1] == 0.1); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50
-	CHECK(ally_reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
-	CHECK(ally_reload_times[1] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50
-
+	CHECK(reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
+	CHECK(reload_times[1] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50 (enenmy inrange)
+	CHECK(reload_times[2] == 0.1); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50 (enemy out of range)
+	CHECK(reload_times[3] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
 }
