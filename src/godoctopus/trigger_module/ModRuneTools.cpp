@@ -9,6 +9,7 @@
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
+#include "godoctopus/trigger_module/SpawnUnitRune.h"
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
 typename std::enable_if<Level, void>::type mod_rune(flecs::entity e, bool add, int level)
@@ -329,6 +330,9 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "ConditionalReloadBuffLowLifeRuneTier2") {
 		mod_rune_type<true, ConditionalReloadBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, level);
+	}
+	else if (rune_name == "SpawnCloneUnitRune") {
+		mod_rune_type<false, octopus::BuffAddComponent<SpawnCloneUnitRune>>(e, add, type, level);
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());

@@ -3,6 +3,7 @@
 #include "testing/GameNodeBasic.test.h"
 #include "testing/Triggers.test.h"
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
+#include "testing/SpawnCloneUnitRune.test.h"
 
 namespace godoctopus2_tests {
 
@@ -47,6 +48,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Damage Bu
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Reload Buff Low Life Tier1 rune") {
 	test_gamenode_conditional_reload_buff_low_life_tier1();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode SpawnCloneUnitRune rune") {
+	test_gamenode_spawn_clone_unit_rune();
 }
 
 } // namespace godoctopus2_tests

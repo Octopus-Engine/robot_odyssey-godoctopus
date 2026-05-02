@@ -3,7 +3,6 @@
 #include "core/variant/variant.h"
 #include "core/string/print_string.h"
 
-#include "octopus/systems/player/buff/PlayerBuffSystems.hh"
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/advanced/buff/BuffSystem.hh"
 #include "octopus/components/step/BuffComponentStep.hh"
@@ -23,37 +22,8 @@
 #include "godoctopus/trigger_module/trigger_systems/LifeTriggerSystem.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
-
-template<typename BuffType, typename... ComponentType>
-struct BuffDeclarer {
-	flecs::world &ecs;
-	bool add_debuff_all_system;
-
-	template<typename BotType>
-	void operator()() const {
-		octopus::declare_player_buff_systems<BotType, BuffType, ComponentType...>(ecs, add_debuff_all_system);
-	}
-};
-
-template<typename BuffType, typename... ComponentType>
-void declare_player_buff_systems_all_units(flecs::world &ecs, bool add_debuff_all_system)
-{
-	for_each_bot_type(BuffDeclarer<BuffType, ComponentType...>{ecs, add_debuff_all_system});
-}
-
-template<typename Trigger>
-void declare_trigger_buff(flecs::world &ecs)
-{
-	// component declaration
-	ecs.component<Trigger>()
-		.member("level", &Trigger::level)
-	;
-	ecs.component<octopus::BuffAddComponent<Trigger>>()
-		.member("placeholder", &octopus::BuffAddComponent<Trigger>::placeholder)
-	;
-
-	declare_player_buff_systems_all_units<typename octopus::BuffAddComponent<Trigger>>(ecs, false);
-}
+#include "godoctopus/trigger_module/SpawnUnitRune.h"
+#include "godoctopus/trigger_module/BuffDeclarer.h"
 
 template<typename BuffType, typename... ComponentType>
 void declare_classic_buff(flecs::world &ecs)
@@ -207,4 +177,6 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_trigger_buff<ApplyAttackSpeedDebuffAreaOnRuneLoad>(ecs);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
+
+	declare_spawn_unit_triggers(ecs, ctx);
 }

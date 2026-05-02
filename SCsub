@@ -200,6 +200,7 @@ godoctopus2_sources = [
     "./src/godoctopus/trigger_module/AoePulseRune.cpp",
     "./src/godoctopus/trigger_module/ModRuneTools.cpp",
     "./src/godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.cpp",
+    "./src/godoctopus/trigger_module/SpawnUnitRune.cpp",
     "./src/godoctopus/trigger_module/TriggerDeclaration.cpp",
     "./src/godoctopus/action/ActionNode.cpp",
     "./src/godoctopus/command/CommandNode.cpp",
