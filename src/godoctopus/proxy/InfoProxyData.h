@@ -113,6 +113,8 @@ public:
 		copy->set_building(get_building());
 		return copy;
 	}
+
+	flecs::entity entity;
 };
 
 }

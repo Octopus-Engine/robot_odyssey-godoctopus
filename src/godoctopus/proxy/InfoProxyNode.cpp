@@ -147,6 +147,7 @@ void InfoProxyNode::setup() {
 				RuneLoad<DefaultRune> *rune_load)
 			{
 				InfoProxyData &infos_data = _proxy_map[e.id()];
+				infos_data.entity = e;
 
 				infos_data.set_position(pos.pos);
 				infos_data.set_has_attack_target(atk_cmd);
