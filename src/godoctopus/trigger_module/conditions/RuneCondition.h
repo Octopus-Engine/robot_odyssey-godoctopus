@@ -13,18 +13,20 @@ struct RuneCondition
 	static bool check(flecs::entity e)
 	{
 		RuneLoad<type> * rune_load = e.try_get_mut<RuneLoad<type>>();
-		if(rune_load && rune_load->qty >= requirement)
-		{
-			if(requirement > 0 && consume)
-			{
-				rune_load->qty -= requirement;
-				e.world().event<trigger_module::RuneConsumed<type>>()
-					.template id<RuneLoad<type>>()
-					.entity(e)
-					.emit();
-			}
-			return true;
+		return rune_load && rune_load->qty >= requirement;
+	}
+
+	static void post_condition(flecs::entity e) {
+		if (!consume) {
+			return;
 		}
-		return false;
+		RuneLoad<type> * rune_load = e.try_get_mut<RuneLoad<type>>();
+		if(rune_load && requirement > 0) {
+			rune_load->qty -= requirement;
+			e.world().event<trigger_module::RuneConsumed<type>>()
+				.template id<RuneLoad<type>>()
+				.entity(e)
+				.emit();
+		}
 	}
 };

@@ -20,6 +20,16 @@ struct ApplyTemporaryBuffEvent
 	}
 };
 
+// Base temporary buff event - applies buff to single entity
+template<typename BuffType>
+struct ApplyTemporaryBuffComponentEvent
+{
+	static void apply(flecs::entity source, int32_t) {
+		// Apply buff directly to the entity
+		source.set<octopus::BuffComponent<BuffType>>({{}, octopus::get_time_stamp(source.world()), BuffType::DURATION_TICKS, false});
+	}
+};
+
 // Apply a temporary buff to all allies in an area
 template<typename BuffType, int32_t range>
 struct ApplyTemporaryBuffAreaEvent

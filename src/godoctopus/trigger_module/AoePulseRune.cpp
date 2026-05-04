@@ -22,10 +22,10 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 	ecs.system<Rune, octopus::Position, octopus::Team, PulseRuneTriggerTime<Rune> *>()
 		.kind(ecs.entity(UpdatePhase))
 		.each([&ctx, tick_interval](flecs::entity e, Rune const &rune, octopus::Position const &pos, octopus::Team const &team, PulseRuneTriggerTime<Rune> *trigger_time) {
-			if(!Condition::check(e))
-			{
+			if(!Condition::check(e)) {
 				return;
 			}
+			Condition::post_condition(e);
 
 			int64_t current_time = octopus::get_time_stamp(e.world());
 

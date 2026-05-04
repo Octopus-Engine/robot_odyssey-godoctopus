@@ -66,3 +66,4 @@ void declare_temporary_buff_triggers(flecs::world &ecs, custom_step_manager& man
 	declare_area_trigger_system<ApplyDamageDebuffAreaOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<5, DefaultRune>, ApplyTemporaryDebuffAreaEvent<TemporaryDamageDebuff_20_2_15, 5>>(ecs, ctx);
 	declare_area_trigger_system<ApplyAttackSpeedDebuffAreaOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<5, DefaultRune>, ApplyTemporaryDebuffAreaEvent<TemporaryAttackSpeedDebuff_30_3_15, 5>>(ecs, ctx);
 }
+

@@ -10,6 +10,7 @@
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
+#include "godoctopus/trigger_module/UndyingRune.h"
 
 template<bool Level, typename RuneType, typename UnitType, typename... ComponentType>
 typename std::enable_if<Level, void>::type mod_rune(flecs::entity e, bool add, int level)
@@ -333,6 +334,9 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "SpawnCloneUnitRune") {
 		mod_rune_type<false, octopus::BuffAddComponent<SpawnCloneUnitRune>>(e, add, type, level);
+	}
+	else if (rune_name == "ApplyUndyingBuffOnRuneLoad") {
+		mod_rune_type<false, octopus::BuffAddComponent<ApplyUndyingBuffOnRuneLoad>>(e, add, type, level);
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());

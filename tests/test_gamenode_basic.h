@@ -4,6 +4,7 @@
 #include "testing/Triggers.test.h"
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
 #include "testing/SpawnCloneUnitRune.test.h"
+#include "testing/UndyingRune.test.h"
 
 namespace godoctopus2_tests {
 
@@ -52,6 +53,18 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Reload Bu
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode SpawnCloneUnitRune rune") {
 	test_gamenode_spawn_clone_unit_rune();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode UndyingRune applies buff at rune load 5") {
+	test_gamenode_undying_rune_applies_buff_at_rune_load_5();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode UndyingRune expires after 15 seconds") {
+	test_gamenode_undying_buff_expires_after_15_seconds();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode UndyingRune buff reapplied after cooldown expires") {
+	test_gamenode_undying_buff_reapplied_after_cooldown_expires();
 }
 
 } // namespace godoctopus2_tests

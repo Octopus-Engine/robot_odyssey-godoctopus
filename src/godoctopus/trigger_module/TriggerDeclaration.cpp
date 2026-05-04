@@ -23,6 +23,7 @@
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
+#include "godoctopus/trigger_module/UndyingRune.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
 
 template<typename BuffType, typename... ComponentType>
@@ -177,6 +178,8 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_trigger_buff<ApplyAttackSpeedDebuffAreaOnRuneLoad>(ecs);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
+
+	declare_undying_rune_triggers(ecs, manager);
 
 	declare_spawn_unit_triggers(ecs, ctx);
 }

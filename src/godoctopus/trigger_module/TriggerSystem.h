@@ -16,6 +16,7 @@ void declare_trigger_system(flecs::world &ecs)
 		.each([](flecs::entity e, Rune const &rune, typename Trigger::component const &) {
 			if(Condition::check(e))
 			{
+				Condition::post_condition(e);
 				Event::apply(e, rune.level);
 			}
 		});
@@ -34,6 +35,7 @@ void declare_attack_trigger_system(flecs::world &ecs)
 		.each([](flecs::entity e, const Rune& rune, octopus::AttackTrigger const &trigger) {
 			if(Condition::check(e))
 			{
+				Condition::post_condition(e);
 				Event::apply(e, trigger.target, rune.level);
 			}
 		});
@@ -52,6 +54,7 @@ void declare_attack_trigger_target_condition_system(flecs::world &ecs)
 		.each([](flecs::entity e, const Rune& rune, octopus::AttackTrigger const &trigger) {
 			if(Condition::check(trigger.target))
 			{
+				Condition::post_condition(trigger.target);
 				Event::apply(e, trigger.target, rune.level);
 			}
 		});
@@ -73,6 +76,7 @@ void declare_area_trigger_system(flecs::world &ecs, octopus::PositionContext con
 			octopus::Team const *team = e.try_get<octopus::Team>();
 			if(pos && team && Condition::check(e))
 			{
+				Condition::post_condition(e);
 				Event::apply(e, pos->pos, team->team, ctx, rune.level);
 			}
 		});
@@ -88,6 +92,7 @@ void declare_attack_area_trigger_system(flecs::world &ecs, octopus::PositionCont
 			octopus::Team const *team = e.try_get<octopus::Team>();
 			if(pos && team && Condition::check(e))
 			{
+				Condition::post_condition(e);
 				Event::apply(e, pos->pos, team->team, ctx, rune.level);
 			}
 		});
@@ -103,6 +108,7 @@ void declare_attack_area_trigger_target_condition_system(flecs::world &ecs, octo
 			octopus::Team const *team = e.try_get<octopus::Team>();
 			if(pos && team && Condition::check(trigger.target))
 			{
+				Condition::post_condition(trigger.target);
 				Event::apply(e, pos->pos, team->team, ctx, rune.level);
 			}
 		});

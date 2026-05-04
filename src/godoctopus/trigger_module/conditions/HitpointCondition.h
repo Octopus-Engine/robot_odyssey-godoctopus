@@ -21,6 +21,8 @@ struct HitPointOverPercentCondition
 
 		return hp->qty / hp_max->qty >= ratio;
 	}
+
+	static void post_condition(flecs::entity e) {};
 };
 
 /// @brief Checks if an entity's hitpoints are below a specified percentage.
@@ -40,6 +42,7 @@ struct HitPointUnderPercentCondition
 
 		return hp->qty / hp_max->qty <= ratio;
 	}
+	static void post_condition(flecs::entity e) {};
 };
 
 /// @brief Checks if an entity has enough hitpoints for a cost and deducts them if the condition is met.
@@ -52,9 +55,15 @@ struct HitPointCostCondition
 		octopus::HitPoint * hp = e.try_get_mut<octopus::HitPoint>();
 		if(hp && hp->qty > requirement)
 		{
-			hp->qty -= requirement;
 			return true;
 		}
 		return false;
+	}
+	static void post_condition(flecs::entity e) {
+		octopus::HitPoint * hp = e.try_get_mut<octopus::HitPoint>();
+		if(hp && hp->qty > requirement)
+		{
+			hp->qty -= requirement;
+		}
 	}
 };
