@@ -257,9 +257,6 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 		context.game_node->tick();
 	}
 
-	// Verify rune load accumulation
-	double unit_a_rune_load = 0;
-
 	double reload_times[4];
 	reload_times[0] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupA)[0])->get_reload_time();
 	reload_times[1] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupB)[0])->get_reload_time();
