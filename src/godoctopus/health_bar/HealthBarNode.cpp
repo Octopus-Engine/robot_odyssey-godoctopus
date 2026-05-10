@@ -3,6 +3,7 @@
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
+#include "godoctopus/components/rune_load/RuneLoad.h"
 
 #include "flecs.h"
 
@@ -23,6 +24,17 @@ void HealthBarNode::free_health_bar(int idx) {
 	std::lock_guard<std::mutex> lock(mutex);
 	RenderingServer::get_singleton()->free(bars.get(idx).rid);
 	bars.free_instance(idx);
+}
+
+int HealthBarNode::add_alteration_bar() {
+	std::lock_guard<std::mutex> lock(mutex);
+	return alterations.new_instance(AlterationBarData{}).handle();
+}
+
+void HealthBarNode::free_alteration_bar(int idx) {
+	std::lock_guard<std::mutex> lock(mutex);
+	RenderingServer::get_singleton()->free(alterations.get(idx).rid);
+	alterations.free_instance(idx);
 }
 
 void HealthBarNode::set_bar_position(int idx, Vector3 pos) {
@@ -65,6 +77,23 @@ void HealthBarNode::_process(double delta) {
 		RenderingServer::get_singleton()->canvas_item_add_texture_rect(bar.rid, Rect2(0,0,csize.x*bar.width,csize.y), texture->get_rid(), true);
 		RenderingServer::get_singleton()->canvas_item_set_modulate(bar.rid, Color(bar.ratio,1,1,1));
 	});
+
+	alterations.for_each([&](AlterationBarData &alt) {
+		if (alt.rid.is_null()) {
+			RID rid = RenderingServer::get_singleton()->canvas_item_create();
+			RenderingServer::get_singleton()->canvas_item_set_material(rid, alteration_material->get_rid());
+			RenderingServer::get_singleton()->canvas_item_set_parent(rid, _health_bar_control_container->get_canvas_item());
+			alt.rid = rid;
+		} else {
+			RenderingServer::get_singleton()->canvas_item_clear(alt.rid);
+		}
+		RenderingServer::get_singleton()->canvas_item_set_transform(alt.rid, Transform2D().translated(
+			_camera->unproject_position(alt.pos) + Vector2(-csize.x*alt.width/2, -csize.y-1.)
+		));
+		RenderingServer::get_singleton()->canvas_item_add_texture_rect(alt.rid, Rect2(0,0,csize.x*alt.width,3.), texture->get_rid(), true);
+		RenderingServer::get_singleton()->canvas_item_set_modulate(alt.rid, Color(alt.nb/255.,1,1,1));
+	});
+
 	// need to redraw
 	_health_bar_control_container->queue_redraw();
 }
@@ -106,15 +135,30 @@ void HealthBarNode::setup() {
 			hp_data.ratio = hp.qty.to_double()/hp_max.qty.to_double();
 		});
 
+	ecs.system<octopus::Position const, RuneLoad<DefaultRune> const, HealthBar>()
+		.kind(ecs.entity(DisplaySyncPhase))
+		.each([this](flecs::entity e, octopus::Position const &pos, RuneLoad<DefaultRune> const &rune_load, HealthBar &hp_bar) {
+			if(hp_bar.idx_alteration_bar < 0) {
+				hp_bar.idx_alteration_bar = this->add_alteration_bar();
+			}
+			std	::lock_guard<std::mutex> lock(this->mutex);
+			// sync
+			AlterationBarData &alt_data = alterations[hp_bar.idx_alteration_bar];
+			alt_data.pos = WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), hp_bar.offset, real_t(octopus::to_double(pos.pos.y)));
+			alt_data.width = hp_bar.width;
+			alt_data.nb = rune_load.qty;
+		});
 
 	ecs.system<HealthBar>()
 		.with(flecs::Disabled)
 		.kind(ecs.entity(DisplaySyncPhase))
 		.each([this](flecs::entity e, HealthBar &hp_bar) {
-			if (hp_bar.idx_bar < 0) {
-				return;
+			if (hp_bar.idx_bar >= 0) {
+				this->free_health_bar(hp_bar.idx_bar);
 			}
-			this->free_health_bar(hp_bar.idx_bar);
+			if (hp_bar.idx_alteration_bar >= 0) {
+				this->free_alteration_bar(hp_bar.idx_alteration_bar);
+			}
 			e.remove<HealthBar>();
 	});
 }

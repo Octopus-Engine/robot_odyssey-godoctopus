@@ -16,6 +16,7 @@ struct HealthBar {
 	double offset;
 	double width;
 	int idx_bar = -1;
+	int idx_alteration_bar = -1;
 };
 
 struct HealthBarData {
@@ -25,6 +26,13 @@ struct HealthBarData {
 	float ratio;
 };
 
+struct AlterationBarData {
+	RID rid;
+	Vector3 pos;
+	double width;
+	float nb;
+};
+
 class HealthBarNode : public Node {
 	GDCLASS(HealthBarNode, Node)
 
@@ -32,6 +40,7 @@ class HealthBarNode : public Node {
 	SET_GET_NODE_PATH(GameNode, game_node);
 	SET_GET_NODE_PATH(Control, health_bar_control_container);
 	SET_GET_PARAM(Ref<ShaderMaterial>, bar_material);
+	SET_GET_PARAM(Ref<ShaderMaterial>, alteration_material);
 	SET_GET_PARAM(Ref<Texture2D>, texture);
 	SET_GET_PARAM(int, display_mode);
 public:
@@ -43,6 +52,7 @@ public:
 		BIND_NODE_PATH(HealthBarNode, GameNode, game_node);
 		BIND_NODE_PATH(HealthBarNode, Control, health_bar_control_container);
 		ADD_OBJECT_PROP(HealthBarNode, ShaderMaterial, bar_material);
+		ADD_OBJECT_PROP(HealthBarNode, ShaderMaterial, alteration_material);
 		ADD_OBJECT_PROP(HealthBarNode, Texture2D, texture);
 
 		ClassDB::bind_method(D_METHOD("add_health_bar"), &HealthBarNode::add_health_bar);
@@ -65,6 +75,9 @@ public:
 	int add_health_bar();
 	void free_health_bar(int idx);
 
+	int add_alteration_bar();
+	void free_alteration_bar(int idx);
+
 	void set_bar_position(int idx, Vector3 pos);
 	void set_bar_ratio(int idx, float ratio);
 
@@ -75,6 +88,7 @@ protected:
 	void _notification(int p_notification);
 private:
 	smart_list<HealthBarData> bars;
+	smart_list<AlterationBarData> alterations;
 
 	void setup();
 };
