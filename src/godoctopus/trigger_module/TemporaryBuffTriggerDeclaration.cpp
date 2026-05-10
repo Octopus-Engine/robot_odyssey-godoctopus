@@ -52,9 +52,9 @@ void declare_temporary_buff_triggers(flecs::world &ecs, custom_step_manager& man
 	declare_temporary_buff_systems<TemporaryAttackSpeedDebuff_30_3_15, octopus::Attack>(ecs, manager);
 
 	// Self-buffs: consume 3 runes when triggered
-	declare_trigger_system<ApplyArmorBuffOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<3, DefaultRune>, ApplyTemporaryBuffEvent<TemporaryArmorBuff_10_1_15>>(ecs);
 	declare_trigger_system<ApplyDamageBuffOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<3, DefaultRune>, ApplyTemporaryBuffEvent<TemporaryDamageBuff_20_2_15>>(ecs);
 	declare_trigger_system<ApplyAttackSpeedBuffOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<3, DefaultRune>, ApplyTemporaryBuffEvent<TemporaryAttackSpeedBuff_10_1_15>>(ecs);
+	declare_trigger_system<ApplyArmorBuffOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<3, DefaultRune>, ApplyTemporaryBuffEvent<TemporaryArmorBuff_10_1_15>>(ecs);
 
 	// Area-buffs: allies around unit
 	declare_area_trigger_system<ApplyArmorBuffAreaOnRuneLoad, trigger_module::RuneLoaded<DefaultRune>, RuneCondition<5, DefaultRune>, ApplyTemporaryBuffAreaEvent<TemporaryArmorBuff_10_1_15, 5>>(ecs, ctx);

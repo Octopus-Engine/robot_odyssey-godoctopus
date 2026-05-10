@@ -72,10 +72,10 @@ struct AttackSpeedBuffRuneTier2 : AttackSpeedBuff<20> { int32_t level = 0; };
 struct AttackSpeedBuffRuneTier3 : AttackSpeedBuff<50> { int32_t level = 0; };
 
 // Regular buffs runes
-struct HitPointBuffRuneRegular : LeveledBuff<LeveledHitPointBuff<10, 5>, octopus::HitPoint, octopus::HitPointMax> {};
-struct ArmorBuffRuneRegular : LeveledBuff<LeveledArmorBuff<10, 5>, octopus::Armor> {};
 struct DamageBuffRuneRegular : LeveledBuff<LeveledDamageBuff<2, 1>, octopus::Attack> {};
+struct HitPointBuffRuneRegular : LeveledBuff<LeveledHitPointBuff<10, 5>, octopus::HitPoint, octopus::HitPointMax> {};
 struct ReloadBuffRuneRegular : LeveledBuff<LeveledAttackSpeedBuff<5, 1>, octopus::Attack> {};
+struct ArmorBuffRuneRegular : LeveledBuff<LeveledArmorBuff<10, 5>, octopus::Armor> {};
 struct SpecialBuffRuneRegular : LeveledBuff<LeveledSpecialBuff<2, 1>, Special> {};
 struct AffinityBuffRuneRegular : LeveledBuff<LeveledAffinityBuff<2, 1>, Special> {};
 

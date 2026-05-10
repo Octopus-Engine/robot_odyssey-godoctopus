@@ -102,21 +102,25 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_trigger_system<AddRuneLoadOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneEvent<DefaultRune, 1>>(ecs);
 
 	declare_attack_trigger_system<LifestealRuneSpecial, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled<10, 2> >(ecs);
+	declare_attack_area_trigger_system<AoeDamageSpecial, trigger_module::DamageDealt, AlwaysCondition, DamageAreaEventSpecialScaled<10, 5, 1>>(ecs, ctx);
 
-	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled<19, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventDamageBasedSpecialScaled<19, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventHitpointBasedSpecialScaled<10, 5, 5>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventDamageBasedSpecialScaled<10, 5, 5>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled<20, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventDamageBasedSpecialScaled<20, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventHitpointBasedSpecialScaled<10, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventDamageBasedSpecialScaled<10, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, DamageAreaEventSpecialScaled<2, 5, 1>>(ecs, ctx);
 
 	// declare all trigger buff systems
 	declare_trigger_buff<AddRuneLoadOnAttack>(ecs);
 	declare_trigger_buff<AddRuneLoadOnTargetOnAttack>(ecs);
 	declare_trigger_buff<AddRuneLoadOnHit>(ecs);
 	declare_trigger_buff<LifestealRuneSpecial>(ecs);
+	declare_trigger_buff<AoeDamageSpecial>(ecs);
 	declare_trigger_buff<AoeDamageBasedOnHitpointOnDeath>(ecs);
 	declare_trigger_buff<AoeDamageBasedOnDamageOnDeath>(ecs);
 	declare_trigger_buff<AoeHealBasedOnHitpointOnDeath>(ecs);
 	declare_trigger_buff<AoeHealBasedOnDamageOnDeath>(ecs);
+	declare_trigger_buff<AoeDamageConsumeRuneOnHit>(ecs);
 
 	// declare scaling buffs
 	// regulars

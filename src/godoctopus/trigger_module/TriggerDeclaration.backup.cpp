@@ -13,7 +13,6 @@
 	// declare_area_trigger_system<AoeDamageOnHit, trigger_module::DamageReceived, AlwaysCondition, DamageAreaEvent<1, 5, 1>>(ecs, ctx);
 	// declare_area_trigger_system<AoeDamageOnHitLevel, trigger_module::DamageReceived, AlwaysCondition, DamageAreaEvent<1, 5, 1>>(ecs, ctx);
 
-	// declare_area_trigger_system<AoeDamageConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, DamageAreaEventSpecialScaled<2, 5, 1>>(ecs, ctx);
 	// declare_area_trigger_system<AoeDamageConsumeRuneOnHitTier2, trigger_module::DamageReceived, RuneCondition<2, DefaultRune>, DamageAreaEvent<4, 5, 2>>(ecs, ctx);
 
 	// declare_area_trigger_system<AoeHealOnHit, trigger_module::DamageReceived, AlwaysCondition, HealAreaEvent<2, 5, 1>>(ecs, ctx);
