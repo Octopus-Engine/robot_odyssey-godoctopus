@@ -70,9 +70,15 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 	;
 
 	{
-		std::function<void(godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, SelectionSmartMeshHandle&)> setup =
-			[](godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, SelectionSmartMeshHandle&) {};
-		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle, SelectionSmartMeshHandle>(ecs, library,
+		// Setup function to scale based on the ray collision
+		std::function<void(godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, octopus::Collision const &)> setup =
+			[](godot::SmartMultiMeshInstance* mmesh, SelectionSmartMeshHandle const & handle, octopus::Collision const & collision) {
+				int instance_id = handle.instance_id;
+				Transform3D transform = mmesh->get_old_instance_transform(instance_id);
+				transform.scale_basis(collision.ray.to_double()*3.*Vector3(1,1,1));
+				mmesh->set_instance_transform(instance_id, transform);
+			};
+		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle, octopus::Collision const>(ecs, library,
 			setup);
 	}
 
