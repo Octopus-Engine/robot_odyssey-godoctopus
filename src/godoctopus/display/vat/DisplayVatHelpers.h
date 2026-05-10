@@ -27,15 +27,16 @@ void declare_displayer_instance_handling_systems(flecs::world &ecs, Library *lib
 			lib->_mutex.unlock();
 		});
 
-	ecs.observer<IndexContainer const>()
+	ecs.observer<IndexContainer>()
 		.event(flecs::OnRemove)
-		.each([lib](flecs::entity e, IndexContainer const &handle) {
+		.each([lib](flecs::entity e, IndexContainer &handle) {
 			if (handle.instance_id < 0) {
 				return;
 			}
 			lib->_mutex.lock();
 			PosDisplayer *mmesh = lib->get_multi_mesh(handle.multi_mesh_id);
 			mmesh->free_instance(handle.instance_id);
+			handle.instance_id = -1;
 			lib->_mutex.unlock();
 		});
 
