@@ -1,7 +1,10 @@
 #pragma once
 
 #include "flecs.h"
+
 #include "octopus/world/position/PositionContext.hh"
+#include "octopus/components/basic/timestamp/TimeStamp.hh"
+
 #include "godoctopus/components/rune_load/RuneLoad.h"
 
 template<typename type, int32_t delta>
@@ -13,6 +16,7 @@ struct RuneEvent
 		if(rune_load)
 		{
 			rune_load->qty += delta;
+			rune_load->last_update_time = octopus::get_time_stamp(target.world());
 			if(delta > 0)
 			{
 				target.world().event<trigger_module::RuneLoaded<type>>()
@@ -45,6 +49,7 @@ struct RuneAreaEvent
 			{
 				RuneLoad<type> * rune_load = ent.try_get_mut<RuneLoad<type>>();
 				rune_load->qty += delta;
+				rune_load->last_update_time = octopus::get_time_stamp(ent.world());
 				if(delta > 0)
 				{
 					ent.world().event<trigger_module::RuneLoaded<type>>()
