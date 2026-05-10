@@ -31,6 +31,7 @@
 #include "godoctopus/components/beacon/BeaconSlotOccupied.h"
 #include "godoctopus/components/beacon/BeaconOccupant.h"
 #include "godoctopus/components/resource_producer/ResourceProducer.h"
+#include "godoctopus/components/rune_load/RuneLoad.h"
 #include "godoctopus/components/Static.h"
 #include "godoctopus/game/ability/building/ProximityBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/building/BasicResourceProducerBeaconSpawnAbility.h"
@@ -300,6 +301,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_beacon_slot_occupied_component(ecs);
 	declare_beacon_occupant_component(ecs);
 	declare_resource_producer_component(ecs);
+	declare_rune_load_component<DefaultRune>(ecs);
 
 	//
 	// Systems

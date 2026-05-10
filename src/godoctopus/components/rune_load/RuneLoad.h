@@ -22,6 +22,9 @@ void declare_rune_load_component(flecs::world &ecs)
 	ecs.system<RuneLoad<type>>()
 		.kind(ecs.entity(ValidatePhase))
 		.each([ecs](flecs::entity e, RuneLoad<type> &rune_load) {
+			if (rune_load.qty == 0) {
+				return;
+			}
 			// reset rune after 15 seconds
 			if (octopus::get_time_stamp(ecs) - rune_load.last_update_time > 15 * TICK_RATE) {
 				rune_load.qty = 0;
