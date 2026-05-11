@@ -14,6 +14,10 @@
 
 #include "octopus_types.h"
 
+namespace godot {
+	class SmartMMeshLibrary;
+}
+
 struct AddRuneLoadOnAttack { int32_t level = 0; };
 struct AddRuneLoadOnTargetOnAttack { int32_t level = 0; };
 struct HealAndConsumeRuneLoadOnHit { int32_t level = 0; };
@@ -106,6 +110,6 @@ using ConditionalDamageBuffHighLifeRuneTier2 = ConditionalDamageBuffLowLifeRune<
 using ConditionalReloadBuffHighLifeRuneTier1 = ConditionalReloadBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* reload_x10_base = */ 10, /* reload_x10_per_special = */ 2>;
 using ConditionalReloadBuffHighLifeRuneTier2 = ConditionalReloadBuffLowLifeRune</* under = */ false, /* percent = */ 80, /* reload_x10_base = */ 20, /* reload_x10_per_special = */ 4>;
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager);
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library = nullptr);
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, int level);

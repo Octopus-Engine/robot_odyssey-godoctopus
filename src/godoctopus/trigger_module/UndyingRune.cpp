@@ -14,11 +14,12 @@
 #include "godoctopus/trigger_module/conditions/HasComponentCondition.h"
 #include "godoctopus/trigger_module/UndyingBuffCooldown.h"
 #include "godoctopus/components/special/Special.h"
+#include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 
 // Forward declare the typedef for Undying Buff
 typedef TemporaryUndyingBuff<15*TICK_RATE> TemporaryUndyingBuff_15s;
 
-void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manager)
+void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manager, godot::SmartMMeshLibrary *library)
 {
 	declare_trigger_buff<ApplyUndyingBuffOnRuneLoad>(ecs);
 
@@ -102,4 +103,55 @@ void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manag
 				ApplyTemporaryBuffComponentEvent<TemporaryUndyingBuff_15s>::apply(e, rune->level);
 			}
 		});
+
+	// Visual display system: Add handle when Undying buff is applied
+	if (library) {
+		// Constant multi_mesh_id for undying buff visual display
+		constexpr int32_t UNDYING_BUFF_VISUAL_MESH_ID = 2;
+
+		// Typedef for the visual display handle
+		using UndyingBuffSmartMMeshHandle = SmartMMeshLibraryHandleT<TemporaryUndyingBuff_15s>;
+		declare_basic_displayer_instance_handling_systems<TemporaryUndyingBuff_15s>(ecs, library);
+
+		ecs.observer<>()
+			.event(flecs::OnAdd)
+			.with<TemporaryUndyingBuff_15s>()
+			.each([&ecs, library](flecs::entity e) {
+				e.set<UndyingBuffSmartMMeshHandle>({UNDYING_BUFF_VISUAL_MESH_ID});
+			});
+
+		// Visual display system: Remove handle when Undying buff expires
+		ecs.observer<>()
+			.event(flecs::OnRemove)
+			.with<TemporaryUndyingBuff_15s>()
+			.each([&ecs](flecs::entity e) {
+				e.remove<UndyingBuffSmartMMeshHandle>();
+			});
+
+		// lock mutex
+		ecs.system<>()
+			.kind(ecs.entity(DisplaySyncPhase))
+			.run([&ecs, library](flecs::iter&) {
+				library->_mutex.lock();
+			});
+
+		// Position sync system for undying buff visual display (DisplaySyncPhase)
+		ecs.system<octopus::Position const, UndyingBuffSmartMMeshHandle const>()
+			.kind(ecs.entity(DisplaySyncPhase))
+			.multi_threaded()
+			.each([library](flecs::entity e, octopus::Position const &pos, UndyingBuffSmartMMeshHandle const &handle) {
+				if(handle.instance_id < 0) { return; }
+				godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
+				if (!mmesh) { return; }
+				mmesh->set_instance_new_position(handle.instance_id, WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), 0., real_t(octopus::to_double(pos.pos.y))));
+				mmesh->set_color(handle.instance_id, Color(1,1,1,0.5).srgb_to_linear());
+			});
+
+		// clear up mutex
+		ecs.system<>()
+			.kind(ecs.entity(DisplaySyncPhase))
+			.run([library](flecs::iter&) {
+				library->_mutex.unlock();
+			});
+		}
 }

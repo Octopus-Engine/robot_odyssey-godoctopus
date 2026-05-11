@@ -84,7 +84,7 @@ void declare_updatable_buff(flecs::world &ecs)
 	for_each_bot_type(UpdateableBuffSystemDeclarer<BuffType, ComponentType...>{ecs});
 }
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager)
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library)
 {
 	ecs.component<trigger_module::Death>();
 	ecs.component<trigger_module::Attack>();
@@ -183,7 +183,7 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
 
-	declare_undying_rune_triggers(ecs, manager);
+	declare_undying_rune_triggers(ecs, manager, library);
 
 	declare_spawn_unit_triggers(ecs, ctx);
 }
