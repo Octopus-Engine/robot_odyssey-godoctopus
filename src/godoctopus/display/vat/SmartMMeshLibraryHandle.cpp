@@ -8,8 +8,6 @@
 #include "octopus_types.h"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
 
-#include "DisplayVatHelpers.h"
-
 void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library,
 	int32_t selection_multi_mesh_id) {
 
@@ -84,25 +82,11 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 
 	// vision handling
 	using VisionSmartMeshHandle = SmartMMeshLibraryHandleT<Vision>;
-	// no instance id to enable reload
-	ecs.component<VisionSmartMeshHandle>()
-		.member("multi_mesh_id", &VisionSmartMeshHandle::multi_mesh_id)
-	;
 
 	ecs.component<Vision>()
 		.member("visible", &Vision::visible)
 	;
-
-	{
-		// for now we just set the multi mesh id
-		std::function<void(godot::SmartMultiMeshInstance*, VisionSmartMeshHandle const &, VisionSmartMeshHandle&)> setup =
-			[library](godot::SmartMultiMeshInstance*, VisionSmartMeshHandle const &, VisionSmartMeshHandle& handle) {
-				godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
-				mmesh->set_outline_color(0, Color(0.5,1,1,1));
-			};
-		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, VisionSmartMeshHandle, VisionSmartMeshHandle>(ecs, library,
-			setup);
-	}
+	declare_basic_displayer_instance_handling_systems<Vision>(ecs, library);
 
 	// Update phase
 

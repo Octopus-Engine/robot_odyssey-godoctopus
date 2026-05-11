@@ -2,10 +2,13 @@
 
 #include "flecs.h"
 
-#include "vat/SmartMMeshLibrary.h"
 
 #include "octopus/utils/FixedPoint.hh"
+
 #include "godoctopus/display/vat/VatLibraryHandle.h"
+
+#include "DisplayVatHelpers.h"
+#include "vat/SmartMMeshLibrary.h"
 
 template<typename T>
 struct SmartMMeshLibraryHandleT {
@@ -44,3 +47,18 @@ struct Vision {
 };
 
 void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library, int32_t selection_multi_mesh_id);
+
+template<typename HandleType>
+void declare_basic_displayer_instance_handling_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library) {
+	// vision handling
+	using MMeshHandle = SmartMMeshLibraryHandleT<HandleType>;
+	// no instance id to enable reload
+	ecs.component<MMeshHandle>()
+		.member("multi_mesh_id", &MMeshHandle::multi_mesh_id)
+	;
+	std::function<void(godot::SmartMultiMeshInstance*, MMeshHandle const &, MMeshHandle&)> setup =
+		[](godot::SmartMultiMeshInstance*, MMeshHandle const &, MMeshHandle&) {
+		};
+	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, MMeshHandle, MMeshHandle>(ecs, library,
+		setup);
+}

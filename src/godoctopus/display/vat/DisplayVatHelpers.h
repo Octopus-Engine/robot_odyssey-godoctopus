@@ -4,6 +4,7 @@
 
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus_types.h"
 
 template<typename Library, typename PosDisplayer, typename IndexContainer, typename... Data>
 void declare_displayer_instance_handling_systems(flecs::world &ecs, Library *lib,
