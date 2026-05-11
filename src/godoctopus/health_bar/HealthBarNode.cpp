@@ -13,6 +13,9 @@ HealthBarNode::~HealthBarNode() {
 	bars.for_each_const([&](HealthBarData const &bar) {
 		RenderingServer::get_singleton()->free(bar.rid);
 	});
+	alterations.for_each_const([&](AlterationBarData const &alt) {
+		RenderingServer::get_singleton()->free(alt.rid);
+	});
 }
 
 int HealthBarNode::add_health_bar() {
