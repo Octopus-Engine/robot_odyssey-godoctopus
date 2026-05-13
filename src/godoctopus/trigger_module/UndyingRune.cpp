@@ -106,9 +106,6 @@ void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manag
 
 	// Visual display system: Add handle when Undying buff is applied
 	if (library) {
-		// Constant multi_mesh_id for undying buff visual display
-		constexpr int32_t UNDYING_BUFF_VISUAL_MESH_ID = 2;
-
 		// Typedef for the visual display handle
 		using UndyingBuffSmartMMeshHandle = SmartMMeshLibraryHandleT<TemporaryUndyingBuff_15s>;
 		declare_basic_displayer_instance_handling_systems<TemporaryUndyingBuff_15s>(ecs, library);
@@ -117,6 +114,8 @@ void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manag
 			.event(flecs::OnAdd)
 			.with<TemporaryUndyingBuff_15s>()
 			.each([&ecs, library](flecs::entity e) {
+				// Constant multi_mesh_id for undying buff visual display
+				constexpr int32_t UNDYING_BUFF_VISUAL_MESH_ID = 2;
 				e.set<UndyingBuffSmartMMeshHandle>({UNDYING_BUFF_VISUAL_MESH_ID});
 			});
 
