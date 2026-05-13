@@ -200,7 +200,7 @@ void InfoProxyNode::setup() {
 					bool first = true;
 					for (const std::string &item : production_queue->queue) {
 						Ref<InfoProductionQueueResource> prod_res = Ref<InfoProductionQueueResource>(memnew(InfoProductionQueueResource));
-						prod_res->set_name(item.c_str());
+						prod_res->set_prod_name(item.c_str());
 						if (first) {
 							octopus::ProductionTemplate<custom_step_manager> const * prod_template = production_library.try_get(item);
 							if (prod_template) {

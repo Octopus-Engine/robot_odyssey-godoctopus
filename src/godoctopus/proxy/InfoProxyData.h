@@ -21,11 +21,11 @@ public:
 class InfoProductionQueueResource : public Resource {
 	GDCLASS(InfoProductionQueueResource, Resource)
 
-	SET_GET_PARAM_DEF(String, name, "");
+	SET_GET_PARAM_DEF(String, prod_name, "");
 	SET_GET_PARAM_DEF(double, progress, 0);
 public:
 	static void _bind_methods() {
-		ADD_SIMPLE_PROP(InfoProductionQueueResource, STRING, name);
+		ADD_SIMPLE_PROP(InfoProductionQueueResource, STRING, prod_name);
 		ADD_SIMPLE_PROP(InfoProductionQueueResource, FLOAT, progress);
 	}
 };
@@ -124,7 +124,7 @@ public:
 		for (int i = 0; i < get_production_queue().size(); ++i) {
 			Ref<InfoProductionQueueResource> prod_copy = Ref<InfoProductionQueueResource>(memnew(InfoProductionQueueResource));
 			Ref<InfoProductionQueueResource> prod_source = get_production_queue()[i];
-			prod_copy->set_name(prod_source->get_name());
+			prod_copy->set_prod_name(prod_source->get_prod_name());
 			prod_copy->set_progress(prod_source->get_progress());
 			copy->get_production_queue()[i] = prod_copy;
 		}
