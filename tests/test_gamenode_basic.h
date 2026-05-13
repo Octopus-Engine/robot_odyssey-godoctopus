@@ -76,4 +76,8 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production wi
 	test_commandnode_production_without_producer();
 }
 
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production with two producers") {
+	test_commandnode_production_two_producers_parallel_output();
+}
+
 } // namespace godoctopus2_tests
