@@ -18,14 +18,31 @@ public:
 	}
 };
 
+class InfoProductionQueueResource : public Resource {
+	GDCLASS(InfoProductionQueueResource, Resource)
+
+	SET_GET_PARAM_DEF(String, name, "");
+	SET_GET_PARAM_DEF(double, progress, 0);
+public:
+	static void _bind_methods() {
+		ADD_SIMPLE_PROP(InfoProductionQueueResource, STRING, name);
+		ADD_SIMPLE_PROP(InfoProductionQueueResource, FLOAT, progress);
+	}
+};
+
 class InfoProxyResource : public Resource {
 	GDCLASS(InfoProxyResource, Resource)
 
+	// Info Target
 	SET_GET_PARAM_DEF(Vector2, position, Vector2());
 	SET_GET_PARAM_DEF(Vector2, target, Vector2());
 	SET_GET_PARAM_DEF(bool, has_move_target, false);
 	SET_GET_PARAM_DEF(bool, has_attack_target, false);
 
+	// Info Production Queue
+	SET_GET_PARAM(TypedArray<Ref<InfoProductionQueueResource>>, production_queue);
+
+	// Basic info
 	SET_GET_PARAM_DEF(String, type, "");
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM_DEF(int, player, 0);
@@ -48,6 +65,8 @@ public:
 		ADD_SIMPLE_PROP(InfoProxyResource, BOOL, has_move_target);
 		ADD_SIMPLE_PROP(InfoProxyResource, BOOL, has_attack_target);
 
+		ADD_ARRAY_OBJECT_PROP(InfoProxyResource, InfoProductionQueueResource, production_queue);
+
 		ADD_SIMPLE_PROP(InfoProxyResource, STRING, type);
 		ADD_SIMPLE_PROP(InfoProxyResource, INT, team);
 		ADD_SIMPLE_PROP(InfoProxyResource, INT, player);
@@ -67,11 +86,16 @@ public:
 };
 
 struct InfoProxyData {
+	// Info Target
 	SET_GET_PARAM(octopus::Vector, position);
 	SET_GET_PARAM(octopus::Vector, target);
 	SET_GET_PARAM_DEF(bool, has_move_target, false);
 	SET_GET_PARAM_DEF(bool, has_attack_target, false);
 
+	// Info Production Queue
+	SET_GET_PARAM(TypedArray<Ref<InfoProductionQueueResource>>, production_queue);
+
+	// Basic info
 	SET_GET_PARAM(std::string, type);
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM_DEF(int, player, 0);
@@ -95,6 +119,15 @@ public:
 		copy->set_target({(float)get_target().x.to_double(), (float)get_target().y.to_double()});
 		copy->set_has_move_target(get_has_move_target());
 		copy->set_has_attack_target(get_has_attack_target());
+
+		copy->get_production_queue().resize(get_production_queue().size());
+		for (int i = 0; i < get_production_queue().size(); ++i) {
+			Ref<InfoProductionQueueResource> prod_copy = Ref<InfoProductionQueueResource>(memnew(InfoProductionQueueResource));
+			Ref<InfoProductionQueueResource> prod_source = get_production_queue()[i];
+			prod_copy->set_name(prod_source->get_name());
+			prod_copy->set_progress(prod_source->get_progress());
+			copy->get_production_queue()[i] = prod_copy;
+		}
 
 		copy->set_type(get_type().c_str());
 		copy->set_team(get_team());

@@ -15,6 +15,10 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/world/player/PlayerInfo.hh"
+#include "octopus/world/production/ProductionTemplateLibrary.hh"
+#include "octopus/world/production/ProductionTemplate.hh"
+
+#include "octopus_types.h"
 
 namespace godot {
 
@@ -114,8 +118,8 @@ void InfoProxyNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	// Create Position, Velocity query that matches empty archetypes.
-	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*> update_query =
-		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*>();
+	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*> update_query =
+		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -130,7 +134,7 @@ void InfoProxyNode::setup() {
 			// reset proxy map to avoid keeping data of entities that are no longer valid
 			_proxy_map.clear();
 
-			update_query.each([this](flecs::entity e,
+			update_query.each([this, ecs](flecs::entity e,
 				Position &pos,
 				PrefabType *prefab_type,
 				PlayerAppartenance *player_appartenance,
@@ -144,7 +148,8 @@ void InfoProxyNode::setup() {
 				MoveCommand *move_cmd,
 				AttackCommand *atk_cmd,
 				PickableSetUp *pickable,
-				RuneLoad<DefaultRune> *rune_load)
+				RuneLoad<DefaultRune> *rune_load,
+				ProductionQueue *production_queue)
 			{
 				InfoProxyData &infos_data = _proxy_map[e.id()];
 				infos_data.entity = e;
@@ -187,6 +192,32 @@ void InfoProxyNode::setup() {
 					infos_data.set_rune_loads(rune_load->qty);
 				} else {
 					infos_data.set_rune_loads(0);
+				}
+
+				if (production_queue) {
+					const auto &production_library = ecs.get<octopus::ProductionTemplateLibrary<custom_step_manager>>();
+					TypedArray<Ref<InfoProductionQueueResource>> prod_array;
+					bool first = true;
+					for (const std::string &item : production_queue->queue) {
+						Ref<InfoProductionQueueResource> prod_res = Ref<InfoProductionQueueResource>(memnew(InfoProductionQueueResource));
+						prod_res->set_name(item.c_str());
+						if (first) {
+							octopus::ProductionTemplate<custom_step_manager> const * prod_template = production_library.try_get(item);
+							if (prod_template) {
+								prod_res->set_progress((double)(octopus::get_time_stamp(e.world()) - production_queue->start_timestamp) / double(prod_template->duration()));
+							} else {
+								prod_res->set_progress(0);
+							}
+							first = false;
+						} else {
+							prod_res->set_progress(0);
+						}
+						prod_array.append(prod_res);
+					}
+					infos_data.set_production_queue(prod_array);
+				}
+				else {
+					infos_data.set_production_queue(TypedArray<Ref<InfoProductionQueueResource>>());
 				}
 			});
 		});
