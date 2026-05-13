@@ -14,6 +14,7 @@
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/position/Move.hh"
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/advanced/production/queue/ProductionQueue.hh"
 
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
@@ -54,6 +55,16 @@ struct PrefabDeclarer {
 			.template add<BotType>()
 			.template auto_override<RuneLoad<DefaultRune>>()
 		;
+	}
+};
+
+struct PrefabProductionDeclarer {
+	flecs::world &ecs;
+	std::string producer_name;
+
+	template<typename BotType>
+	void operator()() const {
+		ecs.prefab(producer_name.c_str()).add<octopus::ProductionQueue>(ecs.component(BotType::naming()));
 	}
 };
 
@@ -106,6 +117,14 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
 	;
+
+	if (unit_prefab->get_producer()) {
+		prefab.add<octopus::ProductionQueue>();
+		for_each_bot_type(PrefabProductionDeclarer {
+			ecs,
+			unit_prefab->get_prefab_name().utf8().get_data()
+		});
+	}
 
 	if (unit_prefab->get_is_static()) {
 		prefab.add<Building>();

@@ -74,13 +74,6 @@ void declare_prefab(flecs::world &ecs) {
 	ecs.prefab("heavyfire_bot")
 		.add<octopus::NoInstantDamage>()
 	;
-
-	ecs.prefab("base_central")
-		.add<octopus::ResourceStock>()
-		.add<octopus::ProductionQueue>()
-	;
-
-	for_each_bot_type(PrefabProductionDeclarer{ecs, "base_central"});
 }
 
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
@@ -88,8 +81,14 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	ecs.entity().set<octopus::PlayerInfo>({0, 0});
-	ecs.entity().set<octopus::PlayerInfo>({1, 1});
+	ecs.entity()
+		.set<octopus::PlayerInfo>({0, 0})
+		.add<octopus::ResourceStock>()
+		.add<octopus::ResourceSpent>();
+	ecs.entity()
+		.set<octopus::PlayerInfo>({1, 1})
+		.add<octopus::ResourceStock>()
+		.add<octopus::ResourceSpent>();
 
 	declare_prefab(ecs);
 	declare_earbot_steam_ability(ecs, game.get_step_context());
