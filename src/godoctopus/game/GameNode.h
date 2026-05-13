@@ -25,6 +25,7 @@
 namespace godot {
 
 class GameNode;
+class ResourceNodeEventBus;
 
 class LevelNode : public Node {
 	GDCLASS(LevelNode, Node)
@@ -62,6 +63,7 @@ public:
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);
+	SET_GET_NODE_PATH(ResourceNodeEventBus, resource_node_event_bus);
 	SET_GET_PARAM_DEF(LevelNode*, level_node, nullptr);
 	SET_GET_PARAM(TypedArray<Ref<UnitPrefab>>, unit_prefabs);
 public:

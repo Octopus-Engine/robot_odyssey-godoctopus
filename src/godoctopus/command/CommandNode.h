@@ -27,6 +27,12 @@ public:
 	void cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue);
 	/// @brief Make all entities in group perform the cast named cast_name
 	void all_cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue);
+	/// @brief Add a production command to the lowest queue that can produce the given product
+	void add_production(Ref<EntityGroup> group, String const &prod_name_p);
+	/// @brief Cancel a production in the queue (mono_unit_group should contain only the unit that is producing the product to cancel)
+	void cancel_production(Ref<EntityGroup> mono_unit_group, int queue_index);
+	/// @brief Queue a production in any procution building of the player
+	void queue_production(int player, String const &prod_name);
 
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class

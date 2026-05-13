@@ -13,6 +13,8 @@ void ResourceNodeEventBus::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup"), &ResourceNodeEventBus::setup);
 	ClassDB::bind_method(D_METHOD("notify_resource_consumed", "position", "resource_name", "amount", "player"),
 		&ResourceNodeEventBus::notify_resource_consumed);
+	ClassDB::bind_method(D_METHOD("notify_resource_produced", "position", "resource_name", "amount", "player"),
+		&ResourceNodeEventBus::notify_resource_produced);
 
 	ADD_SIGNAL(MethodInfo("resource_produced",
 		PropertyInfo(Variant::VECTOR3, "position"),
@@ -68,6 +70,14 @@ void ResourceNodeEventBus::setup() {
 
 void ResourceNodeEventBus::notify_resource_consumed(Vector3 const &position, String const &resource_name, double amount, int player) {
 	call_deferred("emit_signal", "resource_consumed",
+		position,
+		resource_name,
+		amount,
+		player);
+}
+
+void ResourceNodeEventBus::notify_resource_produced(Vector3 const &position, String const &resource_name, double amount, int player) {
+	call_deferred("emit_signal", "resource_produced",
 		position,
 		resource_name,
 		amount,

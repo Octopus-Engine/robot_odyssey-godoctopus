@@ -38,6 +38,8 @@
 #include "godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/circular/CircularSpawnAbility.h"
 #include "godoctopus/game/ability/circular/BuildingSlotSpawnAbility.h"
+#include "godoctopus/production/UnitProduction.h"
+#include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 namespace godot
@@ -77,7 +79,9 @@ GameNode::~GameNode() {
 	stop();
 }
 
-static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab) {
+static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, ResourceNodeEventBus* _resource_node_event_bus) {
+	auto &production_library = ecs.get_mut<octopus::ProductionTemplateLibrary<custom_step_manager>>();
+	production_library.add_template(new UnitProductionTemplate(unit_prefab, _resource_node_event_bus));
 
 	for_each_bot_type(PrefabExistenceChecker{unit_prefab->get_prefab_name().utf8().get_data(), false});
 	bool is_static = unit_prefab->get_is_static();
@@ -268,9 +272,6 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	using namespace octopus;
 	flecs::world &ecs = _world.ecs;
 
-	// _entity_payload = new EntityPayload<flecs::entity>();
-
-	// _drawer->set_time_step(_time_step);
 	_world.attack_retarget_wait = 32;
 	auto flock_manager = ecs.entity("flock_manager")
 							.add<FlockManager>();
@@ -346,7 +347,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	// Add unit type component
 	for_each_bot_type(PrefabDeclarer{ecs});
 	for (Ref<UnitPrefab> unit_prefab : unit_prefabs) {
-		declare_unit_prefab(ecs, unit_prefab);
+		declare_unit_prefab(ecs, unit_prefab, _resource_node_event_bus);
 	}
 
 	// load level
@@ -377,8 +378,14 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 		print_line("Init with no level node set!");
 		init_world(meta_data, [](Dictionary const &meta_data_, GameNode &game) {
 			print_line("No level node to setup - basic setup");
-			game.get_world().ecs.entity().set<octopus::PlayerInfo>({0, 0});
-			game.get_world().ecs.entity().set<octopus::PlayerInfo>({1, 1});
+			game.get_world().ecs.entity()
+				.set<octopus::PlayerInfo>({0, 0})
+				.add<octopus::ResourceStock>()
+				.add<octopus::ResourceSpent>();
+			game.get_world().ecs.entity()
+				.set<octopus::PlayerInfo>({1, 1})
+				.add<octopus::ResourceStock>()
+				.add<octopus::ResourceSpent>();
 			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library());
 		});
 	}
@@ -413,6 +420,7 @@ void GameNode::init_nodes()
 	INIT_NODE_PATH(ParticuleSmartMMesh, particules);
 	INIT_NODE_PATH(VatLibrary, vat_library);
 	INIT_NODE_PATH(PickerNode, picker_node);
+	INIT_NODE_PATH(ResourceNodeEventBus, resource_node_event_bus);
 }
 
 double GameNode::get_avg_engine_times()
@@ -439,6 +447,7 @@ void GameNode::_bind_methods()
 	BIND_NODE_PATH(GameNode, ParticuleSmartMMesh, particules);
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
 	BIND_NODE_PATH(GameNode, PickerNode, picker_node);
+	BIND_NODE_PATH(GameNode, ResourceNodeEventBus, resource_node_event_bus);
 
 	BIND_PROP(GameNode, LevelNode, level_node);
 

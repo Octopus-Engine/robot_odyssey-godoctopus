@@ -3,6 +3,7 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
+#include "octopus/components/advanced/production/queue/ProductionQueue.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/position/Move.hh"
@@ -32,6 +33,16 @@
 /////////////////////////////////////////////////
 
 namespace godot {
+
+struct PrefabProductionDeclarer {
+	flecs::world &ecs;
+	const char *producer_name;
+
+	template<typename BotType>
+	void operator()() const {
+		ecs.prefab(producer_name).add<octopus::ProductionQueue>(ecs.component(BotType::naming()));
+	}
+};
 
 void declare_prefab(flecs::world &ecs) {
 	// Add casting ability for earbots
@@ -63,6 +74,13 @@ void declare_prefab(flecs::world &ecs) {
 	ecs.prefab("heavyfire_bot")
 		.add<octopus::NoInstantDamage>()
 	;
+
+	ecs.prefab("base_central")
+		.add<octopus::ResourceStock>()
+		.add<octopus::ProductionQueue>()
+	;
+
+	for_each_bot_type(PrefabProductionDeclarer{ecs, "base_central"});
 }
 
 void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {

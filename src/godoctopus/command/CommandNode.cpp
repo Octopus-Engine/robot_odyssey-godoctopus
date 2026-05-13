@@ -29,6 +29,40 @@ static bool can_cast(flecs::world const &ecs,
 		&& caster->check_timestamp_last_cast(reload_time, octopus::get_time_stamp(ecs), cast_name);
 }
 
+static flecs::entity find_best_entity_for_production(
+	flecs::world const &ecs,
+	std::vector<flecs::entity> const &entities,
+	std::string const &production_name_p
+) {
+	using namespace octopus;
+	auto &&prod_library = ecs.try_get<ProductionTemplateLibrary<custom_step_manager> >();
+	if(!prod_library) {
+		return flecs::entity();
+	}
+	ProductionTemplate<custom_step_manager> const & prod_template = prod_library->get(production_name_p);
+
+	flecs::entity best_ent;
+	int64_t best_end_time = -1;
+	for(flecs::entity const &e : entities) {
+		if(!e.is_valid()) {
+			continue;
+		}
+		octopus::ProductionQueue const * prod_queue = e.try_get<octopus::ProductionQueue>();
+		if(prod_queue
+		&& e.has<octopus::ProductionQueue>(ecs.component(production_name_p.c_str()))
+		&& prod_template.can_produce(e, ecs)) {
+			int64_t const queue_duration = octopus::get_queue_duration(*prod_library, prod_queue->queue);
+			int64_t const start = prod_queue->start_timestamp;
+			if(best_end_time < 0 || start + queue_duration < best_end_time)
+			{
+				best_end_time = start + queue_duration;
+				best_ent = e;
+			}
+		}
+	}
+	return best_ent;
+}
+
 static flecs::entity find_best_entity_for_casting(flecs::world const &ecs,
 												  Ref<EntityGroup> group,
 												  std::string const &cast_name,
@@ -121,8 +155,10 @@ void CommandNode::stop_command(Ref<EntityGroup> group) {
 }
 
 void CommandNode::cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue) {
+    if(!_input_container) { return; }
     octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
 
+    // TODO move to functor!!!
     std::string cast_name_str = cast_name.utf8().get_data();
 	flecs::entity entity_target;
 	if (target.is_valid() && target->get_entities().size() > 0) {
@@ -145,8 +181,10 @@ void CommandNode::cast_command(Ref<EntityGroup> group, String const &cast_name, 
 }
 
 void CommandNode::all_cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue) {
+    if(!_input_container) { return; }
     octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
 
+    // TODO move to functor!!!
     std::string cast_name_str = cast_name.utf8().get_data();
 	flecs::entity entity_target;
 	if (target.is_valid() && target->get_entities().size() > 0) {
@@ -175,7 +213,64 @@ void CommandNode::all_cast_command(Ref<EntityGroup> group, String const &cast_na
     _input_container->addFunctorCommand(command);
 }
 
+void CommandNode::add_production(Ref<EntityGroup> group, String const &prod_name_p){
+    if(!_input_container || group->empty()) { return; }
+    std::string prod_name_str = prod_name_p.utf8().get_data();
 
+    octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
+    command.func = [this, group, prod_name_str](
+        octopus::WorldContext<custom_step_manager> const &world,
+        octopus::InputContainer<custom_variant, custom_step_manager>& container)
+        -> octopus::InputCommandPackage<custom_variant> {
+        flecs::entity e = find_best_entity_for_production(world.ecs, group->get_entities(), prod_name_str);
+
+        if(!e.is_valid()) { return octopus::InputCommandPackage<custom_variant>(); }
+
+        // register production
+        container.container_add_production.get_front_layer().push_back({e, prod_name_str});
+
+        return octopus::InputCommandPackage<custom_variant>();
+    };
+    _input_container->addFunctorCommand(command);
+}
+
+void CommandNode::cancel_production(Ref<EntityGroup> mono_unit_group, int queue_index) {
+    if(!_input_container || mono_unit_group->empty()) { return; }
+    flecs::entity e = mono_unit_group->get_entities()[0];
+    if(e.is_valid()) {
+        _input_container->cancelProduction(octopus::InputCancelProduction {e, queue_index});
+    }
+}
+
+void CommandNode::queue_production(int player, String const &prod_name) {
+    std::string prod_name_str = prod_name.utf8().get_data();
+
+    octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
+    command.func = [this, player, prod_name_str](
+        octopus::WorldContext<custom_step_manager> const &world,
+        octopus::InputContainer<custom_variant, custom_step_manager>& container)
+        -> octopus::InputCommandPackage<custom_variant> {
+
+        // Get all producer for the player
+        auto query = world.ecs.query<const octopus::PlayerAppartenance, const octopus::ProductionQueue>();
+        std::vector<flecs::entity> entities;
+        query.each([&](flecs::entity e, octopus::PlayerAppartenance const &player_app, octopus::ProductionQueue const &prod_queue) {
+            if(player_app.idx == (uint32_t)player && e.has<octopus::ProductionQueue>(world.ecs.component(prod_name_str.c_str()))) {
+                entities.push_back(e);
+            }
+        });
+
+        flecs::entity e = find_best_entity_for_production(world.ecs, entities, prod_name_str);
+
+        if(!e.is_valid()) { return octopus::InputCommandPackage<custom_variant>(); }
+
+        // register production
+        container.container_add_production.get_front_layer().push_back({e, prod_name_str});
+
+        return octopus::InputCommandPackage<custom_variant>();
+    };
+    _input_container->addFunctorCommand(command);
+}
 
 // Will be called by Godot when the class is registered
 // Use this to add properties to your class
@@ -187,6 +282,9 @@ void CommandNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("stop_command", "group"), &CommandNode::stop_command);
 	ClassDB::bind_method(D_METHOD("cast_command", "group", "cast_name", "target", "world_target", "queue"), &CommandNode::cast_command);
 	ClassDB::bind_method(D_METHOD("all_cast_command", "group", "cast_name", "target", "world_target", "queue"), &CommandNode::all_cast_command);
+	ClassDB::bind_method(D_METHOD("add_production", "group", "prod_name"), &CommandNode::add_production);
+	ClassDB::bind_method(D_METHOD("cancel_production", "group", "queue_index"), &CommandNode::cancel_production);
+	ClassDB::bind_method(D_METHOD("queue_production", "player", "prod_name"), &CommandNode::queue_production);
 	ClassDB::bind_method(D_METHOD("setup"), &CommandNode::setup);
 }
 

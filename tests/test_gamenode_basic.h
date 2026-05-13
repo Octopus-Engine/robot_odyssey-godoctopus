@@ -5,6 +5,7 @@
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
 #include "testing/SpawnCloneUnitRune.test.h"
 #include "testing/UndyingRune.test.h"
+#include "testing/CommandNodeProduction.test.h"
 
 namespace godoctopus2_tests {
 
@@ -65,6 +66,14 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode UndyingRune expires a
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode UndyingRune buff reapplied after cooldown expires") {
 	test_gamenode_undying_buff_reapplied_after_cooldown_expires();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production with producer") {
+	test_commandnode_production_with_producer();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production without producer") {
+	test_commandnode_production_without_producer();
 }
 
 } // namespace godoctopus2_tests

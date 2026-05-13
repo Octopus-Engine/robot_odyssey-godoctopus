@@ -28,6 +28,7 @@ public:
 
 	/// @brief Call from GDScript to fire the resource_consumed signal.
 	void notify_resource_consumed(Vector3 const &position, String const &resource_name, double amount, int player);
+	void notify_resource_produced(Vector3 const &position, String const &resource_name, double amount, int player);
 
 protected:
 	void _notification(int p_notification);

@@ -232,6 +232,7 @@ godoctopus2_sources = [
     "./src/godoctopus/display/particule/ParticleOrchestrator.cpp",
     "./src/godoctopus/pickable/Pickable.cpp",
     "./src/godoctopus/pickable/PickerNode.cpp",
+    "./src/godoctopus/production/UnitProduction.cpp",
     "./src/godoctopus/projectile/CustomBasicProjectile.cpp",
     "./src/godoctopus/projectile/HeavyfireBotProjectile.cpp",
     "./src/godoctopus/proximity/ProximityChecker.cpp",

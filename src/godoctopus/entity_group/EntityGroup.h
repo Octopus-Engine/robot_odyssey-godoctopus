@@ -19,6 +19,7 @@ public:
 	std::vector<flecs::entity> & get_entities() { return entities; }
 
 	int size() const { return entities.size(); }
+	int empty() const { return entities.empty(); }
 
 	void remove_dead_entities(InfoProxyNode *proxy_node);
 
