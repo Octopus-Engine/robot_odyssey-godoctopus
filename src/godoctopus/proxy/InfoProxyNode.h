@@ -50,6 +50,14 @@ public:
 	/// @note This is not a real-time query, but will return the last known data for the entities in the group. The data is updated at a fixed interval (every 8 ticks).
 	TypedArray<Ref<InfoTargetResource>> get_target_from_group(Ref<EntityGroup> group) const;
 
+	/// @brief Get production queue data for entities in group. Only returns data for entities that are alive and enabled, and will return empty data for entities that are not valid.
+	/// @note This is not a real-time query, but will return the last known data for the entities in the group. The data is updated at a fixed interval (every 8 ticks).
+	/// @param group The entity group to query.
+	/// @return A typed array of production queue resources for the entities in the group.
+	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_group(Ref<EntityGroup> group) const;
+
+	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_player(int player_id) const;
+
 	void init_nodes();
 
 	/// @brief Get a locker for the proxy data. The locker will lock the mutex for the duration of its lifetime, and will provide access to the proxy data map.
@@ -64,6 +72,7 @@ private:
 	mutable std::mutex _mutex;
 
 	std::unordered_map<flecs::entity_t, InfoProxyData> _proxy_map;
+	std::unordered_map<uint32_t, std::vector<flecs::entity_t>> _player_to_production_entities;
 	int64_t _last_refresh_time = 0;
 
 	friend struct InfoProxyNodeDataLocker;

@@ -38,6 +38,8 @@ void InfoProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup"), &InfoProxyNode::setup);
 	ClassDB::bind_method(D_METHOD("get_proxy_from_group", "group"), &InfoProxyNode::get_proxy_from_group);
 	ClassDB::bind_method(D_METHOD("get_target_from_group", "group"), &InfoProxyNode::get_target_from_group);
+	ClassDB::bind_method(D_METHOD("get_production_queue_from_group", "group"), &InfoProxyNode::get_production_queue_from_group);
+	ClassDB::bind_method(D_METHOD("get_production_queue_from_player", "player_id"), &InfoProxyNode::get_production_queue_from_player);
 }
 
 TypedArray<Ref<InfoProxyResource>> InfoProxyNode::get_proxy_from_group(Ref<EntityGroup> group) const {
@@ -108,6 +110,46 @@ TypedArray<Ref<InfoTargetResource>> InfoProxyNode::get_target_from_group(Ref<Ent
 	return data_array;
 }
 
+TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue_from_group(Ref<EntityGroup> group) const {
+	TypedArray<Ref<InfoProductionQueueResource>> result;
+	std::lock_guard<std::mutex> lock(_mutex);
+	for (flecs::entity_t entity : group->get_entities()) {
+		auto it = _proxy_map.find(entity);
+		if (it != _proxy_map.end()) {
+			const InfoProxyData &d = it->second;
+			if (d.get_alive()) {
+				result.append(d.get_production_queue());
+			}
+		}
+	}
+	return result;
+}
+
+TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue_from_player(int player_id) const {
+	TypedArray<Ref<InfoProductionQueueResource>> result;
+	std::lock_guard<std::mutex> lock(_mutex);
+	if (player_id < 0 || _player_to_production_entities.find((uint32_t)player_id) == _player_to_production_entities.end()) {
+		return result;
+	}
+	uint64_t idx = 0;
+	bool any_valid = true;
+	while (any_valid) {
+		any_valid = false;
+		for (const auto &entity : _player_to_production_entities.at((uint32_t)player_id)) {
+			auto it = _proxy_map.find(entity);
+			if (it != _proxy_map.end()) {
+				const InfoProxyData &d = it->second;
+				if (d.get_alive() && idx < d.get_production_queue().size()) {
+					result.append(d.get_production_queue()[idx]);
+					any_valid = true;
+				}
+			}
+		}
+		idx++;
+	}
+	return result;
+}
+
 void InfoProxyNode::setup() {
 	using namespace octopus;
 
@@ -133,6 +175,7 @@ void InfoProxyNode::setup() {
 
 			// reset proxy map to avoid keeping data of entities that are no longer valid
 			_proxy_map.clear();
+			_player_to_production_entities.clear();
 
 			update_query.each([this, ecs](flecs::entity e,
 				Position &pos,
@@ -213,6 +256,9 @@ void InfoProxyNode::setup() {
 							prod_res->set_progress(0);
 						}
 						prod_array.append(prod_res);
+					}
+					if (prod_array.size() > 0 && player_appartenance) {
+						_player_to_production_entities[player_appartenance->idx].push_back(e.id());
 					}
 					infos_data.set_production_queue(prod_array);
 				}
