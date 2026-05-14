@@ -218,6 +218,7 @@ godoctopus2_sources = [
     "./src/godoctopus/game/ability/building/ProximityBeaconSpawnAbility.cpp",
     "./src/godoctopus/game/ability/building/BasicResourceProducerBeaconSpawnAbility.cpp",
     "./src/godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.cpp",
+    "./src/godoctopus/game/ability/building/UnitProducerBeaconSpawnAbility.cpp",
     "./src/godoctopus/game/ability/circular/CircularSpawnAbility.cpp",
     "./src/godoctopus/game/ability/circular/BuildingSlotSpawnAbility.cpp",
     "./src/godoctopus/game/ability/unit/ArmorbotBuff.cpp",

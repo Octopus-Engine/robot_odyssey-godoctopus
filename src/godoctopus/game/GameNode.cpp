@@ -37,6 +37,7 @@
 #include "godoctopus/game/ability/building/ProximityBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/building/BasicResourceProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/UnitProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/circular/CircularSpawnAbility.h"
 #include "godoctopus/game/ability/circular/BuildingSlotSpawnAbility.h"
 #include "godoctopus/production/UnitProduction.h"
@@ -337,6 +338,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_proximity_beacon_ability(ecs, *this);
 	declare_basic_resource_producer_beacon_ability(ecs, *this);
 	declare_advanced_resource_producer_beacon_ability(ecs, *this);
+	declare_unit_producer_beacon_ability(ecs, *this);
 	declare_circular_spawn_ability(ecs, *this);
 	declare_building_slot_spawn_ability(ecs, *this);
 
