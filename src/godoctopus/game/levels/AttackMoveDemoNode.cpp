@@ -25,6 +25,7 @@
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/projectile/HeavyfireBotProjectile.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/production/PlayerUpgradeProduction.h"
 #include "octopus_types.h"
 
 /////////////////////////////////////////////////
@@ -81,46 +82,45 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	flecs::world &ecs = game.get_world().ecs;
 
-	ecs.entity()
+	flecs::entity p0 = ecs.entity()
 		.set<octopus::PlayerInfo>({0, 0})
 		.add<octopus::ResourceStock>()
-		.add<octopus::ResourceSpent>();
-	ecs.entity()
+		.add<octopus::ResourceSpent>()
+		.add<octopus::PlayerUpgrade>();
+	flecs::entity p1 = ecs.entity()
 		.set<octopus::PlayerInfo>({1, 1})
 		.add<octopus::ResourceStock>()
-		.add<octopus::ResourceSpent>();
+		.add<octopus::ResourceSpent>()
+		.add<octopus::PlayerUpgrade>();
 
 	declare_prefab(ecs);
 	declare_earbot_steam_ability(ecs, game.get_step_context());
 	declare_armorbot_ability(ecs, game);
 	declare_heavyfire_bot_projectile_systems(ecs, game.get_world().position_context, game.get_step_context().step_manager);
 
-	for(int i = 0 ; i < count1 ; ++ i) {
-		auto e1 = ecs.entity()
-			.is_a(ecs.prefab(unit1.utf8().get_data()))
-			.set<octopus::Team>({1})
-			.set<octopus::PlayerAppartenance>({1})
-			.set<octopus::Position>({{20+0.01*i,40+0.01*i}, {0,0}})
-		;
-
-		octopus::AttackCommand atk_l {flecs::entity(), {12,5}, true};
-		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
-		e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
-	}
-
-	int n = count2;
-	for(int i = 0 ; i < n/10 ; ++ i) {
-		for(int j = 0 ; j < 10 ; ++ j) {
-			auto e1 = ecs.entity()
-				.is_a(ecs.prefab(unit2.utf8().get_data()))
-				.set<octopus::Team>({0})
-				.set<octopus::PlayerAppartenance>({0})
-				.set<octopus::Position>({{12+0.5*i,5+0.5*j}, {0,0}})
-			;
-
-			octopus::AttackCommand atk_l {flecs::entity(), {50,100}, true};
-			e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {atk_l});
-			e1.try_get_mut<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionDone());
+	octopus::ProductionTemplateLibrary<custom_step_manager> &prod_library = ecs.get_mut<octopus::ProductionTemplateLibrary<custom_step_manager>>();
+	if (meta_data.has("PlayerUpgrades")) {
+		Dictionary const &prod_dict = meta_data["PlayerUpgrades"];
+		Array const &prod_names = prod_dict.keys();
+		for (int i = 0; i < prod_names.size(); ++i) {
+			const String prod_name = prod_names[i];
+			Dictionary const &prod_data = prod_dict[prod_name];
+			const int64_t duration = int64_t(prod_data["duration"]) * TICK_RATE;
+			std::unordered_map<std::string, octopus::Fixed> costs;
+			if (prod_data.has("costs")) {
+				Dictionary const &costs_dict = prod_data["costs"];
+				Array const &resource_names = costs_dict.keys();
+				for (int j = 0; j < resource_names.size(); ++j) {
+					const String resource_name = resource_names[j];
+					const octopus::Fixed cost = octopus::Fixed(double(costs_dict[resource_name]));
+					costs[resource_name.utf8().get_data()] = cost;
+				}
+			}
+			prod_library.add_template(new PlayerUpgradeProduction(prod_name.utf8().get_data(), duration, costs));
+			const std::string prod_name_std = prod_name.utf8().get_data();
+			ecs.prefab("base_central").add<octopus::ProductionQueue>(ecs.component(prod_name_std.c_str()));
+			p0.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
+			p1.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
 		}
 	}
 }

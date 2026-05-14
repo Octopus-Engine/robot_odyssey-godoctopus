@@ -13,10 +13,6 @@ class AttackMoveDemoNode : public LevelNode {
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(ParticleOrchestrator, particule_orchestrator);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
-	SET_GET_PARAM_DEF(String, unit1, "earbot");
-	SET_GET_PARAM_DEF(String, unit2, "tallbot");
-	SET_GET_PARAM_DEF(int, count1, 10);
-	SET_GET_PARAM_DEF(int, count2, 10);
 
 public:
 	void setup(Dictionary const &meta_data, GameNode &game) override;
@@ -28,10 +24,6 @@ public:
 		BIND_NODE_PATH(AttackMoveDemoNode, ParticuleSmartMMesh, particules);
 		BIND_NODE_PATH(AttackMoveDemoNode, ParticleOrchestrator, particule_orchestrator);
 		BIND_NODE_PATH(AttackMoveDemoNode, VatLibrary, vat_library);
-		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit1);
-		ADD_SIMPLE_PROP(AttackMoveDemoNode, INT, count1);
-		ADD_SIMPLE_PROP(AttackMoveDemoNode, STRING, unit2);
-		ADD_SIMPLE_PROP(AttackMoveDemoNode, INT, count2);
 	}
 
 	void init_nodes() {

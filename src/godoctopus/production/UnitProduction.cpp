@@ -41,7 +41,7 @@ void UnitProductionTemplate::produce(flecs::entity producer_p, flecs::world cons
 
 		octopus::Position pos_l;
 		pos_l.pos = producer_p.try_get<octopus::Position>()->pos;
-		pos_l.pos.y += 4;
+		pos_l.pos.y += 5;
 
 		e.set<octopus::Position>(pos_l)
 			.is_a(ecs.prefab(_name.c_str()))

@@ -27,6 +27,7 @@
 #include "godoctopus/proximity/ProximityChecker.h"
 #include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
+#include "godoctopus/event_bus/ProductionNodeEventBus.h"
 #include "godoctopus/triangulation/TriangulationNode.h"
 #include "godoctopus/triangulation/DelaunayTriangulationNode.h"
 
@@ -69,7 +70,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::UnitPrefab>();
 	ClassDB::register_class<godot::ProximityChecker>();
 	ClassDB::register_class<godot::ResourceNodeEventBus>();
-
+	ClassDB::register_class<godot::ProductionNodeEventBus>();
 	ClassDB::register_class<godot::TriangulationNode>();
 	ClassDB::register_class<godot::DelaunayTriangulationNode>();
 	// Demo Nodes
