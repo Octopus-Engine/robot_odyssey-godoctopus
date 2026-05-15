@@ -37,7 +37,7 @@ struct PlayerUpgradeProduction : octopus::ProductionTemplate<custom_step_manager
 
 		apply_production(producer_p, ecs, manager_p);
 
-		ecs.entity(PRODUCTION_NODE_EVENT_BUS).emit<ProductionDone>({prod_name, (int)player.get<octopus::PlayerInfo>().idx});
+		ecs.entity(PRODUCTION_NODE_EVENT_BUS).emit<ProductionDone>(producer_p, {prod_name, (int)player.get<octopus::PlayerInfo>().idx});
 	}
 	virtual void apply_production(flecs::entity producer_p, flecs::world const &ecs, custom_step_manager &manager_p) const {}
 	virtual void enqueue(flecs::entity producer_p, flecs::world const &ecs, custom_step_manager &manager_p) const {
@@ -61,17 +61,3 @@ struct PlayerUpgradeProduction : octopus::ProductionTemplate<custom_step_manager
 	virtual std::string name() const { return prod_name; }
 	virtual int64_t duration() const { return duration_prod;}
 };
-
-// struct PlayerUpgradeProductionCast : public PlayerUpgradeProduction {
-// 	using PlayerUpgradeProduction::PlayerUpgradeProduction;
-
-// 	PlayerUpgradeProductionCast(std::string const &prod_name_p, int64_t duration_p,
-// 		std::unordered_map<std::string, octopus::Fixed> const &costs_p,
-// 		std::vector<std::string> const &requirements_p = {})
-// 		: PlayerUpgradeProduction(prod_name_p, duration_p, costs_p, requirements_p) {}
-
-// 	virtual void apply_production(flecs::entity producer_p, flecs::world const &ecs, custom_step_manager &manager_p) const override {
-// 		octopus::CastCommand cast_cmd {prod_name, producer_p, producer_p.get<octopus::Position>()->pos};
-// 		producer_p.try_get<custom_queue>()->_queuedActions.push_back(octopus::CommandQueueActionAddBack<custom_variant> {cast_cmd});
-// 	}
-// };

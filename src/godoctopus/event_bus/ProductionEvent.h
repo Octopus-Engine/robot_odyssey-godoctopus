@@ -1,6 +1,9 @@
 #pragma once
 
+#include "flecs.h"
+
 struct ProductionDone {
+	flecs::entity entity;
 	std::string production_name;
 	int player;
 };
