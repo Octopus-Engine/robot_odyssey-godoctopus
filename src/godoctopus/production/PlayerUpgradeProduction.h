@@ -37,7 +37,7 @@ struct PlayerUpgradeProduction : octopus::ProductionTemplate<custom_step_manager
 
 		apply_production(producer_p, ecs, manager_p);
 
-		ecs.entity(PRODUCTION_NODE_EVENT_BUS).emit<ProductionDone>(producer_p, {prod_name, (int)player.get<octopus::PlayerInfo>().idx});
+		ecs.entity(PRODUCTION_NODE_EVENT_BUS).emit<ProductionDone>({producer_p, prod_name, (int)player.get<octopus::PlayerInfo>().idx});
 	}
 	virtual void apply_production(flecs::entity producer_p, flecs::world const &ecs, custom_step_manager &manager_p) const {}
 	virtual void enqueue(flecs::entity producer_p, flecs::world const &ecs, custom_step_manager &manager_p) const {
