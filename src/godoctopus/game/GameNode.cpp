@@ -120,7 +120,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 	;
 
 	if (unit_prefab->get_producer()) {
-		prefab.add<octopus::ProductionQueue>();
+		prefab.set<octopus::ProductionQueue>({0, {}, octopus::Vector(unit_prefab->get_production_point_x(), unit_prefab->get_production_point_y())});
 		for_each_bot_type(PrefabProductionDeclarer {
 			ecs,
 			unit_prefab->get_prefab_name().utf8().get_data()

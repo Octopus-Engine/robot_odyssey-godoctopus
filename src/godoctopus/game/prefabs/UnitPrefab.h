@@ -87,6 +87,8 @@ public:
 		// Cost
 		ClassDB::add_property_group("UnitPrefab", "Production");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, producer);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, production_point_x);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, production_point_y);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_basic_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_advanced_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_pop_x10);
@@ -182,6 +184,8 @@ public:
 	SET_GET_PARAM_DEF(int, speed_x10, 30);
 	// Production
 	SET_GET_PARAM_DEF(bool, producer, false);
+	SET_GET_PARAM_DEF(int, production_point_x, 0.);
+	SET_GET_PARAM_DEF(int, production_point_y, 0.);
 	SET_GET_PARAM_DEF(int, cost_basic_x10, 10);
 	SET_GET_PARAM_DEF(int, cost_advanced_x10, 10);
 	SET_GET_PARAM_DEF(int, cost_pop_x10, 10);
