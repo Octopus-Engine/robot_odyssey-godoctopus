@@ -42,7 +42,7 @@ class HealthBarNode : public Node {
 	SET_GET_PARAM(Ref<ShaderMaterial>, bar_material);
 	SET_GET_PARAM(Ref<ShaderMaterial>, alteration_material);
 	SET_GET_PARAM(Ref<Texture2D>, texture);
-	SET_GET_PARAM(int, display_mode);
+	SET_GET_PARAM_DEF(int, display_mode, 1);
 public:
 	~HealthBarNode();
 	// Will be called by Godot when the class is registered
