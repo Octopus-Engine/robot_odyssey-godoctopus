@@ -139,7 +139,6 @@ flecs_sources = [
 
 octopus2_sources = [
     "./src/octopus2/src/octopus/src/cdt/src/CDT.cpp",
-    "./src/octopus2/src/octopus/src/octopus/commands/basic/ability/CastCommand.cc",
     "./src/octopus2/src/octopus/src/octopus/commands/basic/move/AttackCommandSystem.cc",
     "./src/octopus2/src/octopus/src/octopus/commands/basic/move/MoveCommand.cc",
     "./src/octopus2/src/octopus/src/octopus/commands/basic/rally_point/SetRallyPointCommand.cc",
@@ -227,6 +226,7 @@ godoctopus2_sources = [
     "./src/godoctopus/health_bar/HealthBarNode.cpp",
     "./src/godoctopus/info/InfoNode.cpp",
 	"./src/godoctopus/proxy/InfoProxyNode.cpp",
+	"./src/godoctopus/proxy/PlayerResourceProxyNode.cpp",
     "./src/godoctopus/info/VisionNode.cpp",
     "./src/godoctopus/display/vat/SmartMMeshLibraryHandle.cpp",
     "./src/godoctopus/display/vat/VatLibraryHandle.cpp",

@@ -23,6 +23,9 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 
 	virtual octopus::UpgradeRequirement get_requirements() const { return {}; }
 	virtual std::unordered_map<std::string, octopus::Fixed> resource_consumption() const { return {}; }
+	std::unordered_map<std::string, octopus::Fixed> player_resource_consumption_cache;
+    virtual std::unordered_map<std::string, octopus::Fixed> player_resource_consumption() const { return player_resource_consumption_cache; }
+
 
 	// Allow subclasses to provide a default prefab name when BeaconConfig is unavailable.
 	// Returns empty string by default (no fallback). Subclasses can override to provide variant-specific defaults.

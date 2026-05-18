@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BeaconSpawnAbility.h"
+#include "core/variant/dictionary.h"
 
 namespace godot {
 class GameNode;
@@ -23,4 +24,4 @@ struct AdvancedResourceProducerBeaconSpawnAbility : BeaconSpawnAbility {
 	virtual octopus::Fixed range() const override { return octopus::Fixed(0); }
 };
 
-void declare_advanced_resource_producer_beacon_ability(flecs::world &ecs, godot::GameNode &game);
+void declare_advanced_resource_producer_beacon_ability(flecs::world &ecs, godot::GameNode &game, Dictionary const &meta_data);
