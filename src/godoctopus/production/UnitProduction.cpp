@@ -11,8 +11,8 @@ UnitProductionTemplate::UnitProductionTemplate(Ref<UnitPrefab> const &prefab, Re
 	_name = prefab->get_prefab_name().utf8().get_data();
 	duration_in_ticks = prefab->get_production_duration() * TICK_RATE;
 	// Requirements handled in godot for now (temporary!)
-	//_resource_consumption["basic"] = prefab->get_cost_basic_x10() / 10.;
-	//_resource_consumption["advanced"] = prefab->get_cost_advanced_x10() / 10.;
+	_resource_consumption["basic"] = prefab->get_cost_basic_x10() / 10.;
+	_resource_consumption["advanced"] = prefab->get_cost_advanced_x10() / 10.;
 }
 
 /// @brief This is used to handle resource consumption and restoration

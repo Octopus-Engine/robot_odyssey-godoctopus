@@ -19,6 +19,9 @@
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/game/ability/unit/ArmorbotBuff.h"
 #include "godoctopus/game/ability/building/ProximityBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/BasicResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.h"
+#include "godoctopus/game/ability/building/UnitProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/unit/EarbotSteam.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
@@ -97,6 +100,9 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 	declare_earbot_steam_ability(ecs, game.get_step_context());
 	declare_armorbot_ability(ecs, game);
 	declare_heavyfire_bot_projectile_systems(ecs, game.get_world().position_context, game.get_step_context().step_manager);
+	declare_basic_resource_producer_beacon_ability(ecs, game, meta_data);
+	declare_advanced_resource_producer_beacon_ability(ecs, game, meta_data);
+	declare_unit_producer_beacon_ability(ecs, game, meta_data);
 
 	octopus::ProductionTemplateLibrary<custom_step_manager> &prod_library = ecs.get_mut<octopus::ProductionTemplateLibrary<custom_step_manager>>();
 	if (meta_data.has("PlayerUpgrades")) {

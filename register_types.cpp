@@ -24,6 +24,7 @@
 #include "godoctopus/info/VisionNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
+#include "godoctopus/proxy/PlayerResourceProxyNode.h"
 #include "godoctopus/proximity/ProximityChecker.h"
 #include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
@@ -65,6 +66,10 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::InfoProductionQueueResource>();
 	ClassDB::register_class<godot::InfoProxyResource>();
 	ClassDB::register_class<godot::InfoProxyNode>();
+	ClassDB::register_class<godot::PlayerResourceEntryResource>();
+	ClassDB::register_class<godot::PlayerUpgradeEntryResource>();
+	ClassDB::register_class<godot::PlayerResourceProxyResource>();
+	ClassDB::register_class<godot::PlayerResourceProxyNode>();
 	ClassDB::register_class<godot::VisionNode>();
 	ClassDB::register_class<godot::ParticleOcherstrated>();
 	ClassDB::register_class<godot::UnitPrefab>();

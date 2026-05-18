@@ -25,7 +25,6 @@ void ProductionNodeEventBus::setup() {
 	}
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
-	custom_step_manager &step_manager = _game_node->get_step_context().step_manager;
 
 	// Create an entity observer
 	ecs.entity(PRODUCTION_NODE_EVENT_BUS).observe<ProductionDone>([this](ProductionDone const & prod) {

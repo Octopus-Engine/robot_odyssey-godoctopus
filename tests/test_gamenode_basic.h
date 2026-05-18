@@ -6,6 +6,7 @@
 #include "testing/SpawnCloneUnitRune.test.h"
 #include "testing/UndyingRune.test.h"
 #include "testing/CommandNodeProduction.test.h"
+#include "testing/PlayerResourceProxy.test.h"
 
 namespace godoctopus2_tests {
 
@@ -78,6 +79,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production wi
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production with two producers") {
 	test_commandnode_production_two_producers_parallel_output();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Player Resource Proxy sync") {
+	test_player_resource_proxy_sync();
 }
 
 } // namespace godoctopus2_tests
