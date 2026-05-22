@@ -134,8 +134,9 @@ void InputStatusProxyNode::setup() {
 		.kind(ecs.entity(DisplaySyncPhase))
 		.run([this, ecs](flecs::iter &) {
 			std::lock_guard<std::mutex> lock(_mutex);
-			_refresh_cast_queries(ecs);
-			_refresh_production_queries(ecs);
+			flecs::world world = ecs;
+			_refresh_cast_queries(world);
+			_refresh_production_queries(world);
 		});
 
 	_setup_done = true;
