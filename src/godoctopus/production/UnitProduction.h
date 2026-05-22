@@ -7,6 +7,7 @@
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 
 #include "octopus_types.h"
+#include <vector>
 
 namespace godot {
 
@@ -16,6 +17,7 @@ struct UnitProductionTemplate : public octopus::ProductionTemplate<custom_step_m
 	UnitProductionTemplate(Ref<UnitPrefab> const &prefab, ResourceNodeEventBus* event_bus_p);
 
     // Requirements handled in godot for now (temporary!)
+    virtual octopus::UpgradeRequirement get_requirements() const override;
     /// @brief This is used to handle resource consumption and restoration
     virtual std::unordered_map<std::string, octopus::Fixed> resource_consumption() const override;
     /// @brief This is called when the production is done
@@ -38,6 +40,7 @@ struct UnitProductionTemplate : public octopus::ProductionTemplate<custom_step_m
 private:
 	std::string _name;
 	int64_t duration_in_ticks = 0;
+	std::vector<std::string> _requirements;
 	std::unordered_map<std::string, octopus::Fixed> _resource_consumption;
 	ResourceNodeEventBus* event_bus;
 };

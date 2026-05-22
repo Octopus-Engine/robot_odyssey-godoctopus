@@ -93,6 +93,7 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_advanced_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_pop_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, production_duration);
+		ADD_ARRAY_OBJECT_PROP(UnitPrefab, String, required_technologies);
 		// Health bar
 		ClassDB::add_property_group("UnitPrefab", "Health");
 		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
@@ -190,6 +191,7 @@ public:
 	SET_GET_PARAM_DEF(int, cost_advanced_x10, 10);
 	SET_GET_PARAM_DEF(int, cost_pop_x10, 10);
 	SET_GET_PARAM_DEF(int, production_duration, 10);
+	SET_GET_PARAM(TypedArray<String>, required_technologies);
 	// Health bar
 	SET_GET_PARAM_DEF(int, hitpoint, 75);
 	SET_GET_PARAM_DEF(int, armor, 0);

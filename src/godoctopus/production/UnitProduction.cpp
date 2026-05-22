@@ -10,9 +10,25 @@ namespace godot {
 UnitProductionTemplate::UnitProductionTemplate(Ref<UnitPrefab> const &prefab, ResourceNodeEventBus* event_bus_p) : event_bus(event_bus_p) {
 	_name = prefab->get_prefab_name().utf8().get_data();
 	duration_in_ticks = prefab->get_production_duration() * TICK_RATE;
+	TypedArray<String> required_technologies = prefab->get_required_technologies();
+	for (int i = 0; i < required_technologies.size(); ++i) {
+		String const requirement = required_technologies[i];
+		if (requirement.is_empty()) {
+			continue;
+		}
+		_requirements.push_back(requirement.utf8().get_data());
+	}
 	// Requirements handled in godot for now (temporary!)
 	_resource_consumption["basic"] = prefab->get_cost_basic_x10() / 10.;
 	_resource_consumption["advanced"] = prefab->get_cost_advanced_x10() / 10.;
+}
+
+octopus::UpgradeRequirement UnitProductionTemplate::get_requirements() const {
+	octopus::UpgradeRequirement up_requirement;
+	for (std::string const &requirement : _requirements) {
+		up_requirement.upgrades[requirement] = 1;
+	}
+	return up_requirement;
 }
 
 /// @brief This is used to handle resource consumption and restoration
