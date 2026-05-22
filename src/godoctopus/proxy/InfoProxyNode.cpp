@@ -8,10 +8,12 @@
 #include "godoctopus/pickable/Pickable.h"
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
+#include "octopus/components/basic/ability/Caster.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/player/Team.hh"
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/advanced/production/queue/ProductionQueue.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/world/player/PlayerInfo.hh"
@@ -19,6 +21,7 @@
 #include "octopus/world/production/ProductionTemplate.hh"
 
 #include "octopus_types.h"
+#include <unordered_set>
 
 namespace godot {
 
@@ -39,6 +42,7 @@ void InfoProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_proxy_from_group", "group"), &InfoProxyNode::get_proxy_from_group);
 	ClassDB::bind_method(D_METHOD("get_target_from_group", "group"), &InfoProxyNode::get_target_from_group);
 	ClassDB::bind_method(D_METHOD("get_production_queue_from_group", "group"), &InfoProxyNode::get_production_queue_from_group);
+	ClassDB::bind_method(D_METHOD("get_available_actions_from_group", "group"), &InfoProxyNode::get_available_actions_from_group);
 	ClassDB::bind_method(D_METHOD("get_production_queue_from_player", "player_id"), &InfoProxyNode::get_production_queue_from_player);
 }
 
@@ -112,6 +116,9 @@ TypedArray<Ref<InfoTargetResource>> InfoProxyNode::get_target_from_group(Ref<Ent
 
 TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue_from_group(Ref<EntityGroup> group) const {
 	TypedArray<Ref<InfoProductionQueueResource>> result;
+	if (!group.is_valid()) {
+		return result;
+	}
 	std::lock_guard<std::mutex> lock(_mutex);
 	for (flecs::entity_t entity : group->get_entities()) {
 		auto it = _proxy_map.find(entity);
@@ -122,6 +129,52 @@ TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue
 			}
 		}
 	}
+	return result;
+}
+
+TypedArray<Ref<InfoAvailableActionResource>> InfoProxyNode::get_available_actions_from_group(Ref<EntityGroup> group) const {
+	TypedArray<Ref<InfoAvailableActionResource>> result;
+	if (!group.is_valid()) {
+		return result;
+	}
+
+	std::lock_guard<std::mutex> lock(_mutex);
+	std::unordered_set<std::string> seen_action_keys;
+
+	auto append_action = [&result, &seen_action_keys](InfoAvailableActionResource::ActionType action_type, const char *action_name, flecs::entity source_entity) {
+		if (!action_name || action_name[0] == '\0') {
+			return;
+		}
+		const std::string key = std::to_string((int)action_type) + ":" + action_name;
+		if (seen_action_keys.find(key) != seen_action_keys.end()) {
+			return;
+		}
+		seen_action_keys.insert(key);
+
+		Ref<InfoAvailableActionResource> action_resource(memnew(InfoAvailableActionResource));
+		action_resource->set_action_name(String(action_name));
+		action_resource->set_action_type((int)action_type);
+		action_resource->set_source_entity_id((int64_t)source_entity.id());
+		result.append(action_resource);
+	};
+
+	for (flecs::entity entity : group->get_entities()) {
+		if (!entity.is_valid()) {
+			continue;
+		}
+		auto info_it = _proxy_map.find(entity.id());
+		if (info_it == _proxy_map.end() || !info_it->second.get_alive()) {
+			continue;
+		}
+
+		entity.each<octopus::Caster>([&append_action, entity](flecs::entity ability) {
+			append_action(InfoAvailableActionResource::ACTION_CAST, ability.name().c_str(), entity);
+		});
+		entity.each<octopus::ProductionQueue>([&append_action, entity](flecs::entity production) {
+			append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production.name().c_str(), entity);
+		});
+	}
+
 	return result;
 }
 

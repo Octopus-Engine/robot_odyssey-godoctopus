@@ -56,6 +56,10 @@ public:
 	/// @return A typed array of production queue resources for the entities in the group.
 	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_group(Ref<EntityGroup> group) const;
 
+	/// @brief Get available action capabilities for entities in group.
+	/// @note This returns capability presence (union across the group), not runtime cast/production readiness.
+	TypedArray<Ref<InfoAvailableActionResource>> get_available_actions_from_group(Ref<EntityGroup> group) const;
+
 	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_player(int player_id) const;
 
 	void init_nodes();
