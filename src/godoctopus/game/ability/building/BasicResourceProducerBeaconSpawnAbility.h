@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BeaconSpawnAbility.h"
-#include "core/variant/dictionary.h"
 
 namespace godot {
 class GameNode;

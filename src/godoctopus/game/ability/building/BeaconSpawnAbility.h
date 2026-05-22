@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flecs.h"
+#include "core/variant/dictionary.h"
 
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/world/ability/AbilityTemplateLibrary.hh"
@@ -95,3 +96,5 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 };
 
 void declare_beacon_spawn_ability(flecs::world &ecs, godot::GameNode &game);
+
+void load_beacon_spawn_ability_meta_data(BeaconSpawnAbility &ability, Dictionary const &meta_data);
