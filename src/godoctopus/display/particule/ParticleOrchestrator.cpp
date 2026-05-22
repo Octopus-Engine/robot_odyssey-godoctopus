@@ -19,7 +19,6 @@ static Ref<ParticuleTypeResource> get_resource_or_default(ParticleOrchestrator c
 	if (resource_idx >= 0 && resource_idx < self->get_particule_resources().size()) {
 		return self->get_particule_resources()[resource_idx];
 	}
-	std::cout<<"defaulted "<<resource_idx<<std::endl;
 	return Ref<ParticuleTypeResource>();
 }
 
