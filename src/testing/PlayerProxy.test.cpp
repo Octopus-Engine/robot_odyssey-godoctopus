@@ -4,20 +4,20 @@
 
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
-#include "godoctopus/proxy/PlayerResourceProxyNode.h"
+#include "godoctopus/proxy/PlayerProxyNode.h"
 
 #include "octopus/components/basic/player/PlayerUpgrade.hh"
 #include "octopus/world/player/PlayerInfo.hh"
 #include "octopus/world/resources/ResourceInfo.hh"
 #include "octopus/world/resources/ResourceStock.hh"
 
-#include "testing/PlayerResourceProxy.test.h"
+#include "testing/PlayerProxy.test.h"
 
-struct PlayerResourceProxyTestContext {
+struct PlayerProxyTestContext {
 	godot::GameNode *game_node = nullptr;
-	godot::PlayerResourceProxyNode *proxy_node = nullptr;
+	godot::PlayerProxyNode *proxy_node = nullptr;
 
-	PlayerResourceProxyTestContext() {
+	PlayerProxyTestContext() {
 		game_node = memnew(godot::GameNode);
 		game_node->set_name("GameNode");
 
@@ -25,7 +25,7 @@ struct PlayerResourceProxyTestContext {
 		prefab->set_prefab_name("gunbot");
 		game_node->get_unit_prefabs().push_back(prefab);
 
-		proxy_node = memnew(godot::PlayerResourceProxyNode);
+		proxy_node = memnew(godot::PlayerProxyNode);
 		proxy_node->set_ref_game_node(NodePath("/root/GameNode"));
 		proxy_node->set_refresh_tick(1);
 		game_node->add_child(proxy_node);
@@ -35,8 +35,8 @@ struct PlayerResourceProxyTestContext {
 	}
 };
 
-void test_player_resource_proxy_sync() {
-	PlayerResourceProxyTestContext context;
+void test_player_proxy_sync() {
+	PlayerProxyTestContext context;
 	auto &ecs = context.game_node->get_world().ecs;
 
 	flecs::entity player0 = ecs.entity("player0")

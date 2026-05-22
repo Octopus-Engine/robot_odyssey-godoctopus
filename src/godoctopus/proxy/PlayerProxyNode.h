@@ -10,10 +10,10 @@
 
 namespace godot {
 
-class PlayerResourceProxyNode;
+class PlayerProxyNode;
 
-struct PlayerResourceProxyNodeDataLocker {
-	PlayerResourceProxyNodeDataLocker(PlayerResourceProxyNode *node_p, std::mutex &mutex_p);
+struct PlayerProxyNodeDataLocker {
+	PlayerProxyNodeDataLocker(PlayerProxyNode *node_p, std::mutex &mutex_p);
 
 	std::unordered_map<uint32_t, PlayerResourceProxyData> const &proxy_map;
 
@@ -21,8 +21,8 @@ private:
 	std::lock_guard<std::mutex> lock;
 };
 
-class PlayerResourceProxyNode : public Node {
-	GDCLASS(PlayerResourceProxyNode, Node)
+class PlayerProxyNode : public Node {
+	GDCLASS(PlayerProxyNode, Node)
 
 	SET_GET_PARAM_DEF(int, refresh_tick, 8);
 	SET_GET_NODE_PATH(GameNode, game_node);
@@ -35,9 +35,12 @@ public:
 
 	TypedArray<Ref<PlayerResourceProxyResource>> get_proxy_from_players() const;
 	Ref<PlayerResourceProxyResource> get_proxy_from_player(int player_id) const;
+	int64_t get_upgrade_level(int player_id, const String &upgrade_name) const;
+	bool check_upgrade(int player_id, const String &upgrade_name, int64_t level = 1) const;
+	bool check_upgrades(int player_id, const Dictionary &requirements) const;
 
-	PlayerResourceProxyNodeDataLocker get_data_locker() {
-		return PlayerResourceProxyNodeDataLocker(this, _mutex);
+	PlayerProxyNodeDataLocker get_data_locker() {
+		return PlayerProxyNodeDataLocker(this, _mutex);
 	}
 
 	void add_resource(const String &resource_name, int64_t amount, int player_id);
@@ -61,7 +64,7 @@ private:
 	};
 	std::vector<PeriodicResource> periodic_resources;
 
-	friend struct PlayerResourceProxyNodeDataLocker;
+	friend struct PlayerProxyNodeDataLocker;
 };
 
 }

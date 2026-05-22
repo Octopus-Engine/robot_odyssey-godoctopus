@@ -24,7 +24,7 @@
 #include "godoctopus/info/VisionNode.h"
 #include "godoctopus/pickable/PickerNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
-#include "godoctopus/proxy/PlayerResourceProxyNode.h"
+#include "godoctopus/proxy/PlayerProxyNode.h"
 #include "godoctopus/proxy/InputStatusProxyNode.h"
 #include "godoctopus/proximity/ProximityChecker.h"
 #include "godoctopus/nwfc/NotWaveFunctionCollapseNode.h"
@@ -70,7 +70,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::PlayerResourceEntryResource>();
 	ClassDB::register_class<godot::PlayerUpgradeEntryResource>();
 	ClassDB::register_class<godot::PlayerResourceProxyResource>();
-	ClassDB::register_class<godot::PlayerResourceProxyNode>();
+	ClassDB::register_class<godot::PlayerProxyNode>();
 	ClassDB::register_class<godot::InputStatusResourceCost>();
 	ClassDB::register_class<godot::InputStatusResource>();
 	ClassDB::register_class<godot::InputStatusProxyNode>();

@@ -6,7 +6,7 @@
 #include "testing/SpawnCloneUnitRune.test.h"
 #include "testing/UndyingRune.test.h"
 #include "testing/CommandNodeProduction.test.h"
-#include "testing/PlayerResourceProxy.test.h"
+#include "testing/PlayerProxy.test.h"
 
 namespace godoctopus2_tests {
 
@@ -82,7 +82,7 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production wi
 }
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Player Resource Proxy sync") {
-	test_player_resource_proxy_sync();
+	test_player_proxy_sync();
 }
 
 } // namespace godoctopus2_tests

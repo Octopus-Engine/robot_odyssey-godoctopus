@@ -226,7 +226,7 @@ godoctopus2_sources = [
     "./src/godoctopus/health_bar/HealthBarNode.cpp",
     "./src/godoctopus/info/InfoNode.cpp",
     "./src/godoctopus/proxy/InfoProxyNode.cpp",
-    "./src/godoctopus/proxy/PlayerResourceProxyNode.cpp",
+    "./src/godoctopus/proxy/PlayerProxyNode.cpp",
     "./src/godoctopus/proxy/InputStatusProxyNode.cpp",
     "./src/godoctopus/info/VisionNode.cpp",
     "./src/godoctopus/display/vat/SmartMMeshLibraryHandle.cpp",

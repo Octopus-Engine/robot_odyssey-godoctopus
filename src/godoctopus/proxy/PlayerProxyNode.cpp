@@ -1,4 +1,4 @@
-#include "PlayerResourceProxyNode.h"
+#include "PlayerProxyNode.h"
 
 #include "octopus/components/basic/player/PlayerUpgrade.hh"
 #include "octopus/world/player/PlayerInfo.hh"
@@ -8,21 +8,24 @@
 
 namespace godot {
 
-PlayerResourceProxyNodeDataLocker::PlayerResourceProxyNodeDataLocker(PlayerResourceProxyNode *node_p, std::mutex &mutex_p) :
+PlayerProxyNodeDataLocker::PlayerProxyNodeDataLocker(PlayerProxyNode *node_p, std::mutex &mutex_p) :
 	proxy_map(node_p->_proxy_map), lock(mutex_p) {}
 
-void PlayerResourceProxyNode::_bind_methods() {
-	BIND_NODE_PATH(PlayerResourceProxyNode, GameNode, game_node);
-	ADD_SIMPLE_PROP(PlayerResourceProxyNode, INT, refresh_tick);
+void PlayerProxyNode::_bind_methods() {
+	BIND_NODE_PATH(PlayerProxyNode, GameNode, game_node);
+	ADD_SIMPLE_PROP(PlayerProxyNode, INT, refresh_tick);
 
-	ClassDB::bind_method(D_METHOD("setup"), &PlayerResourceProxyNode::setup);
-	ClassDB::bind_method(D_METHOD("get_proxy_from_players"), &PlayerResourceProxyNode::get_proxy_from_players);
-	ClassDB::bind_method(D_METHOD("get_proxy_from_player", "player_id"), &PlayerResourceProxyNode::get_proxy_from_player);
-	ClassDB::bind_method(D_METHOD("add_resource", "resource_name", "amount", "player_id"), &PlayerResourceProxyNode::add_resource);
-	ClassDB::bind_method(D_METHOD("add_periodic_resource", "resource_name", "amount", "tickrate", "player_id"), &PlayerResourceProxyNode::add_periodic_resource);
+	ClassDB::bind_method(D_METHOD("setup"), &PlayerProxyNode::setup);
+	ClassDB::bind_method(D_METHOD("get_proxy_from_players"), &PlayerProxyNode::get_proxy_from_players);
+	ClassDB::bind_method(D_METHOD("get_proxy_from_player", "player_id"), &PlayerProxyNode::get_proxy_from_player);
+	ClassDB::bind_method(D_METHOD("get_upgrade_level", "player_id", "upgrade_name"), &PlayerProxyNode::get_upgrade_level);
+	ClassDB::bind_method(D_METHOD("check_upgrade", "player_id", "upgrade_name", "level"), &PlayerProxyNode::check_upgrade, DEFVAL(1));
+	ClassDB::bind_method(D_METHOD("check_upgrades", "player_id", "requirements"), &PlayerProxyNode::check_upgrades);
+	ClassDB::bind_method(D_METHOD("add_resource", "resource_name", "amount", "player_id"), &PlayerProxyNode::add_resource);
+	ClassDB::bind_method(D_METHOD("add_periodic_resource", "resource_name", "amount", "tickrate", "player_id"), &PlayerProxyNode::add_periodic_resource);
 }
 
-TypedArray<Ref<PlayerResourceProxyResource>> PlayerResourceProxyNode::get_proxy_from_players() const {
+TypedArray<Ref<PlayerResourceProxyResource>> PlayerProxyNode::get_proxy_from_players() const {
 	TypedArray<Ref<PlayerResourceProxyResource>> result;
 	std::lock_guard<std::mutex> lock(_mutex);
 	result.resize(_proxy_map.size());
@@ -33,7 +36,7 @@ TypedArray<Ref<PlayerResourceProxyResource>> PlayerResourceProxyNode::get_proxy_
 	return result;
 }
 
-Ref<PlayerResourceProxyResource> PlayerResourceProxyNode::get_proxy_from_player(int player_id) const {
+Ref<PlayerResourceProxyResource> PlayerProxyNode::get_proxy_from_player(int player_id) const {
 	std::lock_guard<std::mutex> lock(_mutex);
 	auto it = _proxy_map.find((uint32_t)player_id);
 	if (it == _proxy_map.end()) {
@@ -42,7 +45,39 @@ Ref<PlayerResourceProxyResource> PlayerResourceProxyNode::get_proxy_from_player(
 	return it->second.duplicate();
 }
 
-void PlayerResourceProxyNode::setup() {
+int64_t PlayerProxyNode::get_upgrade_level(int player_id, const String &upgrade_name) const {
+	std::lock_guard<std::mutex> lock(_mutex);
+	auto it = _proxy_map.find((uint32_t)player_id);
+	if (it == _proxy_map.end()) {
+		return 0;
+	}
+	TypedArray<Ref<PlayerUpgradeEntryResource>> const &upgrades = it->second.get_ref_upgrades();
+	for (int i = 0; i < upgrades.size(); ++i) {
+		Ref<PlayerUpgradeEntryResource> const entry = upgrades[i];
+		if (entry.is_valid() && entry->get_upgrade_name() == upgrade_name) {
+			return entry->get_level();
+		}
+	}
+	return 0;
+}
+
+bool PlayerProxyNode::check_upgrade(int player_id, const String &upgrade_name, int64_t level) const {
+	return get_upgrade_level(player_id, upgrade_name) >= level;
+}
+
+bool PlayerProxyNode::check_upgrades(int player_id, const Dictionary &requirements) const {
+	Array keys = requirements.keys();
+	for (int i = 0; i < keys.size(); ++i) {
+		String upgrade_name = keys[i];
+		int64_t required_level = (int64_t)requirements[upgrade_name];
+		if (!check_upgrade(player_id, upgrade_name, required_level)) {
+			return false;
+		}
+	}
+	return true;
+}
+
+void PlayerProxyNode::setup() {
 	if (!_game_node) {
 		return;
 	}
@@ -115,30 +150,30 @@ void PlayerResourceProxyNode::setup() {
 		});
 }
 
-void PlayerResourceProxyNode::add_resource(const String &resource_name, int64_t amount, int player_id) {
+void PlayerProxyNode::add_resource(const String &resource_name, int64_t amount, int player_id) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	std::string resource_name_str = resource_name.utf8().get_data();
 	added_resources[(uint32_t)player_id][resource_name_str] += amount;
 }
 
-void PlayerResourceProxyNode::add_periodic_resource(const String &resource_name, int64_t amount, int64_t tickrate, int player_id) {
+void PlayerProxyNode::add_periodic_resource(const String &resource_name, int64_t amount, int64_t tickrate, int player_id) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	std::string resource_name_str = resource_name.utf8().get_data();
 	periodic_resources.push_back({resource_name_str, amount, tickrate, player_id});
 }
 
-void PlayerResourceProxyNode::init_nodes() {
+void PlayerProxyNode::init_nodes() {
 	INIT_NODE_PATH(GameNode, game_node);
 	if (_game_node) {
-		_game_node->connect("init_done", callable_mp(this, &PlayerResourceProxyNode::setup));
+		_game_node->connect("init_done", callable_mp(this, &PlayerProxyNode::setup));
 	}
 }
 
-void PlayerResourceProxyNode::_process(double delta) {
+void PlayerProxyNode::_process(double delta) {
 	(void)delta;
 }
 
-void PlayerResourceProxyNode::_notification(int p_notification) {
+void PlayerProxyNode::_notification(int p_notification) {
 	switch (p_notification) {
 		case NOTIFICATION_PROCESS: {
 		} break;
