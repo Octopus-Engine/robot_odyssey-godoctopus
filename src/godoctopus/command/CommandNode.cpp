@@ -29,61 +29,6 @@ static bool can_cast(flecs::world const &ecs,
 		&& caster->check_timestamp_last_cast(reload_time, octopus::get_time_stamp(ecs), cast_name);
 }
 
-static flecs::entity find_best_entity_for_production(
-	flecs::world const &ecs,
-	std::vector<flecs::entity> const &entities,
-	std::string const &production_name_p
-) {
-	using namespace octopus;
-	auto &&prod_library = ecs.try_get<ProductionTemplateLibrary<custom_step_manager> >();
-	if(!prod_library) {
-		return flecs::entity();
-	}
-	ProductionTemplate<custom_step_manager> const & prod_template = prod_library->get(production_name_p);
-
-	flecs::entity best_ent;
-	int64_t best_end_time = -1;
-	for(flecs::entity const &e : entities) {
-		if(!e.is_valid()) {
-			continue;
-		}
-		octopus::ProductionQueue const * prod_queue = e.try_get<octopus::ProductionQueue>();
-		if(prod_queue
-		&& e.has<octopus::ProductionQueue>(ecs.component(production_name_p.c_str()))
-		&& prod_template.can_produce(e, ecs)) {
-			int64_t const queue_duration = octopus::get_queue_duration(*prod_library, prod_queue->queue);
-			int64_t const start = prod_queue->start_timestamp;
-			if(best_end_time < 0 || start + queue_duration < best_end_time)
-			{
-				best_end_time = start + queue_duration;
-				best_ent = e;
-			}
-		}
-	}
-	return best_ent;
-}
-
-static flecs::entity find_best_entity_for_casting(flecs::world const &ecs,
-												  Ref<EntityGroup> group,
-												  std::string const &cast_name,
-												  octopus::Vector const &target_pos) {
-	using namespace octopus;
-
-	int64_t reload = get_reload_time(ecs, cast_name);
-	/// @todo Tri entre les entités :
-	/// - Proximité
-	/// Filtre :
-	/// - Caster qui peut cast la demande
-	/// - Pas de cast du même sort dans la queue (sauf si reload = 0) (sauf si aucun autre candidat)
-	/// - Resource check (en prenant en compte tous les cast dans la queue si booléen queued = true [add])
-	for(flecs::entity const &e : group->get_entities()) {
-		if(can_cast(ecs, e, cast_name, reload)) {
-			return e;
-		}
-	}
-	return flecs::entity();
-}
-
 void CommandNode::move_command(Ref<EntityGroup> group, Vector3 const &world_target, bool queue) {
     if(!_input_container) { return; }
 
@@ -158,36 +103,22 @@ void CommandNode::cast_command(Ref<EntityGroup> group, String const &cast_name, 
     if(!_input_container) { return; }
     octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
 
-    // TODO move to functor!!!
     std::string cast_name_str = cast_name.utf8().get_data();
 	flecs::entity entity_target;
-	if (target.is_valid() && target->get_entities().size() > 0) {
+	if (target->get_entities().size() > 0) {
 		entity_target = target->get_entities()[0];
 	}
 	octopus::CastCommand cast_cmd {cast_name_str, entity_target, {world_target.x/WORLD_SCALE,world_target.z/WORLD_SCALE}};
-
-    command.func = [cast_name_str, cast_cmd, group, queue](
-        octopus::WorldContext<custom_step_manager> const &world,
-        octopus::InputContainer<custom_variant, custom_step_manager>& container)
-        -> octopus::InputCommandPackage<custom_variant>
-    {
-        octopus::InputCommandPackage<custom_variant> command_package;
-        command_package.command = cast_cmd;
-		command_package.entities.push_back(find_best_entity_for_casting(world.ecs, group, cast_name_str, cast_cmd.point_target));
-        command_package.front = !queue;
-        return command_package;
-    };
-    _input_container->addFunctorCommand(command);
+    _input_container->addInputCast({group->get_entities(), cast_cmd, queue});
 }
 
 void CommandNode::all_cast_command(Ref<EntityGroup> group, String const &cast_name, Ref<EntityGroup> target, Vector3 const &world_target, bool queue) {
     if(!_input_container) { return; }
     octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
 
-    // TODO move to functor!!!
     std::string cast_name_str = cast_name.utf8().get_data();
 	flecs::entity entity_target;
-	if (target.is_valid() && target->get_entities().size() > 0) {
+	if (target->get_entities().size() > 0) {
 		entity_target = target->get_entities()[0];
 	}
 	octopus::CastCommand cast_cmd {cast_name_str, entity_target, {world_target.x/WORLD_SCALE,world_target.z/WORLD_SCALE}};
@@ -216,22 +147,7 @@ void CommandNode::all_cast_command(Ref<EntityGroup> group, String const &cast_na
 void CommandNode::add_production(Ref<EntityGroup> group, String const &prod_name_p){
     if(!_input_container || group->empty()) { return; }
     std::string prod_name_str = prod_name_p.utf8().get_data();
-
-    octopus::InputCommandFunctor<custom_variant, custom_step_manager> command;
-    command.func = [this, group, prod_name_str](
-        octopus::WorldContext<custom_step_manager> const &world,
-        octopus::InputContainer<custom_variant, custom_step_manager>& container)
-        -> octopus::InputCommandPackage<custom_variant> {
-        flecs::entity e = find_best_entity_for_production(world.ecs, group->get_entities(), prod_name_str);
-
-        if(!e.is_valid()) { return octopus::InputCommandPackage<custom_variant>(); }
-
-        // register production
-        container.container_add_production.get_front_layer().push_back({e, prod_name_str});
-
-        return octopus::InputCommandPackage<custom_variant>();
-    };
-    _input_container->addFunctorCommand(command);
+    _input_container->newProduction({group->get_entities(), prod_name_str});
 }
 
 void CommandNode::cancel_production(Ref<EntityGroup> mono_unit_group, int queue_index) {
@@ -260,12 +176,8 @@ void CommandNode::queue_production(int player, String const &prod_name) {
             }
         });
 
-        flecs::entity e = find_best_entity_for_production(world.ecs, entities, prod_name_str);
-
-        if(!e.is_valid()) { return octopus::InputCommandPackage<custom_variant>(); }
-
         // register production
-        container.container_add_production.get_front_layer().push_back({e, prod_name_str});
+        container.container_production.get_front_layer().push_back({entities, prod_name_str});
 
         return octopus::InputCommandPackage<custom_variant>();
     };
