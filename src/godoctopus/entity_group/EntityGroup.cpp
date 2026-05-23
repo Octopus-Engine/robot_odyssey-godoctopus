@@ -12,6 +12,7 @@ void EntityGroup::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_populated_count"), &EntityGroup::get_populated_count);
 	ClassDB::bind_method(D_METHOD("get_expected_population"), &EntityGroup::get_expected_population);
 	ClassDB::bind_method(D_METHOD("get_should_populate"), &EntityGroup::get_should_populate);
+	ClassDB::bind_method(D_METHOD("clone"), &EntityGroup::clone);
 }
 
 void EntityGroup::remove_dead_entities(InfoProxyNode *proxy_node) {
@@ -85,6 +86,16 @@ void EntityGroup::filter_group(std::function<bool(flecs::entity)> filter) {
 			return filter(e);
 		}
 	), entities.end());
+}
+
+Ref<EntityGroup> EntityGroup::clone() const {
+	Ref<EntityGroup> new_group = Ref<EntityGroup>(memnew(EntityGroup));
+	new_group->entities = entities;
+	new_group->populated_count = populated_count;
+	new_group->expected_population = expected_population;
+	new_group->should_populate = should_populate;
+	new_group->timestamp = timestamp;
+	return new_group;
 }
 
 }
