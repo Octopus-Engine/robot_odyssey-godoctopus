@@ -23,6 +23,8 @@
 #include "godoctopus/game/ability/building/AdvancedResourceProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/building/UnitProducerBeaconSpawnAbility.h"
 #include "godoctopus/game/ability/unit/EarbotSteam.h"
+#include "godoctopus/game/player_buffs/PlayerDamageBuff.h"
+#include "godoctopus/game/player_buffs/PlayerHealthBuff.h"
 #include "godoctopus/health_bar/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
@@ -85,11 +87,13 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	flecs::world &ecs = game.get_world().ecs;
 
+	// Player
 	flecs::entity p0 = ecs.entity()
 		.set<octopus::PlayerInfo>({0, 0})
 		.add<octopus::ResourceStock>()
 		.add<octopus::ResourceSpent>()
 		.add<octopus::PlayerUpgrade>();
+	// Enemy
 	flecs::entity p1 = ecs.entity()
 		.set<octopus::PlayerInfo>({1, 1})
 		.add<octopus::ResourceStock>()
@@ -97,12 +101,19 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.add<octopus::PlayerUpgrade>();
 
 	declare_prefab(ecs);
+	// abilites and special units
 	declare_earbot_steam_ability(ecs, game.get_step_context());
 	declare_armorbot_ability(ecs, game);
 	declare_heavyfire_bot_projectile_systems(ecs, game.get_world().position_context, game.get_step_context().step_manager);
+
+	// Beacon abilities (ability spawning buildings)
 	declare_basic_resource_producer_beacon_ability(ecs, game, meta_data);
 	declare_advanced_resource_producer_beacon_ability(ecs, game, meta_data);
 	declare_unit_producer_beacon_ability(ecs, game, meta_data);
+
+	// Player basic buff systems
+	declare_health_buff_systems(ecs);
+	declare_damage_buff_systems(ecs);
 
 	octopus::ProductionTemplateLibrary<custom_step_manager> &prod_library = ecs.get_mut<octopus::ProductionTemplateLibrary<custom_step_manager>>();
 	if (meta_data.has("PlayerUpgrades")) {
@@ -127,6 +138,23 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			ecs.prefab("base_central").add<octopus::ProductionQueue>(ecs.component(prod_name_std.c_str()));
 			p0.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
 			p1.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
+		}
+	}
+
+	// Load basic buff for e bots
+	if (meta_data.has("EnemyBuffs")) {
+		Dictionary const &buff_dict = meta_data["EnemyBuffs"];
+		if (buff_dict.has("HealthBuff")) {
+			Dictionary const &health_buff_dict = buff_dict["HealthBuff"];
+			PlayerHealthBuff health_buff;
+			health_buff.hp_bonus = octopus::Fixed(int(health_buff_dict["hp_bonus"]));
+			p1.set<octopus::PlayerBuff<Unit, PlayerHealthBuff, octopus::HitPoint, octopus::HitPointMax>>({health_buff});
+		}
+		if (buff_dict.has("DamageBuff")) {
+			Dictionary const &damage_buff_dict = buff_dict["DamageBuff"];
+			PlayerDamageBuff damage_buff;
+			damage_buff.damage_bonus = octopus::Fixed(int(damage_buff_dict["damage_bonus"]));
+			p1.set<octopus::PlayerBuff<Unit, PlayerDamageBuff, octopus::Attack>>({damage_buff});
 		}
 	}
 }

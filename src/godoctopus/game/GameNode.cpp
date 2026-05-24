@@ -283,6 +283,12 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		custom_signal.check_allies = unit_prefab->get_proximity_custom_signal_check_allies();
 		prefab.set_auto_override<ProximityCustomSignal>(custom_signal);
 	}
+
+	if (unit_prefab->get_is_building()) {
+		prefab.add<Building>();
+	} else {
+		prefab.add<Unit>();
+	}
 }
 
 
