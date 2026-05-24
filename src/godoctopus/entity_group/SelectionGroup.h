@@ -27,6 +27,7 @@ public:
 		ClassDB::bind_method(D_METHOD("append_to_group", "group"), &SelectionGroup::append_to_group);
 		ClassDB::bind_method(D_METHOD("delete_from_group", "group"), &SelectionGroup::delete_from_group);
 		ClassDB::bind_method(D_METHOD("clear_group"), &SelectionGroup::clear_group);
+		ClassDB::bind_method(D_METHOD("toggle_group", "group"), &SelectionGroup::toggle_group);
 
 		ClassDB::bind_method(D_METHOD("group"), &SelectionGroup::group);
 	}
@@ -38,6 +39,7 @@ public:
 	void set_group(Ref<EntityGroup> group);
 	void append_to_group(Ref<EntityGroup> group);
 	void delete_from_group(Ref<EntityGroup> group);
+	void toggle_group(Ref<EntityGroup> group);
 	void clear_group();
 	Ref<EntityGroup> group() const;
 
@@ -50,7 +52,8 @@ private:
 		ADD,
 		REMOVE,
 		SET,
-		CLEAR
+		CLEAR,
+		TOGGLE
 	};
 	UpdateType _update_type = UpdateType::NONE;
 	Ref<EntityGroup> _new_group;

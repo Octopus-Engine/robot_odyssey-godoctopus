@@ -68,6 +68,20 @@ void SelectionGroup::setup() {
 					dst_entities.push_back(e);
 				}
 			}
+			else if(_update_type == UpdateType::TOGGLE) {
+				auto &dst_entities = _group->get_entities();
+				for(flecs::entity &e : _new_group->get_entities()) {
+					auto it = std::find(dst_entities.begin(), dst_entities.end(), e);
+					if (it != dst_entities.end()) {
+						update_selected(e, false);
+						dst_entities.erase(it);
+					}
+					else {
+						update_selected(e, true);
+						dst_entities.push_back(e);
+					}
+				}
+			}
 			else if (_update_type == UpdateType::CLEAR) {
 				// deselect old entities
 				for(flecs::entity &e : _group->get_entities()) {
@@ -79,26 +93,33 @@ void SelectionGroup::setup() {
 		});
 }
 
-
-
 void SelectionGroup::set_group(Ref<EntityGroup> group) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_new_group = group;
 	_update_type = UpdateType::SET;
 }
+
 void SelectionGroup::append_to_group(Ref<EntityGroup> group) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_new_group = group;
 	_update_type = UpdateType::ADD;
 }
+
 void SelectionGroup::delete_from_group(Ref<EntityGroup> group) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	_new_group = group;
 	_update_type = UpdateType::REMOVE;
 }
+
+void SelectionGroup::toggle_group(Ref<EntityGroup> group) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	_new_group = group;
+	_update_type = UpdateType::TOGGLE;
+}
+
 void SelectionGroup::clear_group() {
 	std::lock_guard<std::mutex> lock(_mutex);
-		_update_type = UpdateType::CLEAR;
+	_update_type = UpdateType::CLEAR;
 }
 
 Ref<EntityGroup> SelectionGroup::group() const {
