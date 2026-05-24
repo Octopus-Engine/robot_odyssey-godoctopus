@@ -12,6 +12,7 @@ void EntityGroup::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_populated_count"), &EntityGroup::get_populated_count);
 	ClassDB::bind_method(D_METHOD("get_expected_population"), &EntityGroup::get_expected_population);
 	ClassDB::bind_method(D_METHOD("get_should_populate"), &EntityGroup::get_should_populate);
+	ClassDB::bind_method(D_METHOD("append_to_group", "group"), &EntityGroup::append_to_group);
 	ClassDB::bind_method(D_METHOD("clone"), &EntityGroup::clone);
 }
 
@@ -86,6 +87,22 @@ void EntityGroup::filter_group(std::function<bool(flecs::entity)> filter) {
 			return filter(e);
 		}
 	), entities.end());
+}
+
+static void insert_if_not_present(std::vector<flecs::entity> &entities, flecs::entity const &e) {
+	if (!e.is_valid() || !e.is_alive() || !e.enabled()) {
+		return;
+	}
+	if (std::find(entities.begin(), entities.end(), e) == entities.end()) {
+		entities.push_back(e);
+	}
+}
+
+void EntityGroup::append_to_group(Ref<EntityGroup> group) {
+	auto &dst_entities = get_entities();
+	for(flecs::entity &e : group->get_entities()) {
+		insert_if_not_present(dst_entities, e);
+	}
 }
 
 Ref<EntityGroup> EntityGroup::clone() const {

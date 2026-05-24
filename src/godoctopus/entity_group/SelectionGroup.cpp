@@ -33,15 +33,6 @@ static void update_selected(flecs::entity &e, bool selected) {
 	}
 }
 
-static void insert_if_not_present(std::vector<flecs::entity> &entities, flecs::entity const &e) {
-	if (!e.is_valid() || !e.is_alive() || !e.enabled()) {
-		return;
-	}
-	if (std::find(entities.begin(), entities.end(), e) == entities.end()) {
-		entities.push_back(e);
-	}
-}
-
 void SelectionGroup::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
@@ -52,11 +43,10 @@ void SelectionGroup::setup() {
 		.run([this](flecs::iter&) {
 			std::lock_guard<std::mutex> lock(_mutex);
 			if (_update_type == UpdateType::ADD) {
-				auto &dst_entities = _group->get_entities();
 				for(flecs::entity &e : _new_group->get_entities()) {
 					update_selected(e, true);
-					insert_if_not_present(dst_entities, e);
 				}
+				_group->append_to_group(_new_group);
 			}
 			else if (_update_type == UpdateType::REMOVE) {
 				auto &dst_entities = _group->get_entities();
@@ -75,7 +65,7 @@ void SelectionGroup::setup() {
 				auto &dst_entities = _group->get_entities();
 				for(flecs::entity &e : _new_group->get_entities()) {
 					update_selected(e, true);
-					insert_if_not_present(dst_entities, e);
+					dst_entities.push_back(e);
 				}
 			}
 			else if (_update_type == UpdateType::CLEAR) {

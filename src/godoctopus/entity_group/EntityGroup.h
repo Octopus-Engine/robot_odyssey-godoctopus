@@ -53,6 +53,8 @@ public:
 	uint32_t get_expected_population() const { return expected_population; }
 	bool get_should_populate() const { return should_populate; }
 
+	void append_to_group(Ref<EntityGroup> group);
+
 	Ref<EntityGroup> clone() const;
 protected:
 private:
