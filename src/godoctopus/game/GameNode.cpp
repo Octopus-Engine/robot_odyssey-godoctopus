@@ -14,6 +14,7 @@
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/position/Move.hh"
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/basic/rally_point/RallyPoint.hh"
 #include "octopus/components/advanced/production/queue/ProductionQueue.hh"
 
 #include "godoctopus/death/DeathParticle.h"
@@ -122,6 +123,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 			ecs,
 			unit_prefab->get_prefab_name().utf8().get_data()
 		});
+		prefab.auto_override<octopus::RallyPoint>();
 	}
 
 	if (unit_prefab->get_is_static()) {

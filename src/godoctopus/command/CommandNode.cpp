@@ -42,9 +42,14 @@ void CommandNode::move_command(Ref<EntityGroup> group, Vector3 const &world_targ
     {
         octopus::InputCommandPackage<custom_variant> command_package;
         command_package.command = move;
+        octopus::SetRallyPointCommand rally_point_cmd {move.target, octopus::Fixed::One()/10, true};
         for(flecs::entity const &e : group->get_entities()) {
             if(e.is_valid()) {
-			    command_package.entities.push_back(e);
+                if(e.has<octopus::RallyPoint>()) {
+                    container.container_command.get_front_layer().push_back({e, rally_point_cmd, false});
+                } else {
+                    command_package.entities.push_back(e);
+                }
             }
 		}
         command_package.front = !queue;
