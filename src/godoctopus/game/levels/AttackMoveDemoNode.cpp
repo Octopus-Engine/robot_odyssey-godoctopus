@@ -13,6 +13,7 @@
 #include "octopus/components/step/StepContainer.hh"
 #include "octopus/world/player/PlayerInfo.hh"
 
+#include "godoctopus/components/player/PlayerLoadout.h"
 #include "godoctopus/components/proximity_custom_signal/ProximityCustomSignal.h"
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
@@ -92,12 +93,16 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.set<octopus::PlayerInfo>({0, 0})
 		.add<octopus::ResourceStock>()
 		.add<octopus::ResourceSpent>()
+		.add<PlayerUnitLoadout>()
+		.add<PlayerRuneInventory>()
 		.add<octopus::PlayerUpgrade>();
 	// Enemy
 	flecs::entity p1 = ecs.entity()
 		.set<octopus::PlayerInfo>({1, 1})
 		.add<octopus::ResourceStock>()
 		.add<octopus::ResourceSpent>()
+		.add<PlayerUnitLoadout>()
+		.add<PlayerRuneInventory>()
 		.add<octopus::PlayerUpgrade>();
 
 	declare_prefab(ecs);

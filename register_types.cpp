@@ -70,6 +70,9 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::InfoProxyNode>();
 	ClassDB::register_class<godot::PlayerResourceEntryResource>();
 	ClassDB::register_class<godot::PlayerUpgradeEntryResource>();
+	ClassDB::register_class<godot::PlayerLoadoutRuneEntryResource>();
+	ClassDB::register_class<godot::PlayerLoadoutRuneSlotResource>();
+	ClassDB::register_class<godot::PlayerLoadoutUnitEntryResource>();
 	ClassDB::register_class<godot::PlayerResourceProxyResource>();
 	ClassDB::register_class<godot::PlayerProxyNode>();
 	ClassDB::register_class<godot::InputStatusResourceCost>();

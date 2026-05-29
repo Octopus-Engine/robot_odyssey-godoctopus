@@ -8,6 +8,100 @@
 
 namespace godot {
 
+namespace {
+
+TypedArray<Ref<PlayerLoadoutRuneEntryResource>> to_godot_runes(const PlayerRuneInventory &inventory) {
+	TypedArray<Ref<PlayerLoadoutRuneEntryResource>> runes;
+	runes.resize((int)inventory.runes.size());
+	for (int i = 0; i < (int)inventory.runes.size(); ++i) {
+		Ref<PlayerLoadoutRuneEntryResource> entry = Ref<PlayerLoadoutRuneEntryResource>(memnew(PlayerLoadoutRuneEntryResource));
+		entry->set_rune_internal_name(inventory.runes[i].rune_internal_name.c_str());
+		entry->set_rune_resource_path(inventory.runes[i].rune_resource_path.c_str());
+		entry->set_level(inventory.runes[i].level);
+		runes[i] = entry;
+	}
+	return runes;
+}
+
+PlayerRuneInventory from_godot_runes(const TypedArray<Ref<PlayerLoadoutRuneEntryResource>> &runes) {
+	PlayerRuneInventory inventory;
+	inventory.runes.reserve((size_t)runes.size());
+	for (int i = 0; i < runes.size(); ++i) {
+		Ref<PlayerLoadoutRuneEntryResource> entry = runes[i];
+		if (!entry.is_valid()) {
+			continue;
+		}
+		inventory.runes.push_back({
+			entry->get_rune_internal_name().utf8().get_data(),
+			entry->get_rune_resource_path().utf8().get_data(),
+			entry->get_level()
+		});
+	}
+	return inventory;
+}
+
+TypedArray<Ref<PlayerLoadoutUnitEntryResource>> to_godot_units(const PlayerUnitLoadout &loadout) {
+	TypedArray<Ref<PlayerLoadoutUnitEntryResource>> units;
+	units.resize((int)loadout.units.size());
+	for (int i = 0; i < (int)loadout.units.size(); ++i) {
+		Ref<PlayerLoadoutUnitEntryResource> unit_entry = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
+		unit_entry->set_prefab_name(loadout.units[i].prefab_name.c_str());
+		unit_entry->set_prefab_resource_path(loadout.units[i].prefab_resource_path.c_str());
+
+		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots;
+		slots.resize((int)loadout.units[i].slots.size());
+		for (int slot_idx = 0; slot_idx < (int)loadout.units[i].slots.size(); ++slot_idx) {
+			Ref<PlayerLoadoutRuneSlotResource> slot_entry = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
+			const PlayerRuneSlotData &slot = loadout.units[i].slots[slot_idx];
+			slot_entry->set_slot_type(slot.slot_type);
+			slot_entry->set_locked(slot.locked);
+			slot_entry->set_has_rune(slot.has_rune);
+			slot_entry->set_rune_internal_name(slot.rune_internal_name.c_str());
+			slot_entry->set_rune_resource_path(slot.rune_resource_path.c_str());
+			slot_entry->set_rune_level(slot.rune_level);
+			slots[slot_idx] = slot_entry;
+		}
+		unit_entry->set_slots(slots);
+		units[i] = unit_entry;
+	}
+	return units;
+}
+
+PlayerUnitLoadout from_godot_units(const TypedArray<Ref<PlayerLoadoutUnitEntryResource>> &units) {
+	PlayerUnitLoadout loadout;
+	loadout.units.reserve((size_t)units.size());
+	for (int i = 0; i < units.size(); ++i) {
+		Ref<PlayerLoadoutUnitEntryResource> unit_entry = units[i];
+		if (!unit_entry.is_valid()) {
+			continue;
+		}
+
+		PlayerUnitLoadoutEntry unit;
+		unit.prefab_name = unit_entry->get_prefab_name().utf8().get_data();
+		unit.prefab_resource_path = unit_entry->get_prefab_resource_path().utf8().get_data();
+		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots = unit_entry->get_ref_slots();
+		unit.slots.reserve((size_t)slots.size());
+		for (int slot_idx = 0; slot_idx < slots.size(); ++slot_idx) {
+			Ref<PlayerLoadoutRuneSlotResource> slot_entry = slots[slot_idx];
+			if (!slot_entry.is_valid()) {
+				continue;
+			}
+			unit.slots.push_back({
+				slot_entry->get_slot_type(),
+				slot_entry->get_locked(),
+				slot_entry->get_has_rune(),
+				slot_entry->get_rune_internal_name().utf8().get_data(),
+				slot_entry->get_rune_resource_path().utf8().get_data(),
+				slot_entry->get_rune_level()
+			});
+		}
+		loadout.units.push_back(std::move(unit));
+	}
+	return loadout;
+}
+
+} // namespace
+
 PlayerProxyNodeDataLocker::PlayerProxyNodeDataLocker(PlayerProxyNode *node_p, std::mutex &mutex_p) :
 	proxy_map(node_p->_proxy_map), lock(mutex_p) {}
 
@@ -21,6 +115,13 @@ void PlayerProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_upgrade_level", "player_id", "upgrade_name"), &PlayerProxyNode::get_upgrade_level);
 	ClassDB::bind_method(D_METHOD("check_upgrade", "player_id", "upgrade_name", "level"), &PlayerProxyNode::check_upgrade, DEFVAL(1));
 	ClassDB::bind_method(D_METHOD("check_upgrades", "player_id", "requirements"), &PlayerProxyNode::check_upgrades);
+	ClassDB::bind_method(D_METHOD("get_units", "player_id"), &PlayerProxyNode::get_units);
+	ClassDB::bind_method(D_METHOD("get_runes", "player_id"), &PlayerProxyNode::get_runes);
+	ClassDB::bind_method(D_METHOD("set_units", "player_id", "units"), &PlayerProxyNode::set_units);
+	ClassDB::bind_method(D_METHOD("set_runes", "player_id", "runes"), &PlayerProxyNode::set_runes);
+	ClassDB::bind_method(D_METHOD("add_rune", "player_id", "rune_internal_name", "rune_resource_path", "level"), &PlayerProxyNode::add_rune, DEFVAL(""), DEFVAL(1));
+	ClassDB::bind_method(D_METHOD("remove_rune", "player_id", "rune_internal_name", "level"), &PlayerProxyNode::remove_rune, DEFVAL(-1));
+	ClassDB::bind_method(D_METHOD("clear_runes", "player_id"), &PlayerProxyNode::clear_runes);
 	ClassDB::bind_method(D_METHOD("add_resource", "resource_name", "amount", "player_id"), &PlayerProxyNode::add_resource);
 	ClassDB::bind_method(D_METHOD("add_periodic_resource", "resource_name", "amount", "tickrate", "player_id"), &PlayerProxyNode::add_periodic_resource);
 }
@@ -77,6 +178,85 @@ bool PlayerProxyNode::check_upgrades(int player_id, const Dictionary &requiremen
 	return true;
 }
 
+TypedArray<Ref<PlayerLoadoutUnitEntryResource>> PlayerProxyNode::get_units(int player_id) const {
+	std::lock_guard<std::mutex> lock(_mutex);
+	auto it = _proxy_map.find((uint32_t)player_id);
+	if (it == _proxy_map.end()) {
+		return TypedArray<Ref<PlayerLoadoutUnitEntryResource>>();
+	}
+	return it->second.get_ref_units();
+}
+
+TypedArray<Ref<PlayerLoadoutRuneEntryResource>> PlayerProxyNode::get_runes(int player_id) const {
+	std::lock_guard<std::mutex> lock(_mutex);
+	auto it = _proxy_map.find((uint32_t)player_id);
+	if (it == _proxy_map.end()) {
+		return TypedArray<Ref<PlayerLoadoutRuneEntryResource>>();
+	}
+	return it->second.get_ref_runes();
+}
+
+void PlayerProxyNode::set_units(int player_id, const TypedArray<Ref<PlayerLoadoutUnitEntryResource>> &units) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	pending_units[(uint32_t)player_id] = from_godot_units(units);
+}
+
+void PlayerProxyNode::set_runes(int player_id, const TypedArray<Ref<PlayerLoadoutRuneEntryResource>> &runes) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	pending_runes[(uint32_t)player_id] = from_godot_runes(runes);
+}
+
+void PlayerProxyNode::add_rune(int player_id, const String &rune_internal_name, const String &rune_resource_path, int64_t level) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	uint32_t key = (uint32_t)player_id;
+	PlayerRuneInventory inventory;
+	auto pending_it = pending_runes.find(key);
+	if (pending_it != pending_runes.end()) {
+		inventory = pending_it->second;
+	} else {
+		auto proxy_it = _proxy_map.find(key);
+		if (proxy_it != _proxy_map.end()) {
+			inventory = from_godot_runes(proxy_it->second.get_ref_runes());
+		}
+	}
+	inventory.runes.push_back({
+		rune_internal_name.utf8().get_data(),
+		rune_resource_path.utf8().get_data(),
+		level
+	});
+	pending_runes[key] = std::move(inventory);
+}
+
+bool PlayerProxyNode::remove_rune(int player_id, const String &rune_internal_name, int64_t level) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	uint32_t key = (uint32_t)player_id;
+	PlayerRuneInventory inventory;
+	auto pending_it = pending_runes.find(key);
+	if (pending_it != pending_runes.end()) {
+		inventory = pending_it->second;
+	} else {
+		auto proxy_it = _proxy_map.find(key);
+		if (proxy_it != _proxy_map.end()) {
+			inventory = from_godot_runes(proxy_it->second.get_ref_runes());
+		}
+	}
+
+	std::string rune_name = rune_internal_name.utf8().get_data();
+	for (auto it = inventory.runes.begin(); it != inventory.runes.end(); ++it) {
+		if (it->rune_internal_name == rune_name && (level < 0 || it->level == level)) {
+			inventory.runes.erase(it);
+			pending_runes[key] = std::move(inventory);
+			return true;
+		}
+	}
+	return false;
+}
+
+void PlayerProxyNode::clear_runes(int player_id) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	pending_runes[(uint32_t)player_id] = PlayerRuneInventory();
+}
+
 void PlayerProxyNode::setup() {
 	if (!_game_node) {
 		return;
@@ -85,8 +265,8 @@ void PlayerProxyNode::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
 
-	flecs::query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *> update_query =
-		ecs.query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *>();
+	flecs::query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *, PlayerUnitLoadout *, PlayerRuneInventory *> update_query =
+		ecs.query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *, PlayerUnitLoadout *, PlayerRuneInventory *>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -105,7 +285,18 @@ void PlayerProxyNode::setup() {
 				added_resources[(uint32_t)periodic_resource.player_id][periodic_resource.resource_name] += periodic_resource.amount;
 			}
 
-			update_query.each([this](flecs::entity e, octopus::PlayerInfo &player_info, octopus::ResourceStock *resource_stock, octopus::PlayerUpgrade *player_upgrade) {
+			update_query.each([this](flecs::entity e, octopus::PlayerInfo &player_info, octopus::ResourceStock *resource_stock, octopus::PlayerUpgrade *player_upgrade, PlayerUnitLoadout *player_units, PlayerRuneInventory *player_runes) {
+				auto pending_units_it = pending_units.find(player_info.idx);
+				if (player_units && pending_units_it != pending_units.end()) {
+					*player_units = pending_units_it->second;
+					pending_units.erase(pending_units_it);
+				}
+				auto pending_runes_it = pending_runes.find(player_info.idx);
+				if (player_runes && pending_runes_it != pending_runes.end()) {
+					*player_runes = pending_runes_it->second;
+					pending_runes.erase(pending_runes_it);
+				}
+
 				PlayerResourceProxyData &proxy_data = _proxy_map[player_info.idx];
 				proxy_data.entity = e;
 				proxy_data.set_player((int)player_info.idx);
@@ -144,6 +335,18 @@ void PlayerProxyNode::setup() {
 					}
 				}
 				proxy_data.set_upgrades(upgrades);
+
+				if (player_units) {
+					proxy_data.set_units(to_godot_units(*player_units));
+				} else {
+					proxy_data.set_units(TypedArray<Ref<PlayerLoadoutUnitEntryResource>>());
+				}
+
+				if (player_runes) {
+					proxy_data.set_runes(to_godot_runes(*player_runes));
+				} else {
+					proxy_data.set_runes(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>());
+				}
 			});
 
 			added_resources.clear();

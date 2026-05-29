@@ -7,6 +7,7 @@
 
 #include "godoctopus/game/GameNode.h"
 #include "PlayerResourceProxyData.h"
+#include "godoctopus/components/player/PlayerLoadout.h"
 
 namespace godot {
 
@@ -38,6 +39,13 @@ public:
 	int64_t get_upgrade_level(int player_id, const String &upgrade_name) const;
 	bool check_upgrade(int player_id, const String &upgrade_name, int64_t level = 1) const;
 	bool check_upgrades(int player_id, const Dictionary &requirements) const;
+	TypedArray<Ref<PlayerLoadoutUnitEntryResource>> get_units(int player_id) const;
+	TypedArray<Ref<PlayerLoadoutRuneEntryResource>> get_runes(int player_id) const;
+	void set_units(int player_id, const TypedArray<Ref<PlayerLoadoutUnitEntryResource>> &units);
+	void set_runes(int player_id, const TypedArray<Ref<PlayerLoadoutRuneEntryResource>> &runes);
+	void add_rune(int player_id, const String &rune_internal_name, const String &rune_resource_path = "", int64_t level = 1);
+	bool remove_rune(int player_id, const String &rune_internal_name, int64_t level = -1);
+	void clear_runes(int player_id);
 
 	PlayerProxyNodeDataLocker get_data_locker() {
 		return PlayerProxyNodeDataLocker(this, _mutex);
@@ -56,6 +64,8 @@ private:
 	std::unordered_map<uint32_t, PlayerResourceProxyData> _proxy_map;
 
 	std::unordered_map<uint32_t, std::unordered_map<std::string, int64_t>> added_resources;
+	std::unordered_map<uint32_t, PlayerUnitLoadout> pending_units;
+	std::unordered_map<uint32_t, PlayerRuneInventory> pending_runes;
 	struct PeriodicResource {
 		std::string resource_name;
 		int64_t amount;
