@@ -41,16 +41,6 @@
 
 namespace godot {
 
-struct PrefabProductionDeclarer {
-	flecs::world &ecs;
-	const char *producer_name;
-
-	template<typename BotType>
-	void operator()() const {
-		ecs.prefab(producer_name).add<octopus::ProductionQueue>(ecs.component(BotType::naming()));
-	}
-};
-
 void declare_prefab(flecs::world &ecs) {
 	// Add casting ability for earbots
 	ecs.prefab("earbot")
