@@ -4,6 +4,7 @@
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/commands/queue/CommandQueue.hh"
 #include "octopus/components/advanced/production/queue/ProductionQueue.hh"
+#include "octopus/components/advanced/production/PlayerProduction.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 #include "octopus/components/basic/position/Move.hh"
@@ -131,9 +132,27 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			prod_library.add_template(new PlayerUpgradeProduction(prod_name.utf8().get_data(), duration, costs));
 			const std::string prod_name_std = prod_name.utf8().get_data();
 			ecs.prefab("base_central").add<octopus::ProductionQueue>(ecs.component(prod_name_std.c_str()));
-			p0.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
-			p1.try_get_mut<octopus::PlayerUpgrade>()->upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
+			p0.get_mut<octopus::PlayerUpgrade>().upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
+			p1.get_mut<octopus::PlayerUpgrade>().upgrades["INTERNAL_UPGRADE_" + prod_name_std] = 1;
 		}
+	}
+
+	if (meta_data.has("PlayerProduction")) {
+		Dictionary const &prod_dict = meta_data["PlayerProduction"];
+		Array const &prod_names_0 = prod_dict["0"];
+		octopus::PlayerProduction p0_prod;
+		for (int i = 0; i < prod_names_0.size(); ++i) {
+			const String prod_name = prod_names_0[i];
+			p0_prod.productions[prod_name.utf8().get_data()] = true;
+		}
+		p0.set<octopus::PlayerProduction>(p0_prod);
+		Array const &prod_names_1 = prod_dict["1"];
+		octopus::PlayerProduction p1_prod;
+		for (int i = 0; i < prod_names_1.size(); ++i) {
+			const String prod_name = prod_names_1[i];
+			p1_prod.productions[prod_name.utf8().get_data()] = true;
+		}
+		p1.set<octopus::PlayerProduction>(p1_prod);
 	}
 
 	// Load basic buff for e bots

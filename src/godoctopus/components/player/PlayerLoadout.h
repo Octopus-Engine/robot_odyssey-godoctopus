@@ -31,7 +31,6 @@ struct PlayerRuneSlotData
 struct PlayerUnitLoadoutEntry
 {
 	std::string prefab_name;
-	std::string prefab_resource_path;
 	std::vector<PlayerRuneSlotData> slots;
 };
 

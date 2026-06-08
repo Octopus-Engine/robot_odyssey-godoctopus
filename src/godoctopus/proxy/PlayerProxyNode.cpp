@@ -1,6 +1,7 @@
 #include "PlayerProxyNode.h"
 
 #include "octopus/components/basic/player/PlayerUpgrade.hh"
+#include "octopus/components/advanced/production/PlayerProduction.hh"
 #include "octopus/world/player/PlayerInfo.hh"
 #include "octopus/world/resources/ResourceStock.hh"
 
@@ -46,7 +47,6 @@ TypedArray<Ref<PlayerLoadoutUnitEntryResource>> to_godot_units(const PlayerUnitL
 	for (int i = 0; i < (int)loadout.units.size(); ++i) {
 		Ref<PlayerLoadoutUnitEntryResource> unit_entry = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
 		unit_entry->set_prefab_name(loadout.units[i].prefab_name.c_str());
-		unit_entry->set_prefab_resource_path(loadout.units[i].prefab_resource_path.c_str());
 
 		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots;
 		slots.resize((int)loadout.units[i].slots.size());
@@ -78,7 +78,6 @@ PlayerUnitLoadout from_godot_units(const TypedArray<Ref<PlayerLoadoutUnitEntryRe
 
 		PlayerUnitLoadoutEntry unit;
 		unit.prefab_name = unit_entry->get_prefab_name().utf8().get_data();
-		unit.prefab_resource_path = unit_entry->get_prefab_resource_path().utf8().get_data();
 		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots = unit_entry->get_ref_slots();
 		unit.slots.reserve((size_t)slots.size());
 		for (int slot_idx = 0; slot_idx < slots.size(); ++slot_idx) {
@@ -265,8 +264,7 @@ void PlayerProxyNode::setup() {
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world &ecs = _game_node->get_world().ecs;
 
-	flecs::query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *, PlayerUnitLoadout *, PlayerRuneInventory *> update_query =
-		ecs.query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerUpgrade *, PlayerUnitLoadout *, PlayerRuneInventory *>();
+	flecs::query update_query = ecs.query<octopus::PlayerInfo, octopus::ResourceStock *, octopus::PlayerProduction *,octopus::PlayerUpgrade *, PlayerUnitLoadout *, PlayerRuneInventory *>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -285,9 +283,25 @@ void PlayerProxyNode::setup() {
 				added_resources[(uint32_t)periodic_resource.player_id][periodic_resource.resource_name] += periodic_resource.amount;
 			}
 
-			update_query.each([this](flecs::entity e, octopus::PlayerInfo &player_info, octopus::ResourceStock *resource_stock, octopus::PlayerUpgrade *player_upgrade, PlayerUnitLoadout *player_units, PlayerRuneInventory *player_runes) {
+			update_query.each([this](flecs::entity e, octopus::PlayerInfo &player_info, octopus::ResourceStock *resource_stock, octopus::PlayerProduction *player_production,
+				octopus::PlayerUpgrade *player_upgrade, PlayerUnitLoadout *player_units, PlayerRuneInventory *player_runes) {
+
 				auto pending_units_it = pending_units.find(player_info.idx);
 				if (player_units && pending_units_it != pending_units.end()) {
+					std::cout<<"updating units for player "<<player_info.idx<<std::endl;
+					if (player_production) {
+						std::cout<<"also updating production for player "<<player_info.idx<<std::endl;
+						// Reset old loadout units
+						for (auto const &unit : player_units->units) {
+							player_production->productions[unit.prefab_name] = false;
+							std::cout<<"updating (false) units for player "<<unit.prefab_name<<std::endl;
+						}
+						// Set new loadout units to production
+						for (auto const &unit : pending_units_it->second.units) {
+							player_production->productions[unit.prefab_name] = true;
+							std::cout<<"updating (true) units for player "<<unit.prefab_name<<std::endl;
+						}
+					}
 					*player_units = pending_units_it->second;
 					pending_units.erase(pending_units_it);
 				}

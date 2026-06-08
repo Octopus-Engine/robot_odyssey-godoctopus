@@ -72,13 +72,32 @@ class PlayerLoadoutUnitEntryResource : public Resource {
 	GDCLASS(PlayerLoadoutUnitEntryResource, Resource)
 
 	SET_GET_PARAM_DEF(String, prefab_name, "");
-	SET_GET_PARAM_DEF(String, prefab_resource_path, "");
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneSlotResource>>, slots);
+
+	static Ref<PlayerLoadoutUnitEntryResource> create(String const &prefab_name, int core_slots, int special_slots) {
+		Ref<PlayerLoadoutUnitEntryResource> entry = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
+		entry->set_prefab_name(prefab_name);
+		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots;
+		slots.resize(core_slots + special_slots);
+		for (int i = 0; i < core_slots; ++i) {
+			Ref<PlayerLoadoutRuneSlotResource> slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
+			slot->set_slot_type(0);
+			slots[i] = slot;
+		}
+		for (int i = 0; i < special_slots; ++i) {
+			Ref<PlayerLoadoutRuneSlotResource> slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
+			slot->set_slot_type(1);
+			slots[core_slots + i] = slot;
+		}
+		entry->set_slots(slots);
+		return entry;
+	}
 public:
 	static void _bind_methods() {
 		ADD_SIMPLE_PROP(PlayerLoadoutUnitEntryResource, STRING, prefab_name);
-		ADD_SIMPLE_PROP(PlayerLoadoutUnitEntryResource, STRING, prefab_resource_path);
 		ADD_ARRAY_OBJECT_PROP(PlayerLoadoutUnitEntryResource, PlayerLoadoutRuneSlotResource, slots);
+
+		ClassDB::bind_static_method("PlayerLoadoutUnitEntryResource", D_METHOD("create", "prefab_name", "core_slots", "special_slots"), &PlayerLoadoutUnitEntryResource::create);
 	}
 };
 
@@ -227,7 +246,6 @@ public:
 			Ref<PlayerLoadoutUnitEntryResource> target_unit = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
 			if (source_unit.is_valid()) {
 				target_unit->set_prefab_name(source_unit->get_prefab_name());
-				target_unit->set_prefab_resource_path(source_unit->get_prefab_resource_path());
 
 				TypedArray<Ref<PlayerLoadoutRuneSlotResource>> const &source_slots = source_unit->get_ref_slots();
 				TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots_copy;
