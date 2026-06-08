@@ -171,7 +171,10 @@ TypedArray<Ref<InfoAvailableActionResource>> InfoProxyNode::get_available_action
 			append_action(InfoAvailableActionResource::ACTION_CAST, ability.name().c_str(), entity);
 		});
 		entity.each<octopus::ProductionQueue>([&append_action, entity](flecs::entity production) {
-			append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production.name().c_str(), entity);
+			// Only append the production if player enables it
+			if (satisfy_player_production_requirements(entity, production.name())) {
+				append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production.name().c_str(), entity);
+			}
 		});
 	}
 
