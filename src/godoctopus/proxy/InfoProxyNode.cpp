@@ -14,6 +14,7 @@
 #include "octopus/components/basic/player/Team.hh"
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/advanced/production/queue/ProductionQueue.hh"
+#include "octopus/components/advanced/production/PlayerProduction.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/world/player/PlayerInfo.hh"
@@ -172,7 +173,7 @@ TypedArray<Ref<InfoAvailableActionResource>> InfoProxyNode::get_available_action
 		});
 		entity.each<octopus::ProductionQueue>([&append_action, entity](flecs::entity production) {
 			// Only append the production if player enables it
-			if (satisfy_player_production_requirements(entity, production.name())) {
+			if (octopus::satisfy_player_production_requirements(entity, production.name().c_str())) {
 				append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production.name().c_str(), entity);
 			}
 		});
