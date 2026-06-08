@@ -144,6 +144,7 @@ octopus2_sources = [
     "./src/octopus2/src/octopus/src/octopus/commands/basic/rally_point/SetRallyPointCommand.cc",
     "./src/octopus2/src/octopus/src/octopus/components/advanced/buff/DebuffAll.cc",
     "./src/octopus2/src/octopus/src/octopus/components/advanced/production/queue/ProductionQueue.cc",
+    "./src/octopus2/src/octopus/src/octopus/components/advanced/production/PlayerProduction.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/ability/Caster.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/armor/Armor.cc",
     "./src/octopus2/src/octopus/src/octopus/components/basic/attack/Attack.cc",
