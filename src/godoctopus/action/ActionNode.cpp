@@ -7,6 +7,8 @@
 #include "octopus/commands/basic/move/AttackCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/components/Dummy.h"
+#include "godoctopus/display/vat/VatLibraryHandle.h"
 
 namespace godot {
 
@@ -19,6 +21,7 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_units", "prefab", "position", "team", "count"), &ActionNode::spawn_units);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move", "prefab", "position", "team", "count", "target"), &ActionNode::spawn_units_attack_move);
 	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
+	ClassDB::bind_method(D_METHOD("spawn_dummy_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_dummy_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
 	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "level", "add"), &ActionNode::mod_rune);
 	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
@@ -83,6 +86,15 @@ void ActionNode::setup() {
 							if (spawn_action.group.is_valid()) {
 								spawn_action.group->increase_populated(octopus::get_time_stamp(ecs));
 								spawn_action.group->get_entities().push_back(new_ent);
+							}
+
+							if (spawn_action.dummy) {
+								new_ent.add<Dummy>()
+									   .remove<octopus::PositionInTree>()
+									   .remove<Pickable>()
+									   .remove<VatLibraryHandle>()
+									   .remove<octopus::Collision>()
+									   .remove<custom_queue>();
 							}
 						};
 

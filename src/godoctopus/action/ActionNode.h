@@ -25,6 +25,7 @@ struct SpawnUnitsAction {
 	bool attack_move = false;
 	Vector2 attack_move_target;
 	Ref<EntityGroup> group;
+	bool dummy = false;
 };
 
 struct ModRuneAction {
@@ -64,6 +65,15 @@ public:
 	void spawn_units_in_group(String const &prefab, Vector2 const &position, int team, int count, Ref<EntityGroup> group) {
 		std::lock_guard<std::mutex> lock(_mutex);
 		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), group});
+		if (group.is_valid()) {
+			group->set_should_populate();
+			group->increase_expected_population(count);
+		}
+	}
+
+	void spawn_dummy_units_in_group(String const &prefab, Vector2 const &position, int team, int count, Ref<EntityGroup> group) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(SpawnUnitsAction{prefab, position, team, count, false, Vector2(), group, true});
 		if (group.is_valid()) {
 			group->set_should_populate();
 			group->increase_expected_population(count);
