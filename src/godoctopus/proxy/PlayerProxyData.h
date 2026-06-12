@@ -39,12 +39,12 @@ class PlayerLoadoutRuneEntryResource : public Resource {
 
 	SET_GET_PARAM_DEF(String, rune_internal_name, "");
 	SET_GET_PARAM_DEF(String, rune_resource_path, "");
-	SET_GET_PARAM_DEF(int64_t, level, 1);
+	SET_GET_PARAM_DEF(int64_t, rune_level, 1);
 public:
 	static void _bind_methods() {
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneEntryResource, STRING, rune_internal_name);
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneEntryResource, STRING, rune_resource_path);
-		ADD_SIMPLE_PROP(PlayerLoadoutRuneEntryResource, INT, level);
+		ADD_SIMPLE_PROP(PlayerLoadoutRuneEntryResource, INT, rune_level);
 	}
 };
 
@@ -74,35 +74,15 @@ class PlayerLoadoutUnitEntryResource : public Resource {
 	SET_GET_PARAM_DEF(String, prefab_name, "");
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneSlotResource>>, slots);
 
-	static Ref<PlayerLoadoutUnitEntryResource> create(String const &prefab_name, int core_slots, int special_slots) {
-		Ref<PlayerLoadoutUnitEntryResource> entry = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
-		entry->set_prefab_name(prefab_name);
-		TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots;
-		slots.resize(core_slots + special_slots);
-		for (int i = 0; i < core_slots; ++i) {
-			Ref<PlayerLoadoutRuneSlotResource> slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
-			slot->set_slot_type(0);
-			slots[i] = slot;
-		}
-		for (int i = 0; i < special_slots; ++i) {
-			Ref<PlayerLoadoutRuneSlotResource> slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
-			slot->set_slot_type(1);
-			slots[core_slots + i] = slot;
-		}
-		entry->set_slots(slots);
-		return entry;
-	}
 public:
 	static void _bind_methods() {
 		ADD_SIMPLE_PROP(PlayerLoadoutUnitEntryResource, STRING, prefab_name);
 		ADD_ARRAY_OBJECT_PROP(PlayerLoadoutUnitEntryResource, PlayerLoadoutRuneSlotResource, slots);
-
-		ClassDB::bind_static_method("PlayerLoadoutUnitEntryResource", D_METHOD("create", "prefab_name", "core_slots", "special_slots"), &PlayerLoadoutUnitEntryResource::create);
 	}
 };
 
-class PlayerResourceProxyResource : public Resource {
-	GDCLASS(PlayerResourceProxyResource, Resource)
+class PlayerProxyResource : public Resource {
+	GDCLASS(PlayerProxyResource, Resource)
 
 	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(int, team, 0);
@@ -113,20 +93,20 @@ class PlayerResourceProxyResource : public Resource {
 
 public:
 	static void _bind_methods() {
-		ADD_SIMPLE_PROP(PlayerResourceProxyResource, INT, player);
-		ADD_SIMPLE_PROP(PlayerResourceProxyResource, INT, team);
-		ADD_ARRAY_OBJECT_PROP(PlayerResourceProxyResource, PlayerResourceEntryResource, resources);
-		ADD_ARRAY_OBJECT_PROP(PlayerResourceProxyResource, PlayerUpgradeEntryResource, upgrades);
-		ADD_ARRAY_OBJECT_PROP(PlayerResourceProxyResource, PlayerLoadoutUnitEntryResource, units);
-		ADD_ARRAY_OBJECT_PROP(PlayerResourceProxyResource, PlayerLoadoutRuneEntryResource, runes);
+		ADD_SIMPLE_PROP(PlayerProxyResource, INT, player);
+		ADD_SIMPLE_PROP(PlayerProxyResource, INT, team);
+		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerResourceEntryResource, resources);
+		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerUpgradeEntryResource, upgrades);
+		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerLoadoutUnitEntryResource, units);
+		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerLoadoutRuneEntryResource, runes);
 
-		ClassDB::bind_method(D_METHOD("get_resource_amount", "resource_name"), &PlayerResourceProxyResource::get_resource_amount);
-		ClassDB::bind_method(D_METHOD("get_resource_cap", "resource_name"), &PlayerResourceProxyResource::get_resource_cap);
-		ClassDB::bind_method(D_METHOD("check_resource", "resource_name", "amount"), &PlayerResourceProxyResource::check_resource);
-		ClassDB::bind_method(D_METHOD("check_resources", "costs"), &PlayerResourceProxyResource::check_resources);
-		ClassDB::bind_method(D_METHOD("get_upgrade_level", "upgrade_name"), &PlayerResourceProxyResource::get_upgrade_level);
-		ClassDB::bind_method(D_METHOD("check_upgrade", "upgrade_name", "level"), &PlayerResourceProxyResource::check_upgrade);
-		ClassDB::bind_method(D_METHOD("check_upgrades", "requirements"), &PlayerResourceProxyResource::check_upgrades);
+		ClassDB::bind_method(D_METHOD("get_resource_amount", "resource_name"), &PlayerProxyResource::get_resource_amount);
+		ClassDB::bind_method(D_METHOD("get_resource_cap", "resource_name"), &PlayerProxyResource::get_resource_cap);
+		ClassDB::bind_method(D_METHOD("check_resource", "resource_name", "amount"), &PlayerProxyResource::check_resource);
+		ClassDB::bind_method(D_METHOD("check_resources", "costs"), &PlayerProxyResource::check_resources);
+		ClassDB::bind_method(D_METHOD("get_upgrade_level", "upgrade_name"), &PlayerProxyResource::get_upgrade_level);
+		ClassDB::bind_method(D_METHOD("check_upgrade", "upgrade_name", "level"), &PlayerProxyResource::check_upgrade);
+		ClassDB::bind_method(D_METHOD("check_upgrades", "requirements"), &PlayerProxyResource::check_upgrades);
 	}
 
 	int64_t get_resource_amount(String const &resource_name) const {
@@ -195,7 +175,7 @@ public:
 	}
 };
 
-struct PlayerResourceProxyData {
+struct PlayerProxyData {
 	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM(TypedArray<Ref<PlayerResourceEntryResource>>, resources);
@@ -204,8 +184,8 @@ struct PlayerResourceProxyData {
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>, runes);
 
 public:
-	Ref<PlayerResourceProxyResource> duplicate() const {
-		Ref<PlayerResourceProxyResource> copy = Ref<PlayerResourceProxyResource>(memnew(PlayerResourceProxyResource));
+	Ref<PlayerProxyResource> duplicate() const {
+		Ref<PlayerProxyResource> copy = Ref<PlayerProxyResource>(memnew(PlayerProxyResource));
 		copy->set_player(get_player());
 		copy->set_team(get_team());
 
@@ -278,7 +258,7 @@ public:
 			if (source_rune.is_valid()) {
 				target_rune->set_rune_internal_name(source_rune->get_rune_internal_name());
 				target_rune->set_rune_resource_path(source_rune->get_rune_resource_path());
-				target_rune->set_level(source_rune->get_level());
+				target_rune->set_rune_level(source_rune->get_rune_level());
 			}
 			runes_copy[i] = target_rune;
 		}

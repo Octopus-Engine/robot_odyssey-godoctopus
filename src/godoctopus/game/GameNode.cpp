@@ -406,11 +406,17 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 			game.get_world().ecs.entity()
 				.set<octopus::PlayerInfo>({0, 0})
 				.add<octopus::ResourceStock>()
-				.add<octopus::ResourceSpent>();
+				.add<octopus::ResourceSpent>()
+				.add<PlayerUnitLoadout>()
+				.add<PlayerRuneInventory>()
+				.add<octopus::PlayerUpgrade>();
 			game.get_world().ecs.entity()
 				.set<octopus::PlayerInfo>({1, 1})
 				.add<octopus::ResourceStock>()
-				.add<octopus::ResourceSpent>();
+				.add<octopus::ResourceSpent>()
+				.add<PlayerUnitLoadout>()
+				.add<PlayerRuneInventory>()
+				.add<octopus::PlayerUpgrade>();
 			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library());
 		});
 	}

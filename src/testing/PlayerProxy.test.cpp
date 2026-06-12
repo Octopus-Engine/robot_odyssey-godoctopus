@@ -55,7 +55,7 @@ void test_player_proxy_sync() {
 
 	context.game_node->tick();
 
-	Ref<godot::PlayerResourceProxyResource> proxy0 = context.proxy_node->get_proxy_from_player(0);
+	Ref<godot::PlayerProxyResource> proxy0 = context.proxy_node->get_proxy_from_player(0);
 	CHECK(proxy0.is_valid());
 	CHECK(proxy0->get_player() == 0);
 	CHECK(proxy0->get_team() == 1);
@@ -65,13 +65,13 @@ void test_player_proxy_sync() {
 	CHECK(proxy0->check_upgrade("tier_1", 2));
 	CHECK(!proxy0->check_upgrade("tier_1", 3));
 
-	Ref<godot::PlayerResourceProxyResource> proxy1 = context.proxy_node->get_proxy_from_player(1);
+	Ref<godot::PlayerProxyResource> proxy1 = context.proxy_node->get_proxy_from_player(1);
 	CHECK(proxy1.is_valid());
 	CHECK(proxy1->get_resource_amount("crystal") == 45);
 	Dictionary upgrade_requirements;
 	upgrade_requirements["tier_2"] = 1;
 	CHECK(proxy1->check_upgrades(upgrade_requirements));
 
-	TypedArray<Ref<godot::PlayerResourceProxyResource>> all_players = context.proxy_node->get_proxy_from_players();
+	TypedArray<Ref<godot::PlayerProxyResource>> all_players = context.proxy_node->get_proxy_from_players();
 	CHECK(all_players.size() == 2);
 }

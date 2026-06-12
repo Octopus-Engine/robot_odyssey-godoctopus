@@ -17,7 +17,6 @@ void declare_player_loadout_component(flecs::world &ecs) {
 
     ecs.component<PlayerRuneSlotData>()
         .member("slot_type", &PlayerRuneSlotData::slot_type)
-        .member("locked", &PlayerRuneSlotData::locked)
         .member("has_rune", &PlayerRuneSlotData::has_rune)
         .member("rune_internal_name", &PlayerRuneSlotData::rune_internal_name)
         .member("rune_resource_path", &PlayerRuneSlotData::rune_resource_path)

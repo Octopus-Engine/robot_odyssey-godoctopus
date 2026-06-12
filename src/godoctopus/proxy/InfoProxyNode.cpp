@@ -188,7 +188,7 @@ TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue
 	if (player_id < 0 || _player_to_production_entities.find((uint32_t)player_id) == _player_to_production_entities.end()) {
 		return result;
 	}
-	uint64_t idx = 0;
+	int idx = 0;
 	bool any_valid = true;
 	while (any_valid) {
 		any_valid = false;
@@ -223,7 +223,7 @@ void InfoProxyNode::setup() {
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.run([this, ecs, update_query](flecs::iter&) {
-			if (refresh_tick > 0 && octopus::get_time_stamp(ecs) % refresh_tick != 0) {
+			if (refresh_tick > 0 && ecs.get_info()->frame_count_total % refresh_tick != 0) {
 				return;
 			}
 			std::lock_guard<std::mutex> lock(_mutex);
