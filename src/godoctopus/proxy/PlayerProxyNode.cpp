@@ -225,6 +225,35 @@ void PlayerProxyNode::add_rune(int player_id, const String &rune_internal_name, 
 	});
 }
 
+static Ref<UnitPrefab> find_unit_prefab(GameNode *game_node, const std::string &prefab_name) {
+	for (int i = 0; i < game_node->get_unit_prefabs().size(); ++i) {
+		Ref<UnitPrefab> const &prefab = game_node->get_unit_prefabs()[i];
+		if (prefab.is_valid() && prefab->get_prefab_name() == prefab_name.c_str()) {
+			return prefab;
+		}
+	}
+	return Ref<UnitPrefab>();
+}
+
+static void add_requirements_to_production(Ref<UnitPrefab> const &unit_prefab, octopus::PlayerProduction *player_production) {
+	if (!unit_prefab.is_valid() || !player_production) {
+		return;
+	}
+	for (int i = 0 ; i < unit_prefab->get_required_technologies().size(); ++i) {
+		String const &req_name = unit_prefab->get_required_technologies()[i];
+		const std::string req_name_std = req_name.utf8().get_data();
+		// tier 4 requires tier 3 to be unlocked, so we add it to production as well
+		if (req_name_std == "tier4") {
+			player_production->productions["tier3"] = true;
+		}
+		// tier 3 requires tier 2 to be unlocked, so we add it to production as well
+		if (req_name_std == "tier3" || req_name_std == "tier4") {
+			player_production->productions["tier2"] = true;
+		}
+		player_production->productions[req_name_std] = true;
+	}
+}
+
 void PlayerProxyNode::setup() {
 	if (!_game_node) {
 		return;
@@ -286,6 +315,11 @@ void PlayerProxyNode::setup() {
 					// Add new units to loadout
 					for (auto const &unit : actions.added_units) {
 						player_units->units.push_back(unit);
+						// Get requirements from unit prefab and add to production if needed
+						auto unit_prefab = find_unit_prefab(_game_node, unit.prefab_name);
+						if (unit_prefab.is_valid()) {
+							add_requirements_to_production(unit_prefab, player_production);
+						}
 					}
 					// Set new loadout units to production
 					if (player_production) {
