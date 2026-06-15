@@ -268,8 +268,6 @@ void PlayerProxyNode::setup() {
 		.kind(ecs.entity(PostUpdatePhase))
 		.run([this, ecs, update_query](flecs::iter &) {
 			std::lock_guard<std::mutex> lock(_mutex);
-			_proxy_map.clear();
-
 			for (const auto &periodic_resource : periodic_resources) {
 				if (periodic_resource.tickrate <= 0 || octopus::get_time_stamp(ecs) % periodic_resource.tickrate != 0) {
 					continue;
