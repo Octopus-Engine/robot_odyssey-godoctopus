@@ -302,6 +302,17 @@ void PlayerProxyNode::setup() {
 				// Update units
 				if (player_units && actions.units_loadout.has_value()) {
 					*player_units = std::move(actions.units_loadout.value());
+					// Set new loadout units to production
+					if (player_production) {
+						for (auto const &unit : player_units->units) {
+							player_production->productions[unit.prefab_name] = true;
+							// Get requirements from unit prefab and add to production if needed
+							auto unit_prefab = find_unit_prefab(_game_node, unit.prefab_name);
+							if (unit_prefab.is_valid()) {
+								add_requirements_to_production(unit_prefab, player_production);
+							}
+						}
+					}
 				}
 				else if (player_units) {
 					// Reset old loadout units production
@@ -404,6 +415,17 @@ void PlayerProxyNode::setup() {
 					proxy_data.set_runes(to_godot_runes(*player_runes));
 				} else {
 					proxy_data.set_runes(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>());
+				}
+
+				// Update production
+				TypedArray<String> productions;
+				if (player_production) {
+					for (auto const &[production_name, production_enabled] : player_production->productions.data()) {
+						if (production_enabled) {
+							productions.append(String(production_name.c_str()));
+						}
+					}
+					proxy_data.set_productions(productions);
 				}
 
 				player_actions[player_info.idx] = PlayerAction(); // Clear pending actions after applying them

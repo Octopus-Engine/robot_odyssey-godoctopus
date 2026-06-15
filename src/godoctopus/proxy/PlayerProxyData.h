@@ -90,6 +90,7 @@ class PlayerProxyResource : public Resource {
 	SET_GET_PARAM(TypedArray<Ref<PlayerUpgradeEntryResource>>, upgrades);
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutUnitEntryResource>>, units);
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>, runes);
+	SET_GET_PARAM(TypedArray<String>, productions);
 
 public:
 	static void _bind_methods() {
@@ -99,6 +100,7 @@ public:
 		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerUpgradeEntryResource, upgrades);
 		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerLoadoutUnitEntryResource, units);
 		ADD_ARRAY_OBJECT_PROP(PlayerProxyResource, PlayerLoadoutRuneEntryResource, runes);
+		ADD_ARRAY_PROP(PlayerProxyResource, productions);
 
 		ClassDB::bind_method(D_METHOD("get_resource_amount", "resource_name"), &PlayerProxyResource::get_resource_amount);
 		ClassDB::bind_method(D_METHOD("get_resource_cap", "resource_name"), &PlayerProxyResource::get_resource_cap);
@@ -182,6 +184,7 @@ struct PlayerProxyData {
 	SET_GET_PARAM(TypedArray<Ref<PlayerUpgradeEntryResource>>, upgrades);
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutUnitEntryResource>>, units);
 	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>, runes);
+	SET_GET_PARAM(TypedArray<String>, productions);
 
 public:
 	Ref<PlayerProxyResource> duplicate() const {
@@ -263,6 +266,8 @@ public:
 			runes_copy[i] = target_rune;
 		}
 		copy->set_runes(runes_copy);
+
+		copy->set_productions(get_productions());
 
 		return copy;
 	}
