@@ -21,6 +21,7 @@ struct PlayerRuneInventory
 struct PlayerRuneSlotData
 {
 	int32_t slot_type = 0;
+	bool activated = true;
 	bool has_rune = false;
 	std::string rune_internal_name;
 	std::string rune_resource_path;

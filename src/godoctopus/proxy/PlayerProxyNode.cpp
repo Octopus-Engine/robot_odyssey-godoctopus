@@ -52,6 +52,7 @@ static TypedArray<Ref<PlayerLoadoutUnitEntryResource>> to_godot_units(const Play
 			Ref<PlayerLoadoutRuneSlotResource> slot_entry = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
 			const PlayerRuneSlotData &slot = loadout.units[i].slots[slot_idx];
 			slot_entry->set_slot_type(slot.slot_type);
+			slot_entry->set_activated(slot.activated);
 			slot_entry->set_locked(slot.has_rune);
 			slot_entry->set_has_rune(slot.has_rune);
 			slot_entry->set_rune_internal_name(slot.rune_internal_name.c_str());
@@ -77,6 +78,7 @@ static PlayerUnitLoadoutEntry from_godot_unit(const Ref<PlayerLoadoutUnitEntryRe
 		}
 		unit.slots.push_back({
 			slot_entry->get_slot_type(),
+			slot_entry->get_activated(),
 			slot_entry->get_has_rune(),
 			slot_entry->get_rune_internal_name().utf8().get_data(),
 			slot_entry->get_rune_resource_path().utf8().get_data(),

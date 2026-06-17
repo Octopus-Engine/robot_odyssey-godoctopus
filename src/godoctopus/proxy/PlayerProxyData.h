@@ -52,6 +52,7 @@ class PlayerLoadoutRuneSlotResource : public Resource {
 	GDCLASS(PlayerLoadoutRuneSlotResource, Resource)
 
 	SET_GET_PARAM_DEF(int32_t, slot_type, 0);
+	SET_GET_PARAM_DEF(bool, activated, true);
 	SET_GET_PARAM_DEF(bool, locked, false);
 	SET_GET_PARAM_DEF(bool, has_rune, false);
 	SET_GET_PARAM_DEF(String, rune_internal_name, "");
@@ -60,6 +61,7 @@ class PlayerLoadoutRuneSlotResource : public Resource {
 public:
 	static void _bind_methods() {
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneSlotResource, INT, slot_type);
+		ADD_SIMPLE_PROP(PlayerLoadoutRuneSlotResource, BOOL, activated);
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneSlotResource, BOOL, locked);
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneSlotResource, BOOL, has_rune);
 		ADD_SIMPLE_PROP(PlayerLoadoutRuneSlotResource, STRING, rune_internal_name);
@@ -238,6 +240,7 @@ public:
 					Ref<PlayerLoadoutRuneSlotResource> target_slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
 					if (source_slot.is_valid()) {
 						target_slot->set_slot_type(source_slot->get_slot_type());
+						target_slot->set_activated(source_slot->get_activated());
 						target_slot->set_locked(source_slot->get_locked());
 						target_slot->set_has_rune(source_slot->get_has_rune());
 						target_slot->set_rune_internal_name(source_slot->get_rune_internal_name());
