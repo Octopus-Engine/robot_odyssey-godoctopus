@@ -47,7 +47,8 @@ public:
 	void set_runes(int player_id, const TypedArray<Ref<PlayerLoadoutRuneEntryResource>> &runes);
 
 	void add_delta_resources(int player_id, const String &resource_name, int64_t amount);
-	void add_unit(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots);
+	void add_unit(int player_id, const String &prefab_name);
+	void add_unit_with_slots(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots);
 	void set_unit(int player_id, Ref<PlayerLoadoutUnitEntryResource> unit_loadout);
 	void add_rune(int player_id, const String &rune_internal_name, const String &rune_resource_path, int64_t level = 1);
 

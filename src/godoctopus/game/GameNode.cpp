@@ -1,13 +1,10 @@
 #include "GameNode.h"
 
 // octopus
-#include "octopus/serialization/queue/CommandQueueSupport.hh"
 #include "octopus/serialization/components/BasicSupport.hh"
 #include "octopus/serialization/components/AdvancedSupport.hh"
-#include "octopus/serialization/commands/CommandSupport.hh"
 #include "octopus/systems/Systems.hh"
 #include "octopus/world/path/PathFindingCache.hh"
-#include "octopus/commands/queue/CommandQueue.hh"
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
@@ -42,6 +39,7 @@
 #include "godoctopus/production/UnitProduction.h"
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/pickable/Pickable.h"
 
 namespace godot
 {
@@ -574,6 +572,17 @@ void GameNode::_process(double delta_p)
 		++_ticks;
 		_elapsed -= _time_step;
 	}
+}
+
+
+Ref<UnitPrefab> GameNode::get_prefab(const String &prefab_name) const {
+	for (int i = 0; i < get_unit_prefabs().size(); ++i) {
+		Ref<UnitPrefab> const &prefab = get_unit_prefabs()[i];
+		if (prefab.is_valid() && prefab->get_prefab_name() == prefab_name) {
+			return prefab;
+		}
+	}
+	return Ref<UnitPrefab>();
 }
 
 void GameNode::_notification(int p_notification)

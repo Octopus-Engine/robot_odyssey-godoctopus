@@ -133,6 +133,12 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, proximity_custom_signal_refresh_rate);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_custom_signal_check_allies);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, proximity_custom_signal_dies_on_trigger);
+		// Rune slots
+		ClassDB::add_property_group("UnitPrefab", "RuneSlots");
+		ADD_SIMPLE_PROP(UnitPrefab, INT, core_base_rune_slots);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, core_max_rune_slots);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, special_base_rune_slots);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, special_max_rune_slots);
 	}
 
 	// General
@@ -225,6 +231,11 @@ public:
 	SET_GET_PARAM_DEF(int, proximity_custom_signal_refresh_rate, 50);
 	SET_GET_PARAM_DEF(bool, proximity_custom_signal_check_allies, true);
 	SET_GET_PARAM_DEF(bool, proximity_custom_signal_dies_on_trigger, false);
+	// Rune slots
+	SET_GET_PARAM_DEF(int, core_base_rune_slots, 2);
+	SET_GET_PARAM_DEF(int, core_max_rune_slots, 3);
+	SET_GET_PARAM_DEF(int, special_base_rune_slots, 1);
+	SET_GET_PARAM_DEF(int, special_max_rune_slots, 2);
 };
 
 }

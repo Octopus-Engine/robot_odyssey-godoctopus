@@ -3,22 +3,16 @@
 #include "scene/3d/node_3d.h"
 
 #include <atomic>
-// #include <array>
-// #include <thread>
-
-// #include "smart_list/smart_list.h"
 
 #include "octopus/world/WorldContext.hh"
 #include "octopus/systems/input/Input.hh"
-#include "octopus/utils/Grid.hh"
 
 #include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
-#include "godoctopus/pickable/Pickable.h"
+#include "godoctopus/pickable/PickerNode.h"
 
-#include "flecs.h"
 #include "godot_tools.h"
 #include "octopus_types.h"
 
@@ -81,6 +75,7 @@ public:
 	octopus::WorldContext<custom_step_manager>& get_world() { return _world; }
 	octopus::DefaultStepContext<custom_variant>& get_step_context() { return step_context; }
 	octopus::Input<custom_variant, custom_step_manager> * get_input_controller() { return _input_container; }
+	Ref<UnitPrefab> get_prefab(const String &prefab_name) const;
 	std::mutex &get_progress_mutex() { return _progress_mutex; }
 
 	bool init_done() const { return _init; }

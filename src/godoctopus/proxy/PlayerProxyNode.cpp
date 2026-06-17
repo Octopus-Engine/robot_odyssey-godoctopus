@@ -121,7 +121,8 @@ void PlayerProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("set_runes", "player_id", "runes"), &PlayerProxyNode::set_runes);
 
 	ClassDB::bind_method(D_METHOD("add_delta_resources", "player_id", "resource_name", "amount"), &PlayerProxyNode::add_delta_resources);
-	ClassDB::bind_method(D_METHOD("add_unit", "player_id", "prefab_name", "nb_core_slots", "nb_special_slots"), &PlayerProxyNode::add_unit);
+	ClassDB::bind_method(D_METHOD("add_unit", "player_id", "prefab_name"), &PlayerProxyNode::add_unit);
+	ClassDB::bind_method(D_METHOD("add_unit_with_slots", "player_id", "prefab_name", "nb_core_slots", "nb_special_slots"), &PlayerProxyNode::add_unit_with_slots);
 	ClassDB::bind_method(D_METHOD("set_unit", "player_id", "unit_loadout"), &PlayerProxyNode::set_unit);
 	ClassDB::bind_method(D_METHOD("add_rune", "player_id", "rune_internal_name", "rune_resource_path", "level"), &PlayerProxyNode::add_rune, DEFVAL(1));
 
@@ -201,7 +202,23 @@ void PlayerProxyNode::add_delta_resources(int player_id, const String &resource_
 	player_actions[player_id].delta_resources[resource_name.utf8().get_data()] += amount;
 }
 
-void PlayerProxyNode::add_unit(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots) {
+void PlayerProxyNode::add_unit(int player_id, const String &prefab_name) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	// Add unit to player actions
+	PlayerUnitLoadoutEntry unit_entry {prefab_name.utf8().get_data()};
+	const int nb_activated_core_slots = _game_node->get_prefab(prefab_name)->get_core_base_rune_slots();
+	const int nb_core_slots = _game_node->get_prefab(prefab_name)->get_core_max_rune_slots();
+	const int nb_activated_special_slots = _game_node->get_prefab(prefab_name)->get_special_base_rune_slots();
+	const int nb_special_slots = _game_node->get_prefab(prefab_name)->get_special_max_rune_slots();
+	const int total_slots = nb_core_slots + nb_special_slots;
+	unit_entry.slots.resize(nb_activated_core_slots, PlayerRuneSlotData{0, true});
+	unit_entry.slots.resize(nb_core_slots, PlayerRuneSlotData{0, false});
+	unit_entry.slots.resize(nb_core_slots+nb_activated_special_slots, PlayerRuneSlotData{1, true});
+	unit_entry.slots.resize(total_slots, PlayerRuneSlotData{1, false});
+	player_actions[player_id].added_units.push_back(std::move(unit_entry));
+}
+
+void PlayerProxyNode::add_unit_with_slots(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	// Add unit to player actions
 	PlayerUnitLoadoutEntry unit_entry {prefab_name.utf8().get_data()};
