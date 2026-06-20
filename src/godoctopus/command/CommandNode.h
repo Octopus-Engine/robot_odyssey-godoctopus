@@ -31,6 +31,8 @@ public:
 	void add_production(Ref<EntityGroup> group, String const &prod_name_p);
 	/// @brief Cancel a production in the queue (mono_unit_group should contain only the unit that is producing the product to cancel)
 	void cancel_production(Ref<EntityGroup> mono_unit_group, int queue_index);
+	/// @brief Cancel a production in the queue
+	void cancel_production_from_id(int entity_id, int queue_index);
 	/// @brief Queue a production in any procution building of the player
 	void queue_production(int player, String const &prod_name);
 

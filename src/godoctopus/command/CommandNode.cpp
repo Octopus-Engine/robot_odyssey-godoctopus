@@ -163,6 +163,14 @@ void CommandNode::cancel_production(Ref<EntityGroup> mono_unit_group, int queue_
     }
 }
 
+void CommandNode::cancel_production_from_id(int entity_id, int queue_index) {
+    if(!_input_container || entity_id < 0) { return; }
+    flecs::entity e = _game_node->get_world().ecs.entity(entity_id);
+    if(e.is_valid()) {
+        _input_container->cancelProduction(octopus::InputCancelProduction {e, queue_index});
+    }
+}
+
 void CommandNode::queue_production(int player, String const &prod_name) {
     std::string prod_name_str = prod_name.utf8().get_data();
 
@@ -201,6 +209,7 @@ void CommandNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("all_cast_command", "group", "cast_name", "target", "world_target", "queue"), &CommandNode::all_cast_command);
 	ClassDB::bind_method(D_METHOD("add_production", "group", "prod_name"), &CommandNode::add_production);
 	ClassDB::bind_method(D_METHOD("cancel_production", "group", "queue_index"), &CommandNode::cancel_production);
+	ClassDB::bind_method(D_METHOD("cancel_production_from_id", "entity_id", "queue_index"), &CommandNode::cancel_production_from_id);
 	ClassDB::bind_method(D_METHOD("queue_production", "player", "prod_name"), &CommandNode::queue_production);
 	ClassDB::bind_method(D_METHOD("setup"), &CommandNode::setup);
 }
