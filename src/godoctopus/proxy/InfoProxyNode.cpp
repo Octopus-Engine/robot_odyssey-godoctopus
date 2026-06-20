@@ -298,9 +298,12 @@ void InfoProxyNode::setup() {
 					const auto &production_library = ecs.get<octopus::ProductionTemplateLibrary<custom_step_manager>>();
 					TypedArray<Ref<InfoProductionQueueResource>> prod_array;
 					bool first = true;
+					int queue_idx = 0;
 					for (const std::string &item : production_queue->queue) {
 						Ref<InfoProductionQueueResource> prod_res = Ref<InfoProductionQueueResource>(memnew(InfoProductionQueueResource));
 						prod_res->set_prod_name(item.c_str());
+						prod_res->set_queue_idx(queue_idx);
+						prod_res->set_source_entity_id((int64_t)e.id());
 						if (first) {
 							octopus::ProductionTemplate<custom_step_manager> const * prod_template = production_library.try_get(item);
 							if (prod_template) {
@@ -313,6 +316,7 @@ void InfoProxyNode::setup() {
 							prod_res->set_progress(0);
 						}
 						prod_array.append(prod_res);
+						queue_idx++;
 					}
 					if (prod_array.size() > 0 && player_appartenance) {
 						_player_to_production_entities[player_appartenance->idx].push_back(e.id());
