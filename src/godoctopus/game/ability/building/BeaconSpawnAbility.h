@@ -40,10 +40,23 @@ struct BeaconSpawnAbility : octopus::AbilityTemplate<custom_step_manager> {
 		return "";
 	}
 
+	// Can be overload to give more precise information on the sensor not being activated
+	virtual std::string get_sensor_activation_error() const {
+			return "BEACON_SENSOR_NOT_ACTIVATED";
+	}
+	virtual bool use_sensor_activation_check() const {
+		return false;
+	}
+
 	virtual std::string is_castable(flecs::entity caster, flecs::world const &ecs) const override {
 		BeaconSlotOccupied const *slot = caster.try_get<BeaconSlotOccupied>();
 		if (slot && slot->occupied) {
 			return "BEACON_SLOT_OCCUPIED";
+		}
+
+		ProximitySensor const *sensor = caster.try_get<ProximitySensor>();
+		if (use_sensor_activation_check() && sensor && !sensor->activated) {
+			return get_sensor_activation_error();
 		}
 
 		return get_additional_castability_errors(caster, ecs);
