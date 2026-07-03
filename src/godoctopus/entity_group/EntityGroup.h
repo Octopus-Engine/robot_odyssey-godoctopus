@@ -41,6 +41,9 @@ public:
 		if (timestamp == -1) {
 			timestamp = current_timestamp;
 		}
+		if (is_populated()) {
+			this->call_deferred("emit_signal", "populated");
+		}
 	}
 
 	int64_t get_timestamp() const { return timestamp; }

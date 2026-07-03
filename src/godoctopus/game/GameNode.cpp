@@ -480,6 +480,7 @@ void GameNode::_bind_methods()
 
 	BIND_PROP(GameNode, LevelNode, level_node);
 
+	ClassDB::bind_method(D_METHOD("is_init_done"), &GameNode::init_done);
 	ClassDB::bind_method(D_METHOD("is_paused"), &GameNode::is_paused);
 	ClassDB::bind_method(D_METHOD("set_paused", "paused"), &GameNode::set_paused);
 	ClassDB::add_property("GameNode", PropertyInfo(Variant::BOOL, "paused"), "set_paused", "is_paused");

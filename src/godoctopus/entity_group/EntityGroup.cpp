@@ -14,6 +14,8 @@ void EntityGroup::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_should_populate"), &EntityGroup::get_should_populate);
 	ClassDB::bind_method(D_METHOD("append_to_group", "group"), &EntityGroup::append_to_group);
 	ClassDB::bind_method(D_METHOD("clone"), &EntityGroup::clone);
+
+	ADD_SIGNAL(MethodInfo("populated"));
 }
 
 void EntityGroup::remove_dead_entities(InfoProxyNode *proxy_node) {
@@ -103,6 +105,7 @@ void EntityGroup::append_to_group(Ref<EntityGroup> group) {
 	for(flecs::entity &e : group->get_entities()) {
 		insert_if_not_present(dst_entities, e);
 	}
+	timestamp = std::max(timestamp, group->get_timestamp());
 }
 
 Ref<EntityGroup> EntityGroup::clone() const {

@@ -62,6 +62,8 @@ public:
 
 	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_player(int player_id) const;
 
+	int64_t get_last_refresh_time() const { return _last_refresh_time; }
+
 	void init_nodes();
 
 	/// @brief Get a locker for the proxy data. The locker will lock the mutex for the duration of its lifetime, and will provide access to the proxy data map.

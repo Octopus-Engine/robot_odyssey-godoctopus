@@ -45,6 +45,7 @@ void InfoProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_production_queue_from_group", "group"), &InfoProxyNode::get_production_queue_from_group);
 	ClassDB::bind_method(D_METHOD("get_available_actions_from_group", "group"), &InfoProxyNode::get_available_actions_from_group);
 	ClassDB::bind_method(D_METHOD("get_production_queue_from_player", "player_id"), &InfoProxyNode::get_production_queue_from_player);
+	ClassDB::bind_method(D_METHOD("get_last_refresh_time"), &InfoProxyNode::get_last_refresh_time);
 }
 
 TypedArray<Ref<InfoProxyResource>> InfoProxyNode::get_proxy_from_group(Ref<EntityGroup> group) const {
