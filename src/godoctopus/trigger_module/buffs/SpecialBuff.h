@@ -18,19 +18,16 @@ struct SpecialBuff
 	}
 };
 
-template<int32_t base_quantity, int32_t level_gain>
 struct LeveledSpecialBuff
 {
-	int32_t quantity = base_quantity;
-
-	void apply(flecs::entity, octopus::Fixed const &level, Special &spec) const
+	void apply(flecs::entity, octopus::Fixed const &qty, Special &spec) const
 	{
-		spec.value += quantity + (level * level_gain);
+		spec.value += qty;
 	}
 
-	void revert(flecs::entity, octopus::Fixed const &level, Special &spec) const
+	void revert(flecs::entity, octopus::Fixed const &qty, Special &spec) const
 	{
-		spec.value -= quantity + (level * level_gain);
+		spec.value -= qty;
 	}
 };
 
@@ -50,18 +47,15 @@ struct AffinityBuff
 	}
 };
 
-template<int32_t base_quantity, int32_t level_gain>
 struct LeveledAffinityBuff
 {
-	int32_t quantity = base_quantity;
-
-	void apply(flecs::entity, octopus::Fixed const &level, Special &spec) const
+	void apply(flecs::entity, octopus::Fixed const &qty, Special &spec) const
 	{
-		spec.affinity += octopus::Fixed(quantity + (level * level_gain))/10;
+		spec.affinity += qty/10;
 	}
 
-	void revert(flecs::entity, octopus::Fixed const &level, Special &spec) const
+	void revert(flecs::entity, octopus::Fixed const &qty, Special &spec) const
 	{
-		spec.affinity -= octopus::Fixed(quantity + (level * level_gain))/10;
+		spec.affinity -= qty/10;
 	}
 };

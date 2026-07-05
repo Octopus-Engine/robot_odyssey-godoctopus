@@ -6,13 +6,11 @@
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
 
 // Temporary Armor Buff component - applied with time duration
-template<int32_t base_quantity, int32_t upgrade_quantity, int64_t duration_ticks>
+template<typename RuneType>
 struct TemporaryArmorBuff
 {
-	static constexpr int64_t DURATION_TICKS = duration_ticks;
-	static constexpr int32_t BASE_QUANTITY = base_quantity;
-	static constexpr int32_t UPGRADE_QUANTITY = upgrade_quantity;
-	octopus::Fixed bonus = base_quantity;
+	using ComponentType = octopus::Armor;
+	octopus::Fixed bonus;
 
 	void apply(octopus::Armor &armor) const
 	{
@@ -26,13 +24,11 @@ struct TemporaryArmorBuff
 };
 
 // Temporary Damage Buff component - applied with time duration
-template<int32_t base_quantity, int32_t upgrade_quantity, int64_t duration_ticks>
+template<typename RuneType>
 struct TemporaryDamageBuff
 {
-	static constexpr int64_t DURATION_TICKS = duration_ticks;
-	static constexpr int32_t BASE_QUANTITY = base_quantity;
-	static constexpr int32_t UPGRADE_QUANTITY = upgrade_quantity;
-	octopus::Fixed bonus = base_quantity;
+	using ComponentType = octopus::Attack;
+	octopus::Fixed bonus;
 
 	void apply(octopus::Attack &atk) const
 	{
@@ -46,13 +42,11 @@ struct TemporaryDamageBuff
 };
 
 // Temporary Attack Speed Buff component (reduces reload time) - applied with time duration
-template<int32_t base_quantity, int32_t upgrade_quantity, int64_t duration_ticks>
+template<typename RuneType>
 struct TemporaryAttackSpeedBuff
 {
-	static constexpr int64_t DURATION_TICKS = duration_ticks;
-	static constexpr int32_t BASE_QUANTITY = base_quantity;
-	static constexpr int32_t UPGRADE_QUANTITY = upgrade_quantity;
-	octopus::Fixed bonus = base_quantity;
+	using ComponentType = octopus::Attack;
+	octopus::Fixed bonus;
 
 	void apply(octopus::Attack &atk) const
 	{

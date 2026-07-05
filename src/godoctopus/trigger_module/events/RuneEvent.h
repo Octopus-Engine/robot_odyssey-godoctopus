@@ -10,7 +10,7 @@
 template<typename type, int32_t delta>
 struct RuneEvent
 {
-	static void apply(flecs::entity target, int32_t level=0)
+	static void apply(flecs::entity target, int32_t level=0, int32_t percent=0, int32_t upgrade_percent=0)
 	{
 		RuneLoad<type> * rune_load = target.try_get_mut<RuneLoad<type>>();
 		if(rune_load)

@@ -11,6 +11,7 @@
 
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/pickable/Pickable.h"
+#include "godoctopus/trigger_module/TriggerDeclaration.h"
 
 #include <variant>
 #include <mutex>
@@ -32,7 +33,7 @@ struct ModRuneAction {
 	String unit_type;
 	String rune_type;
 	int player_idx;
-	int level;
+	ModRuneData rune_data;
 	bool add = false;
 };
 
@@ -88,10 +89,7 @@ public:
 		}
 	}
 
-	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, int level, bool add) {
-		std::lock_guard<std::mutex> lock(_mutex);
-		_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, level, add});
-	}
+	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, Dictionary rune_data, bool add);
 
 	void spawn_prop(Vector2 const &position, int ray_x100) {
 		std::lock_guard<std::mutex> lock(_mutex);

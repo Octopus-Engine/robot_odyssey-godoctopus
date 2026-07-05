@@ -28,6 +28,7 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 			Condition::post_condition(e);
 
 			int64_t current_time = octopus::get_time_stamp(e.world());
+			const octopus::Fixed value = rune.upgrade * get_special_value(e) + rune.base;
 
 			// Check if enough ticks have passed since last trigger
 			if(!trigger_time || current_time - trigger_time->last_trigger_time >= tick_interval) {
@@ -36,7 +37,7 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 				} else {
 					e.set<PulseRuneTriggerTime<Rune>>({current_time});
 				}
-				Event::apply(e, pos.pos, team.team, ctx, rune.level);
+				Event::apply(e, pos.pos, team.team, ctx, value, rune.range);
 			}
 		});
 }
@@ -45,14 +46,14 @@ void declare_aoe_pulse_triggers(flecs::world &ecs, octopus::PositionContext cons
 {
 	// declare periodic area trigger systems for pulse runes
 	// Tier 1: base stats (5% base, 3% per level)
-	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpoint, AlwaysCondition, HealAreaEventPeriodicHitpointBased<2, 2, 1>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamage, AlwaysCondition, HealAreaEventPeriodicDamageBased<4, 2, 2>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpoint, AlwaysCondition, DamageAreaEventPeriodicHitpointBased<2, 2, 1>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamage, AlwaysCondition, DamageAreaEventPeriodicDamageBased<4, 2, 2>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpoint, AlwaysCondition, HealAreaEventPeriodicHitpointBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamage, AlwaysCondition, HealAreaEventPeriodicDamageBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpoint, AlwaysCondition, DamageAreaEventPeriodicHitpointBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamage, AlwaysCondition, DamageAreaEventPeriodicDamageBased>(ecs, ctx);
 
 	// Tier 2: enhanced stats (10% base, 5% per level)
-	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpointTier2, AlwaysCondition, HealAreaEventPeriodicHitpointBased<4, 2, 2>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamageTier2, AlwaysCondition, HealAreaEventPeriodicDamageBased<8, 2, 4>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpointTier2, AlwaysCondition, DamageAreaEventPeriodicHitpointBased<4, 2, 2>>(ecs, ctx);
-	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamageTier2, AlwaysCondition, DamageAreaEventPeriodicDamageBased<8, 2, 4>>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnHitpointTier2, AlwaysCondition, HealAreaEventPeriodicHitpointBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseHealBasedOnDamageTier2, AlwaysCondition, HealAreaEventPeriodicDamageBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnHitpointTier2, AlwaysCondition, DamageAreaEventPeriodicHitpointBased>(ecs, ctx);
+	declare_periodic_area_trigger_system<AoePulseDamageBasedOnDamageTier2, AlwaysCondition, DamageAreaEventPeriodicDamageBased>(ecs, ctx);
 }

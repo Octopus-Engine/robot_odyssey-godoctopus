@@ -19,7 +19,7 @@ struct HitpointEvent
 	}
 };
 
-template<int32_t damage, int32_t range, int32_t upgrade>
+template<int32_t damage, int32_t upgrade, int32_t range>
 struct DamageAreaEvent
 {
 	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level)
@@ -39,10 +39,9 @@ struct DamageAreaEvent
 	}
 };
 
-template<int32_t damage, int32_t range, int32_t upgrade>
 struct DamageAreaEventSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t damage, int32_t upgrade, int32_t range)
 	{
 		using namespace octopus;
 
@@ -59,10 +58,9 @@ struct DamageAreaEventSpecialScaled
 	}
 };
 
-template<int32_t damage, int32_t range, int32_t upgrade>
 struct DamageAreaEventHitpointBasedSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t damage, int32_t upgrade, int32_t range)
 	{
 		using namespace octopus;
 		auto const special = get_special_value(source);
@@ -86,10 +84,9 @@ struct DamageAreaEventHitpointBasedSpecialScaled
 	}
 };
 
-template<int32_t damage, int32_t range, int32_t upgrade>
 struct DamageAreaEventDamageBasedSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t damage, int32_t upgrade, int32_t range)
 	{
 		using namespace octopus;
 		auto const special = get_special_value(source);
@@ -132,10 +129,9 @@ struct HealAreaEvent
 	}
 };
 
-template<int32_t heal, int32_t range, int32_t heal_upgrade>
 struct HealAreaEventHitpointBasedSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t heal, int32_t heal_upgrade, int32_t range)
 	{
 		using namespace octopus;
 		auto const special = get_special_value(source);
@@ -159,10 +155,9 @@ struct HealAreaEventHitpointBasedSpecialScaled
 	}
 };
 
-template<int32_t heal, int32_t range, int32_t heal_upgrade>
 struct HealAreaEventDamageBasedSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t heal, int32_t heal_upgrade, int32_t range)
 	{
 		using namespace octopus;
 		auto const special = get_special_value(source);
@@ -185,10 +180,9 @@ struct HealAreaEventDamageBasedSpecialScaled
 	}
 };
 
-template<int32_t heal, int32_t range, int32_t heal_upgrade>
 struct HealAreaEventSpecialScaled
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t level, int32_t heal, int32_t heal_upgrade, int32_t range)
 	{
 		using namespace octopus;
 
@@ -206,10 +200,9 @@ struct HealAreaEventSpecialScaled
 };
 
 // Periodic event handlers for pulse-based runes
-template<int32_t base, int32_t range, int32_t upgrade>
 struct HealAreaEventPeriodicHitpointBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, octopus::Fixed const &percent, octopus::Fixed const &range)
 	{
 		using namespace octopus;
 		HitPointMax const * hp_max = source.try_get<octopus::HitPointMax>();
@@ -217,7 +210,7 @@ struct HealAreaEventPeriodicHitpointBased
 		{
 			return;
 		}
-		auto const aoe_heal = hp_max->qty * (upgrade * get_special_value(source) + base) / 100;
+		auto const aoe_heal = hp_max->qty * percent / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team == team && ent.try_get<HitPoint>())
@@ -232,10 +225,9 @@ struct HealAreaEventPeriodicHitpointBased
 	}
 };
 
-template<int32_t base, int32_t range, int32_t upgrade>
 struct HealAreaEventPeriodicDamageBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, octopus::Fixed const &percent, octopus::Fixed const &range)
 	{
 		using namespace octopus;
 		Attack const * attack = source.try_get<octopus::Attack>();
@@ -243,7 +235,7 @@ struct HealAreaEventPeriodicDamageBased
 		{
 			return;
 		}
-		auto const aoe_heal = attack->cst.damage * (upgrade * get_special_value(source) + base) / 100;
+		auto const aoe_heal = attack->cst.damage * percent / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team == team && ent.try_get<HitPoint>())
@@ -258,10 +250,9 @@ struct HealAreaEventPeriodicDamageBased
 	}
 };
 
-template<int32_t base, int32_t range, int32_t upgrade>
 struct DamageAreaEventPeriodicHitpointBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, octopus::Fixed const &percent, octopus::Fixed const &range)
 	{
 		using namespace octopus;
 		HitPointMax const * hp_max = source.try_get<octopus::HitPointMax>();
@@ -269,7 +260,7 @@ struct DamageAreaEventPeriodicHitpointBased
 		{
 			return;
 		}
-		auto const aoe_dmg = hp_max->qty * (upgrade * get_special_value(source) + base) / 100;
+		auto const aoe_dmg = hp_max->qty * percent / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())
@@ -284,10 +275,9 @@ struct DamageAreaEventPeriodicHitpointBased
 	}
 };
 
-template<int32_t base, int32_t range, int32_t upgrade>
 struct DamageAreaEventPeriodicDamageBased
 {
-	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, int32_t)
+	static void apply(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx, octopus::Fixed const &percent, octopus::Fixed const &range)
 	{
 		using namespace octopus;
 		Attack const * attack = source.try_get<octopus::Attack>();
@@ -295,7 +285,7 @@ struct DamageAreaEventPeriodicDamageBased
 		{
 			return;
 		}
-		auto const aoe_dmg = attack->cst.damage * (upgrade * get_special_value(source) + base) / 100;
+		auto const aoe_dmg = attack->cst.damage * percent / 100;
 
 		auto func_l = [&](int32_t idx_l, flecs::entity ent) -> bool {
 			if(ent.try_get<Team>() && ent.try_get<Team>()->team != team && ent.try_get<HitPoint>())

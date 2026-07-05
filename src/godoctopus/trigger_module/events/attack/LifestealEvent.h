@@ -2,10 +2,9 @@
 
 #include "godoctopus/components/special/Special.h"
 
-template<int32_t percent, int32_t upgrade_percent>
 struct LifestealEvent
 {
-	static void apply(flecs::entity attacker, flecs::entity target, int32_t level=0)
+	static void apply(flecs::entity attacker, flecs::entity target, int32_t level, int32_t percent, int32_t upgrade_percent)
 	{
 		octopus::HitPoint * hp = attacker.try_get_mut<octopus::HitPoint>();
 		octopus::HitPoint const * target_hp = target.try_get<octopus::HitPoint>();
@@ -18,10 +17,9 @@ struct LifestealEvent
 	}
 };
 
-template<int32_t percent, int32_t upgrade_percent>
 struct LifestealEventSpecialScaled
 {
-	static void apply(flecs::entity attacker, flecs::entity target, int32_t)
+	static void apply(flecs::entity attacker, flecs::entity target, int32_t level, int32_t percent, int32_t upgrade_percent)
 	{
 		octopus::HitPoint * hp = attacker.try_get_mut<octopus::HitPoint>();
 		octopus::HitPoint const * target_hp = target.try_get<octopus::HitPoint>();

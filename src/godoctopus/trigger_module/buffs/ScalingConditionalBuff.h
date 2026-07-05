@@ -1,10 +1,10 @@
 #include "ScalingBuff.h"
 
-template<bool under, int64_t percent, int64_t armor_x10_base, int64_t armor_x10_per_special>
+template<typename RuneType, bool under>
 struct ConditionalArmorBuffLowLifeRune :
 	SpecialScaledBuff<
-		ConditionalArmorBuffLowLifeRune<under, percent, armor_x10_base, armor_x10_per_special>,
-		LeveledArmorBuff<armor_x10_base, armor_x10_per_special>,
+		RuneType,
+		LeveledArmorBuff,
 		octopus::Armor, octopus::HitPoint, octopus::HitPointMax
 	> {
 
@@ -16,13 +16,14 @@ struct ConditionalArmorBuffLowLifeRune :
 		}
 	}
 	int32_t level = 0;
+	int64_t percent = 0;
 };
 
-template<bool under, int64_t percent, int64_t damage_base, int64_t damage_per_special>
+template<typename RuneType, bool under>
 struct ConditionalDamageBuffLowLifeRune :
 	SpecialScaledBuff<
-		ConditionalDamageBuffLowLifeRune<under, percent, damage_base, damage_per_special>,
-		LeveledDamageBuff<damage_base, damage_per_special>,
+		RuneType,
+		LeveledDamageBuff,
 		octopus::Attack, octopus::HitPoint, octopus::HitPointMax
 	> {
 
@@ -34,13 +35,14 @@ struct ConditionalDamageBuffLowLifeRune :
 		}
 	}
 	int32_t level = 0;
+	int64_t percent = 0;
 };
 
-template<bool under, int64_t percent, int64_t reload_x10_base, int64_t reload_x10_per_special>
+template<typename RuneType, bool under>
 struct ConditionalReloadBuffLowLifeRune :
 	SpecialScaledBuff<
-		ConditionalReloadBuffLowLifeRune<under, percent, reload_x10_base, reload_x10_per_special>,
-		LeveledAttackSpeedBuff<reload_x10_base, reload_x10_per_special>,
+		RuneType,
+		LeveledAttackSpeedBuff,
 		octopus::Attack, octopus::HitPoint, octopus::HitPointMax
 	> {
 
@@ -52,4 +54,5 @@ struct ConditionalReloadBuffLowLifeRune :
 		}
 	}
 	int32_t level = 0;
+	int64_t percent = 0;
 };

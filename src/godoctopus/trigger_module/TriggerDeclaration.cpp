@@ -31,7 +31,7 @@ void declare_classic_buff(flecs::world &ecs)
 {
 	// component declaration
 	ecs.component<BuffType>()
-		.member("quantity", &BuffType::quantity);
+		.member("qty", &BuffType::qty);
 
 	declare_player_buff_systems_all_units<BuffType, ComponentType...>(ecs, true);
 }
@@ -76,12 +76,22 @@ void declare_updatable_buff(flecs::world &ecs)
 {
 	// component declaration
 	ecs.component<BuffType>()
-		.member("quantity", &BuffType::quantity);
+		.member("base", &BuffType::base)
+		.member("upgrade", &BuffType::upgrade);
 
 	declare_player_buff_systems_all_units<BuffType, ComponentType...>(ecs, true);
 
 	// declare validate system that will update buff value during validate phase
 	for_each_bot_type(UpdateableBuffSystemDeclarer<BuffType, ComponentType...>{ecs});
+}
+
+template<typename BuffType, typename... ComponentType>
+void declare_conditional_updatable_buff(flecs::world &ecs)
+{
+	ecs.component<BuffType>()
+		.member("percent", &BuffType::percent)
+	;
+	declare_updatable_buff<BuffType, ComponentType...>(ecs);
 }
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library)
@@ -101,14 +111,14 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_attack_trigger_system<AddRuneLoadOnTargetOnAttack, trigger_module::DamageDealt, AlwaysCondition, TargetEvent<RuneEvent<DefaultRune, 1>>>(ecs);
 	declare_trigger_system<AddRuneLoadOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneEvent<DefaultRune, 1>>(ecs);
 
-	declare_attack_trigger_system<LifestealRuneSpecial, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled<10, 2> >(ecs);
-	declare_attack_area_trigger_system<AoeDamageSpecial, trigger_module::DamageDealt, AlwaysCondition, DamageAreaEventSpecialScaled<10, 5, 1>>(ecs, ctx);
+	declare_attack_trigger_system<LifestealRuneSpecial, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled>(ecs);
+	declare_attack_area_trigger_system<AoeDamageSpecial, trigger_module::DamageDealt, AlwaysCondition, DamageAreaEventSpecialScaled>(ecs, ctx);
 
-	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled<20, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventDamageBasedSpecialScaled<20, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventHitpointBasedSpecialScaled<10, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeHealBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventDamageBasedSpecialScaled<10, 5, 1>>(ecs, ctx);
-	declare_area_trigger_system<AoeDamageConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, DamageAreaEventSpecialScaled<2, 5, 1>>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventDamageBasedSpecialScaled>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventHitpointBasedSpecialScaled>(ecs, ctx);
+	declare_area_trigger_system<AoeHealBasedOnDamageOnDeath, trigger_module::Death, AlwaysCondition, HealAreaEventDamageBasedSpecialScaled>(ecs, ctx);
+	declare_area_trigger_system<AoeDamageConsumeRuneOnHit, trigger_module::DamageReceived, RuneCondition<1, DefaultRune>, DamageAreaEventSpecialScaled>(ecs, ctx);
 
 	// declare all trigger buff systems
 	declare_trigger_buff<AddRuneLoadOnAttack>(ecs);
@@ -142,19 +152,19 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_updatable_buff<ReloadBuffRuneSpecial, octopus::Attack>(ecs);
 
 	// Conditional armor buff
-	declare_updatable_buff<ConditionalArmorBuffLowLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalArmorBuffLowLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalDamageBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalDamageBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalReloadBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalReloadBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalArmorBuffLowLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalArmorBuffLowLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalDamageBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalDamageBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalReloadBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalReloadBuffLowLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
-	declare_updatable_buff<ConditionalArmorBuffHighLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalArmorBuffHighLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalDamageBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalDamageBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalReloadBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
-	declare_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalArmorBuffHighLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalArmorBuffHighLifeRuneTier2, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalDamageBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalDamageBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
+	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
 	// declare periodic pulse rune buff systems
 	declare_trigger_buff<AoePulseHealBasedOnHitpoint>(ecs);
@@ -167,19 +177,6 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_trigger_buff<AoePulseDamageBasedOnDamageTier2>(ecs);
 
 	declare_aoe_pulse_triggers(ecs, ctx);
-
-	// declare temporary buff rune buff systems
-	declare_trigger_buff<ApplyHealthBuffOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyArmorBuffOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyDamageBuffOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyAttackSpeedBuffOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyHealthBuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyArmorBuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyDamageBuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyAttackSpeedBuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyArmorDebuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyDamageDebuffAreaOnRuneLoad>(ecs);
-	declare_trigger_buff<ApplyAttackSpeedDebuffAreaOnRuneLoad>(ecs);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
 

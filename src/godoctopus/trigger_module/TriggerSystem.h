@@ -36,7 +36,7 @@ void declare_attack_trigger_system(flecs::world &ecs)
 			if(Condition::check(e))
 			{
 				Condition::post_condition(e);
-				Event::apply(e, trigger.target, rune.level);
+				Event::apply(e, trigger.target, rune.level, rune.base, rune.upgrade);
 			}
 		});
 }
@@ -77,7 +77,7 @@ void declare_area_trigger_system(flecs::world &ecs, octopus::PositionContext con
 			if(pos && team && Condition::check(e))
 			{
 				Condition::post_condition(e);
-				Event::apply(e, pos->pos, team->team, ctx, rune.level);
+				Event::apply(e, pos->pos, team->team, ctx, rune.level, rune.base, rune.upgrade, rune.range);
 			}
 		});
 }
@@ -93,7 +93,7 @@ void declare_attack_area_trigger_system(flecs::world &ecs, octopus::PositionCont
 			if(pos && team && Condition::check(e))
 			{
 				Condition::post_condition(e);
-				Event::apply(e, pos->pos, team->team, ctx, rune.level);
+				Event::apply(e, pos->pos, team->team, ctx, rune.level, rune.base, rune.upgrade, rune.range);
 			}
 		});
 }
@@ -109,7 +109,7 @@ void declare_attack_area_trigger_target_condition_system(flecs::world &ecs, octo
 			if(pos && team && Condition::check(trigger.target))
 			{
 				Condition::post_condition(trigger.target);
-				Event::apply(e, pos->pos, team->team, ctx, rune.level);
+				Event::apply(e, pos->pos, team->team, ctx, rune.level, rune.base, rune.upgrade, rune.range);
 			}
 		});
 }

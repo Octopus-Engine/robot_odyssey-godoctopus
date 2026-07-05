@@ -7,6 +7,8 @@
 #include "godoctopus/action/ActionNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
 
+#include "testing/utils/ModRuneDataHelper.h"
+
 struct GameNodeTestContextWithCustomPrefab {
 	godot::GameNode *game_node = nullptr;
 	godot::ActionNode *action_node = nullptr;
@@ -51,7 +53,7 @@ void test_gamenode_spawn_clone_unit_rune() {
 	context.game_node->tick();
 
 	// Apply SpawnCloneUnitRune rune
-	context.action_node->mod_rune("rambot", "SpawnCloneUnitRune", 0, 1, true);
+	context.action_node->mod_rune("rambot", "SpawnCloneUnitRune", 0, create_rune_data(), true);
 	context.game_node->tick();
 
 	// Verify armor is 0 at high HP (buff should not be active)

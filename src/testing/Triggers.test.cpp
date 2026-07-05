@@ -7,6 +7,7 @@
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
 #include "testing/GameNodeBasic.test.h"
+#include "testing/utils/ModRuneDataHelper.h"
 
 struct GameNodeTestContextWithCustomPrefab {
 	godot::GameNode *game_node = nullptr;
@@ -72,7 +73,7 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	}
 
 	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, 0, true);
+	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, create_rune_data(1, 0, 2, 1, 2, 0), true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow the AoE pulse to trigger
@@ -97,8 +98,8 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	// Verify that team 1 (the target) took damage from the AoE effect
 	// even though team 0 (the source) has zero base damage
 	double team1_damage = team1_initial_hp - team1_final_hp;
-	// Damage is 5% of 100 hp
-	CHECK(team1_damage == 5);
+	// Damage is 2% of 100 hp
+	CHECK(team1_damage == 2);
 }
 
 void test_gamenode_trigger_armor_buff() {
@@ -125,8 +126,8 @@ void test_gamenode_trigger_armor_buff() {
 	context.game_node->tick();
 
 	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, 0, true);
-	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, 0, true);
+	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 10, 1, 0, 15), true);
+	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow the AoE pulse to trigger
@@ -187,9 +188,9 @@ void test_gamenode_trigger_damage_buff_area() {
 	context.game_node->tick();
 
 	// Apply ApplyDamageBuffAreaOnRuneLoad rune to rambot
-	context.action_node->mod_rune("rambot", "ApplyDamageBuffAreaOnRuneLoad", 0, 0, true);
+	context.action_node->mod_rune("rambot", "ApplyDamageBuffAreaOnRuneLoad", 0, create_rune_data(1, 0, 20, 2, 5, 15), true);
 	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
-	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, 0, true);
+	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow unit A to attack and reach rune load 3
@@ -247,9 +248,9 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	context.game_node->tick();
 
 	// Apply ApplyAttackSpeedDebuffAreaOnRuneLoad rune to rambot (all instances)
-	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, 0, true);
+	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, create_rune_data(1, 0, -30, 0, 5, 500), true);
 	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
-	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, 0, true);
+	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow unit A to attack and reach rune load 3

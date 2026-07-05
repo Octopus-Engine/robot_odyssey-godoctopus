@@ -6,6 +6,7 @@
 #include "godoctopus/action/ActionNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
+#include "testing/utils/ModRuneDataHelper.h"
 
 struct GameNodeTestContextWithCustomPrefab {
 	godot::GameNode *game_node = nullptr;
@@ -56,7 +57,7 @@ void test_gamenode_conditional_armor_buff_low_life_tier1() {
 	context.game_node->tick();
 
 	// Apply ConditionalArmorBuffLowLifeRuneTier1 rune with level 1
-	context.action_node->mod_rune("rambot", "ConditionalArmorBuffLowLifeRuneTier1", 0, 1, true);
+	context.action_node->mod_rune("rambot", "ConditionalArmorBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 40, 0, 0, 0), true);
 	context.game_node->tick();
 
 	// Verify armor is 0 at high HP (buff should not be active)
@@ -101,7 +102,7 @@ void test_gamenode_conditional_damage_buff_low_life_tier1() {
 	context.game_node->tick();
 
 	// Apply ConditionalDamageBuffLowLifeRuneTier1 rune with level 1
-	context.action_node->mod_rune("rambot", "ConditionalDamageBuffLowLifeRuneTier1", 0, 1, true);
+	context.action_node->mod_rune("rambot", "ConditionalDamageBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 18, 0, 0, 0), true);
 	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)
@@ -146,7 +147,7 @@ void test_gamenode_conditional_reload_buff_low_life_tier1() {
 	context.game_node->tick();
 
 	// Apply ConditionalReloadBuffLowLifeRuneTier1 rune with level 1
-	context.action_node->mod_rune("rambot", "ConditionalReloadBuffLowLifeRuneTier1", 0, 1, true);
+	context.action_node->mod_rune("rambot", "ConditionalReloadBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 40, 0, 0, 0), true);
 	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)

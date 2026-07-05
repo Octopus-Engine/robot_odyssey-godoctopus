@@ -27,6 +27,22 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
 }
 
+static ModRuneData createRuneData(Dictionary rune_data) {
+	ModRuneData data;
+	data.level = rune_data.get("level", 0);
+	data.flat_buff = rune_data.get("flat_buff", 0);
+	data.base = rune_data.get("base", 0);
+	data.upgrade = rune_data.get("upgrade", 0);
+	data.range = rune_data.get("range", 0);
+	data.duration_ticks = rune_data.get("duration_ticks", 0);
+	return data;
+}
+
+void ActionNode::mod_rune(String const &unit_type, String const &rune_type, int player_idx, Dictionary rune_data, bool add) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, createRuneData(rune_data), add});
+}
+
 void ActionNode::setup() {
 	if(!_game_node) {
 		return;
@@ -115,7 +131,10 @@ void ActionNode::setup() {
 					});
 
 					octopus::Logger::getDebug() << "Modding rune "<< (add ? "add" : "remove") <<" for player: "<<player_idx<<", unit_type: "<<unit_type<<", rune_type: "<<rune_type<<std::endl;
-					mod_rune_based_on_names(player, unit_type, rune_type, add, mod_rune_action.level);
+					octopus::Logger::getDebug() << "\tLevel: "<<mod_rune_action.rune_data.level<<", flat_buff: "<<mod_rune_action.rune_data.flat_buff
+												<<", base: "<<mod_rune_action.rune_data.base<<", upgrade: "<<mod_rune_action.rune_data.upgrade
+												<<", range: "<<mod_rune_action.rune_data.range<<", duration_ticks: "<<mod_rune_action.rune_data.duration_ticks<<std::endl;
+					mod_rune_based_on_names(player, unit_type, rune_type, add, mod_rune_action.rune_data);
 				}
 				else if (std::holds_alternative<SpawnPropAction>(action)) {
 					SpawnPropAction const &prop_action = std::get<SpawnPropAction>(action);

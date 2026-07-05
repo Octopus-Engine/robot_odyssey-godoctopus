@@ -9,6 +9,7 @@
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 
 #include "testing/UndyingRune.test.h"
+#include "testing/utils/ModRuneDataHelper.h"
 
 struct GameNodeTestContextWithCustomPrefab {
 	godot::GameNode *game_node = nullptr;
@@ -71,9 +72,9 @@ void test_gamenode_undying_rune_applies_buff_at_rune_load_5() {
 	CHECK(initial_hp == 100);  // Should have full HP
 
 	// 5. Apply ApplyUndyingBuffOnRuneLoad & AddRuneLoadOnHit
-	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, create_rune_data(), true);
 	// Apply AddRuneLoadOnHit to enable rune load accumulation on attack
-	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, create_rune_data(), true);
 	context.game_node->tick();
 
 	// 6. Attack the unit with another unit to increase rune load
@@ -132,9 +133,9 @@ void test_gamenode_undying_buff_expires_after_15_seconds() {
 	CHECK(initial_hp == 60);  // Should have full HP
 
 	// 5. Apply ApplyUndyingBuffOnRuneLoad & AddRuneLoadOnHit
-	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, create_rune_data(), true);
 	// Apply AddRuneLoadOnHit to enable rune load accumulation on attack
-	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, create_rune_data(), true);
 
 	// 6. Attack the unit with another unit to increase rune load
 	context.game_node->tick(20);
@@ -190,9 +191,9 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	CHECK(initial_hp == 60);  // Should have full HP
 
 	// 5. Apply ApplyUndyingBuffOnRuneLoad & AddRuneLoadOnHit
-	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, create_rune_data(), true);
 	// Apply AddRuneLoadOnHit to enable rune load accumulation on attack
-	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, 1, true);
+	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, create_rune_data(), true);
 
 	// 6. Attack the unit with another unit to increase rune load
 	context.game_node->tick(20);
