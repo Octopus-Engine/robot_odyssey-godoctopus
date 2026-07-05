@@ -48,6 +48,8 @@ struct GameNodeTestContextWithProduction {
 		prefab->set_reload_x10(1);
 		prefab->set_range_x10(300);
 		prefab->set_windup_x10(1);
+		prefab->set_cost_basic_x10(0);
+		prefab->set_cost_advanced_x10(0);
 		prefab->set_production_duration(1);  // 1 second production time
 		game_node->get_unit_prefabs().push_back(prefab);
 
