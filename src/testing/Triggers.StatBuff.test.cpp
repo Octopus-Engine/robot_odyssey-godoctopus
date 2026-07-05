@@ -38,7 +38,12 @@ static double run_single_unit_rune_stat(
 	context.action_node->mod_rune("rambot", rune_name, 0, rune_data, true);
 	context.game_node->tick();
 
-	Ref<godot::InfoProxyResource> proxy = context.proxy_node->get_proxy_from_group(group)[0];
+	auto proxies = context.proxy_node->get_proxy_from_group(group);
+	CHECK(proxies.size() == 1);
+	if (proxies.size() != 1) {
+		return -1;
+	}
+	Ref<godot::InfoProxyResource> proxy = proxies[0];
 	return read_stat(proxy);
 }
 
@@ -146,6 +151,7 @@ void test_gamenode_apply_armor_buff_area_on_rune_load() {
 	Ref<godot::UnitPrefab> prefab = create_default_prefab();
 	Ref<godot::UnitPrefab> prefab_2 = create_default_prefab("gunbot");
 	prefab->set_reload_x10(1);
+	prefab->set_damage_x10(10); // Ensure attacks register damage and rune loads increase.
 
 	GameNodeTestContextWithCustomPrefab context(prefab, prefab_2);
 	StringName unit_name = "rambot";
@@ -173,7 +179,7 @@ void test_gamenode_apply_armor_buff_area_on_rune_load() {
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 100; ++i) {
 		context.game_node->tick();
 	}
 

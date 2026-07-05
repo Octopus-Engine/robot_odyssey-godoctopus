@@ -33,4 +33,16 @@ struct GameNodeTestContextWithCustomPrefab {
 		SceneTree::get_singleton()->get_root()->add_child(game_node);
 		game_node->init_from_level(Dictionary());
 	}
+
+	~GameNodeTestContextWithCustomPrefab() {
+		if (game_node && game_node->get_parent()) {
+			game_node->get_parent()->remove_child(game_node);
+		}
+		if (game_node) {
+			game_node->queue_free();
+			game_node = nullptr;
+		}
+		action_node = nullptr;
+		proxy_node = nullptr;
+	}
 };
