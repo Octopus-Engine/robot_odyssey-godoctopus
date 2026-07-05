@@ -1,0 +1,8 @@
+#pragma once
+
+void test_gamenode_damage_buff_rune_special_upgrade_affects_bonus();
+void test_gamenode_armor_buff_rune_special_upgrade_affects_bonus();
+void test_gamenode_reload_buff_rune_special_upgrade_affects_bonus();
+void test_gamenode_damage_buff_rune_regular_flat_buff();
+void test_gamenode_conditional_damage_buff_high_life_tier1();
+void test_gamenode_apply_armor_buff_area_on_rune_load();

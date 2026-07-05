@@ -1,6 +1,7 @@
 #pragma once
 
 #include "testing/GameNodeBasic.test.h"
+#include "testing/Triggers.StatBuff.test.h"
 #include "testing/Triggers.test.h"
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
 #include "testing/SpawnCloneUnitRune.test.h"
@@ -39,6 +40,30 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Damage Buff A
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Attack Speed Debuff Area rune") {
 	test_gamenode_trigger_attack_speed_debuff_area();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode DamageBuffRuneSpecial upgrade scales bonus") {
+	test_gamenode_damage_buff_rune_special_upgrade_affects_bonus();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode ArmorBuffRuneSpecial upgrade scales bonus") {
+	test_gamenode_armor_buff_rune_special_upgrade_affects_bonus();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode ReloadBuffRuneSpecial upgrade scales bonus") {
+	test_gamenode_reload_buff_rune_special_upgrade_affects_bonus();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode DamageBuffRuneRegular applies flat buff") {
+	test_gamenode_damage_buff_rune_regular_flat_buff();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode ConditionalDamageBuffHighLifeRuneTier1") {
+	test_gamenode_conditional_damage_buff_high_life_tier1();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode ApplyArmorBuffAreaOnRuneLoad") {
+	test_gamenode_apply_armor_buff_area_on_rune_load();
 }
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Conditional Armor Buff Low Life Tier1 rune") {
