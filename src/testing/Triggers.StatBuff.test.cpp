@@ -69,12 +69,12 @@ static double read_reload(Ref<godot::InfoProxyResource> const &proxy) { return p
 void test_gamenode_damage_buff_rune_special_upgrade_affects_bonus() {
 	const double damage_without_upgrade = run_single_unit_rune_stat(
 			"DamageBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 0, 0, 0),
+			create_rune_data(1, 0, 10, 0, 0, 0, 0),
 			setup_damage_upgrade_prefab,
 			read_damage);
 	const double damage_with_upgrade = run_single_unit_rune_stat(
 			"DamageBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 2, 0, 0),
+			create_rune_data(1, 0, 10, 0, 2, 0, 0),
 			setup_damage_upgrade_prefab,
 			read_damage);
 
@@ -85,12 +85,12 @@ void test_gamenode_damage_buff_rune_special_upgrade_affects_bonus() {
 void test_gamenode_armor_buff_rune_special_upgrade_affects_bonus() {
 	const double armor_without_upgrade = run_single_unit_rune_stat(
 			"ArmorBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 0, 0, 0),
+			create_rune_data(1, 0, 10, 0, 0, 0, 0),
 			setup_armor_upgrade_prefab,
 			read_armor);
 	const double armor_with_upgrade = run_single_unit_rune_stat(
 			"ArmorBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 2, 0, 0),
+			create_rune_data(1, 0, 10, 0, 2, 0, 0),
 			setup_armor_upgrade_prefab,
 			read_armor);
 
@@ -101,12 +101,12 @@ void test_gamenode_armor_buff_rune_special_upgrade_affects_bonus() {
 void test_gamenode_reload_buff_rune_special_upgrade_affects_bonus() {
 	const double reload_without_upgrade = run_single_unit_rune_stat(
 			"ReloadBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 0, 0, 0),
+			create_rune_data(1, 0, 10, 0, 0, 0, 0),
 			setup_reload_upgrade_prefab,
 			read_reload);
 	const double reload_with_upgrade = run_single_unit_rune_stat(
 			"ReloadBuffRuneSpecial",
-			create_rune_data(1, 0, 10, 2, 0, 0),
+			create_rune_data(1, 0, 10, 0, 2, 0, 0),
 			setup_reload_upgrade_prefab,
 			read_reload);
 
@@ -117,7 +117,7 @@ void test_gamenode_reload_buff_rune_special_upgrade_affects_bonus() {
 void test_gamenode_damage_buff_rune_regular_flat_buff() {
 	const double damage = run_single_unit_rune_stat(
 			"DamageBuffRuneRegular",
-			create_rune_data(1, 42, 0, 0, 0, 0),
+			create_rune_data(1, 42, 0, 0, 0, 0, 0),
 			setup_damage_upgrade_prefab,
 			read_damage);
 	CHECK(damage == 42);
@@ -134,7 +134,7 @@ void test_gamenode_conditional_damage_buff_high_life_tier1() {
 	context.action_node->spawn_units_in_group("rambot", Vector2(100, 100), 0, 1, group);
 	context.game_node->tick();
 
-	context.action_node->mod_rune("rambot", "ConditionalDamageBuffHighLifeRuneTier1", 0, create_rune_data(1, 0, 18, 0, 0, 0), true);
+	context.action_node->mod_rune("rambot", "ConditionalDamageBuffHighLifeRuneTier1", 0, create_rune_data(1, 0, 18, 0, 0, 0, 0), true);
 	context.game_node->tick();
 
 	double damage_high_life = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group)[0])->get_damage();
@@ -175,7 +175,7 @@ void test_gamenode_apply_armor_buff_area_on_rune_load() {
 	context.action_node->spawn_units_in_group(unit_name, Vector2(120, 120), 0, 1, groups.back());
 	context.game_node->tick();
 
-	context.action_node->mod_rune("rambot", "ApplyArmorBuffAreaOnRuneLoad", 0, create_rune_data(1, 0, 10, 0, 5, 500), true);
+	context.action_node->mod_rune("rambot", "ApplyArmorBuffAreaOnRuneLoad", 0, create_rune_data(1, 0, 10, 0, 0, 5, 500), true);
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 

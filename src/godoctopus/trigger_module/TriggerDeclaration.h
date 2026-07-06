@@ -87,6 +87,7 @@ struct ModRuneData {
 	int level = 0;
 	int flat_buff = 0;
 	int base = 0;
+	int level_upgrade = 0;
 	int upgrade = 0;
 	int range = 0;
 	int duration_ticks = 0;

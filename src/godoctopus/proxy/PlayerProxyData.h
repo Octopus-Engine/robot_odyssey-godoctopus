@@ -2,12 +2,11 @@
 
 #include "flecs.h"
 
-#include "godoctopus/proxy/data/PlayerLoadoutRuneEntryResource.h"
-#include "godoctopus/proxy/data/PlayerLoadoutRuneSlotResource.h"
-#include "godoctopus/proxy/data/PlayerLoadoutUnitEntryResource.h"
 #include "godoctopus/proxy/data/PlayerProxyResource.h"
 #include "godoctopus/proxy/data/PlayerResourceEntryResource.h"
 #include "godoctopus/proxy/data/PlayerUpgradeEntryResource.h"
+#include "godoctopus/proxy/data/player/UnitLoadoutResource.h"
+#include "godoctopus/proxy/data/player/RuneInfoResource.h"
 #include "godot_tools.h"
 
 namespace godot {
@@ -17,8 +16,8 @@ struct PlayerProxyData {
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM(TypedArray<Ref<PlayerResourceEntryResource>>, resources);
 	SET_GET_PARAM(TypedArray<Ref<PlayerUpgradeEntryResource>>, upgrades);
-	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutUnitEntryResource>>, units);
-	SET_GET_PARAM(TypedArray<Ref<PlayerLoadoutRuneEntryResource>>, runes);
+	SET_GET_PARAM(TypedArray<Ref<UnitLoadoutResource>>, units);
+	SET_GET_PARAM(TypedArray<Ref<RuneInfoResource>>, runes);
 	SET_GET_PARAM(TypedArray<String>, productions);
 
 public:
@@ -56,50 +55,21 @@ public:
 		}
 		copy->set_upgrades(upgrades_copy);
 
-		TypedArray<Ref<PlayerLoadoutUnitEntryResource>> const &source_units = get_ref_units();
-		TypedArray<Ref<PlayerLoadoutUnitEntryResource>> units_copy;
+		TypedArray<Ref<UnitLoadoutResource>> const &source_units = get_ref_units();
+		TypedArray<Ref<UnitLoadoutResource>> units_copy;
 		units_copy.resize(source_units.size());
 		for (int i = 0; i < source_units.size(); ++i) {
-			Ref<PlayerLoadoutUnitEntryResource> const source_unit = source_units[i];
-			Ref<PlayerLoadoutUnitEntryResource> target_unit = Ref<PlayerLoadoutUnitEntryResource>(memnew(PlayerLoadoutUnitEntryResource));
-			if (source_unit.is_valid()) {
-				target_unit->set_prefab_name(source_unit->get_prefab_name());
-
-				TypedArray<Ref<PlayerLoadoutRuneSlotResource>> const &source_slots = source_unit->get_ref_slots();
-				TypedArray<Ref<PlayerLoadoutRuneSlotResource>> slots_copy;
-				slots_copy.resize(source_slots.size());
-				for (int slot_idx = 0; slot_idx < source_slots.size(); ++slot_idx) {
-					Ref<PlayerLoadoutRuneSlotResource> const source_slot = source_slots[slot_idx];
-					Ref<PlayerLoadoutRuneSlotResource> target_slot = Ref<PlayerLoadoutRuneSlotResource>(memnew(PlayerLoadoutRuneSlotResource));
-					if (source_slot.is_valid()) {
-						target_slot->set_slot_type(source_slot->get_slot_type());
-						target_slot->set_activated(source_slot->get_activated());
-						target_slot->set_locked(source_slot->get_locked());
-						target_slot->set_has_rune(source_slot->get_has_rune());
-						target_slot->set_rune_internal_name(source_slot->get_rune_internal_name());
-						target_slot->set_rune_resource_path(source_slot->get_rune_resource_path());
-						target_slot->set_rune_level(source_slot->get_rune_level());
-					}
-					slots_copy[slot_idx] = target_slot;
-				}
-				target_unit->set_slots(slots_copy);
-			}
-			units_copy[i] = target_unit;
+			Ref<UnitLoadoutResource> const source = source_units[i];
+			units_copy[i] = source->duplicate();
 		}
 		copy->set_units(units_copy);
 
-		TypedArray<Ref<PlayerLoadoutRuneEntryResource>> const &source_runes = get_ref_runes();
-		TypedArray<Ref<PlayerLoadoutRuneEntryResource>> runes_copy;
+		TypedArray<Ref<RuneInfoResource>> const &source_runes = get_ref_runes();
+		TypedArray<Ref<RuneInfoResource>> runes_copy;
 		runes_copy.resize(source_runes.size());
 		for (int i = 0; i < source_runes.size(); ++i) {
-			Ref<PlayerLoadoutRuneEntryResource> const source_rune = source_runes[i];
-			Ref<PlayerLoadoutRuneEntryResource> target_rune = Ref<PlayerLoadoutRuneEntryResource>(memnew(PlayerLoadoutRuneEntryResource));
-			if (source_rune.is_valid()) {
-				target_rune->set_rune_internal_name(source_rune->get_rune_internal_name());
-				target_rune->set_rune_resource_path(source_rune->get_rune_resource_path());
-				target_rune->set_rune_level(source_rune->get_rune_level());
-			}
-			runes_copy[i] = target_rune;
+			Ref<RuneInfoResource> const source = source_runes[i];
+			runes_copy[i] = source->duplicate();
 		}
 		copy->set_runes(runes_copy);
 

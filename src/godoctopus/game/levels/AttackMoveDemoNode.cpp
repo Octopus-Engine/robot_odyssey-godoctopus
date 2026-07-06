@@ -85,7 +85,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.add<octopus::ResourceStock>()
 		.add<octopus::ResourceSpent>()
 		.add<PlayerUnitLoadout>()
-		.add<PlayerRuneInventory>()
+		.add<PlayerRuneLoadout>()
 		.add<octopus::PlayerUpgrade>();
 	// Enemy
 	flecs::entity p1 = ecs.entity()
@@ -93,7 +93,7 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 		.add<octopus::ResourceStock>()
 		.add<octopus::ResourceSpent>()
 		.add<PlayerUnitLoadout>()
-		.add<PlayerRuneInventory>()
+		.add<PlayerRuneLoadout>()
 		.add<octopus::PlayerUpgrade>();
 
 	declare_prefab(ecs);

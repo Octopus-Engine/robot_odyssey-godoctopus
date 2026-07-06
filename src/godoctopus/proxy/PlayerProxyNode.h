@@ -41,16 +41,23 @@ public:
 	int64_t get_upgrade_level(int player_id, const String &upgrade_name) const;
 	bool check_upgrade(int player_id, const String &upgrade_name, int64_t level = 1) const;
 
-	TypedArray<Ref<PlayerLoadoutUnitEntryResource>> get_units(int player_id) const;
-	TypedArray<Ref<PlayerLoadoutRuneEntryResource>> get_runes(int player_id) const;
-	void set_units(int player_id, const TypedArray<Ref<PlayerLoadoutUnitEntryResource>> &units);
-	void set_runes(int player_id, const TypedArray<Ref<PlayerLoadoutRuneEntryResource>> &runes);
-
 	void add_delta_resources(int player_id, const String &resource_name, int64_t amount);
+	////////////////////
+	///   Loadout    ///
+	////////////////////
+	TypedArray<Ref<UnitLoadoutResource>> get_units(int player_id) const;
+	TypedArray<Ref<RuneInfoResource>> get_runes(int player_id) const;
+	void set_units(int player_id, const TypedArray<Ref<UnitLoadoutResource>> &units);
+	void set_runes(int player_id, const TypedArray<Ref<RuneInfoResource>> &runes);
+
 	void add_unit(int player_id, const String &prefab_name);
 	void add_unit_with_slots(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots);
-	void set_unit(int player_id, Ref<PlayerLoadoutUnitEntryResource> unit_loadout);
-	void add_rune(int player_id, const String &rune_internal_name, const String &rune_resource_path, int64_t level = 1);
+	void set_unit(int player_id, Ref<UnitLoadoutResource> unit_loadout);
+	void add_rune(int player_id, Ref<RuneInfoResource> rune);
+
+	////////////////////
+	/// Loadout END  ///
+	////////////////////
 
 	void add_periodic_resource(int player_id, const String &resource_name, int64_t amount, int64_t tickrate);
 
@@ -67,12 +74,12 @@ private:
 	// Action queued up
 	struct PlayerAction {
 		std::unordered_map<std::string, int64_t> delta_resources;
-		std::vector<PlayerUnitLoadoutEntry> added_units;
-		std::vector<PlayerUnitLoadoutEntry> set_units;
-		std::vector<PlayerRuneEntry> added_runes;
+		std::vector<UnitLoadout> added_units;
+		std::vector<UnitLoadout> set_units;
+		std::vector<RuneInfo> added_runes;
 		std::vector<int64_t> removed_runes;
 		std::optional<PlayerUnitLoadout> units_loadout;
-		std::optional<PlayerRuneInventory> runes_loadout;
+		std::optional<PlayerRuneLoadout> runes_loadout;
 	};
 	std::unordered_map<int, PlayerAction> player_actions;
 

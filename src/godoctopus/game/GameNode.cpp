@@ -186,7 +186,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 			unit_prefab->get_impact_scale()
 		};
 		for(int i = 0; i < unit_prefab->get_impacts().size(); ++ i) {
-			Ref<ParticleOcherstrated> impact = unit_prefab->get_impacts()[i];
+			Ref<ParticleOrchestrated> impact = unit_prefab->get_impacts()[i];
 			std::cout<<"registring impact "<<i<<" with effect id "<<impact->get_type()<<std::endl;
 			projectile.impacts.push_back(CustomBasicProjectile::Impact{
 				impact->get_type(),
@@ -406,14 +406,14 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 				.add<octopus::ResourceStock>()
 				.add<octopus::ResourceSpent>()
 				.add<PlayerUnitLoadout>()
-				.add<PlayerRuneInventory>()
+				.add<PlayerRuneLoadout>()
 				.add<octopus::PlayerUpgrade>();
 			game.get_world().ecs.entity()
 				.set<octopus::PlayerInfo>({1, 1})
 				.add<octopus::ResourceStock>()
 				.add<octopus::ResourceSpent>()
 				.add<PlayerUnitLoadout>()
-				.add<PlayerRuneInventory>()
+				.add<PlayerRuneLoadout>()
 				.add<octopus::PlayerUpgrade>();
 			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library());
 		});

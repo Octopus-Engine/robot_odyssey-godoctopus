@@ -41,7 +41,7 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	}
 
 	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, create_rune_data(1, 0, 2, 1, 2, 0), true);
+	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, create_rune_data(1, 0, 2, 0, 1, 2, 0), true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow the AoE pulse to trigger
@@ -94,7 +94,7 @@ void test_gamenode_trigger_armor_buff() {
 	context.game_node->tick();
 
 	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 10, 1, 0, 15), true);
+	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 10, 0, 1, 0, 15), true);
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
@@ -156,7 +156,7 @@ void test_gamenode_trigger_damage_buff_area() {
 	context.game_node->tick();
 
 	// Apply ApplyDamageBuffAreaOnRuneLoad rune to rambot
-	context.action_node->mod_rune("rambot", "ApplyDamageBuffAreaOnRuneLoad", 0, create_rune_data(1, 0, 20, 2, 5, 15), true);
+	context.action_node->mod_rune("rambot", "ApplyDamageBuffAreaOnRuneLoad", 0, create_rune_data(1, 0, 20, 0, 2, 5, 15), true);
 	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
@@ -216,7 +216,7 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	context.game_node->tick();
 
 	// Apply ApplyAttackSpeedDebuffAreaOnRuneLoad rune to rambot (all instances)
-	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, create_rune_data(1, 0, -30, 0, 5, 500), true);
+	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, create_rune_data(1, 0, -30, 0, 0, 5, 500), true);
 	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
@@ -233,7 +233,7 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	reload_times[3] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupD)[0])->get_reload_time();
 
 	CHECK(reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
-	CHECK(reload_times[1] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50 (enenmy inrange)
+	CHECK(reload_times[1] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50 (enemy in range)
 	CHECK(reload_times[2] == 0.1); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50 (enemy out of range)
 	CHECK(reload_times[3] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
 }

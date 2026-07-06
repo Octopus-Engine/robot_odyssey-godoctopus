@@ -23,7 +23,7 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_dummy_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_dummy_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
-	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "level", "add"), &ActionNode::mod_rune);
+	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "rune_data", "add"), &ActionNode::mod_rune);
 	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
 }
 
@@ -32,6 +32,7 @@ static ModRuneData createRuneData(Dictionary rune_data) {
 	data.level = rune_data.get("level", 0);
 	data.flat_buff = rune_data.get("flat_buff", 0);
 	data.base = rune_data.get("base", 0);
+	data.level_upgrade = rune_data.get("level_upgrade", 0);
 	data.upgrade = rune_data.get("upgrade", 0);
 	data.range = rune_data.get("range", 0);
 	data.duration_ticks = rune_data.get("duration_ticks", 0);

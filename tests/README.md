@@ -18,13 +18,13 @@ From `robot_odyssey-godot/`:
 
 ```bash
 # Build engine with tests enabled
-scons tests=yes
+scons platform=linuxbsd target=editor debug=yes debug_symbols=yes tests=yes compiledb=yes
 
 # Run all tests
 ./bin/godot.linuxbsd.editor.x86_64 --test
 
 # Run only godoctopus2 tests
-./bin/godot.linuxbsd.editor.x86_64 --test --test-suite="*[godoctopus2]*"
+./bin/godot.linuxbsd.editor.x86_64 --test --test-case="*[godoctopus2]*"
 
 # Run with verbose output
 ./bin/godot.linuxbsd.editor.x86_64 --test --success
