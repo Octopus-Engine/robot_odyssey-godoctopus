@@ -35,7 +35,7 @@ public:
 	void setup();
 	void _process(double delta);
 
-	TypedArray<Ref<PlayerProxyResource>> get_proxy_from_players() const;
+	TypedArray<PlayerProxyResource> get_proxy_from_players() const;
 	Ref<PlayerProxyResource> get_proxy_from_player(int player_id) const;
 
 	int64_t get_upgrade_level(int player_id, const String &upgrade_name) const;
@@ -45,10 +45,10 @@ public:
 	////////////////////
 	///   Loadout    ///
 	////////////////////
-	TypedArray<Ref<UnitLoadoutResource>> get_units(int player_id) const;
-	TypedArray<Ref<RuneInfoResource>> get_runes(int player_id) const;
-	void set_units(int player_id, const TypedArray<Ref<UnitLoadoutResource>> &units);
-	void set_runes(int player_id, const TypedArray<Ref<RuneInfoResource>> &runes);
+	TypedArray<UnitLoadoutResource> get_units(int player_id) const;
+	TypedArray<RuneInfoResource> get_runes(int player_id) const;
+	void set_units(int player_id, const TypedArray<UnitLoadoutResource> &units);
+	void set_runes(int player_id, const TypedArray<RuneInfoResource> &runes);
 
 	void add_unit(int player_id, const String &prefab_name);
 	void add_unit_with_slots(int player_id, const String &prefab_name, int nb_core_slots, int nb_special_slots);

@@ -45,22 +45,22 @@ public:
 
 	/// @brief Get proxy data for entities in group. Only returns data for entities that are alive and enabled, and will return empty data for entities that are not valid.
 	/// @note This is not a real-time query, but will return the last known data for the entities in the group. The data is updated at a fixed interval (every 8 ticks).
-	TypedArray<Ref<InfoProxyResource>> get_proxy_from_group(Ref<EntityGroup> group) const;
+	TypedArray<InfoProxyResource> get_proxy_from_group(Ref<EntityGroup> group) const;
 
 	/// @note This is not a real-time query, but will return the last known data for the entities in the group. The data is updated at a fixed interval (every 8 ticks).
-	TypedArray<Ref<InfoTargetResource>> get_target_from_group(Ref<EntityGroup> group) const;
+	TypedArray<InfoTargetResource> get_target_from_group(Ref<EntityGroup> group) const;
 
 	/// @brief Get production queue data for entities in group. Only returns data for entities that are alive and enabled, and will return empty data for entities that are not valid.
 	/// @note This is not a real-time query, but will return the last known data for the entities in the group. The data is updated at a fixed interval (every 8 ticks).
 	/// @param group The entity group to query.
 	/// @return A typed array of production queue resources for the entities in the group.
-	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_group(Ref<EntityGroup> group) const;
+	TypedArray<InfoProductionQueueResource> get_production_queue_from_group(Ref<EntityGroup> group) const;
 
 	/// @brief Get available action capabilities for entities in group.
 	/// @note This returns capability presence (union across the group), not runtime cast/production readiness.
-	TypedArray<Ref<InfoAvailableActionResource>> get_available_actions_from_group(Ref<EntityGroup> group) const;
+	TypedArray<InfoAvailableActionResource> get_available_actions_from_group(Ref<EntityGroup> group) const;
 
-	TypedArray<Ref<InfoProductionQueueResource>> get_production_queue_from_player(int player_id) const;
+	TypedArray<InfoProductionQueueResource> get_production_queue_from_player(int player_id) const;
 
 	int64_t get_last_refresh_time() const { return _last_refresh_time; }
 

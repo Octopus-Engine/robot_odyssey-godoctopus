@@ -1,5 +1,7 @@
 #include "HealthBarNode.h"
 
+#include "servers/rendering/rendering_server.h"
+
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
@@ -11,10 +13,10 @@ namespace godot {
 
 HealthBarNode::~HealthBarNode() {
 	bars.for_each_const([&](HealthBarData const &bar) {
-		RenderingServer::get_singleton()->free(bar.rid);
+		RenderingServer::get_singleton()->free_rid(bar.rid);
 	});
 	alterations.for_each_const([&](AlterationBarData const &alt) {
-		RenderingServer::get_singleton()->free(alt.rid);
+		RenderingServer::get_singleton()->free_rid(alt.rid);
 	});
 }
 
@@ -25,7 +27,7 @@ int HealthBarNode::add_health_bar() {
 
 void HealthBarNode::free_health_bar(int idx) {
 	std::lock_guard<std::mutex> lock(mutex);
-	RenderingServer::get_singleton()->free(bars.get(idx).rid);
+	RenderingServer::get_singleton()->free_rid(bars.get(idx).rid);
 	bars.free_instance(idx);
 }
 
@@ -36,7 +38,7 @@ int HealthBarNode::add_alteration_bar() {
 
 void HealthBarNode::free_alteration_bar(int idx) {
 	std::lock_guard<std::mutex> lock(mutex);
-	RenderingServer::get_singleton()->free(alterations.get(idx).rid);
+	RenderingServer::get_singleton()->free_rid(alterations.get(idx).rid);
 	alterations.free_instance(idx);
 }
 

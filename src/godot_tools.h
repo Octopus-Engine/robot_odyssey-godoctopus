@@ -1,5 +1,8 @@
 #pragma once
 
+#include "core/object/class_db.h"
+#include "core/object/callable_mp.h"
+
 #define SET_GET_NODE_PATH(type, var_name) \
 public:\
 	void set_ref_##var_name(NodePath const &node_path) { _ref_##var_name = node_path; }\

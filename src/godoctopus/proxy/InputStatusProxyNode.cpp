@@ -40,7 +40,7 @@ Ref<InputStatusResource> _convert_input_status(octopus::InputStatus const &statu
 	std::vector<std::pair<std::string, octopus::Fixed>> sorted_costs(status.resource_cost.begin(), status.resource_cost.end());
 	std::sort(sorted_costs.begin(), sorted_costs.end(), [](auto const &a, auto const &b) { return a.first < b.first; });
 
-	TypedArray<Ref<InputStatusResourceCost>> resource_cost;
+	TypedArray<InputStatusResourceCost> resource_cost;
 	for (auto const &[name, value] : sorted_costs) {
 		Ref<InputStatusResourceCost> cost_resource(memnew(InputStatusResourceCost));
 		cost_resource->set_resource(name.c_str());
@@ -94,7 +94,7 @@ Ref<InputStatusResource> InputStatusProxyNode::_duplicate_status_resource(Ref<In
 	}
 	copy->set_other_explanations(explanations);
 
-	TypedArray<Ref<InputStatusResourceCost>> costs;
+	TypedArray<InputStatusResourceCost> costs;
 	costs.resize(resource->get_resource_cost().size());
 	for (int i = 0; i < resource->get_resource_cost().size(); ++i) {
 		Ref<InputStatusResourceCost> src = resource->get_resource_cost()[i];

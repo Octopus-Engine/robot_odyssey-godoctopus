@@ -12,7 +12,7 @@ class UnitLoadoutResource : public Resource {
 	GDCLASS(UnitLoadoutResource, Resource)
 
 	SET_GET_PARAM_DEF(String, prefab_name, "");
-	SET_GET_PARAM(TypedArray<Ref<UnitRuneSlotResource>>, slots);
+	SET_GET_PARAM(TypedArray<UnitRuneSlotResource>, slots);
 public:
 
 	UnitLoadout to_data() const {

@@ -16,7 +16,7 @@ struct InfoProxyData {
 	SET_GET_PARAM_DEF(bool, has_attack_target, false);
 
 	// Info Production Queue
-	SET_GET_PARAM(TypedArray<Ref<InfoProductionQueueResource>>, production_queue);
+	SET_GET_PARAM(TypedArray<InfoProductionQueueResource>, production_queue);
 
 	// Basic info
 	SET_GET_PARAM(std::string, type);

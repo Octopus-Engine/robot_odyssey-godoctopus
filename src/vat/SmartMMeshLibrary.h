@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/object/class_db.h"
 #include "scene/3d/node_3d.h"
 #include "SmartMultiMeshInstance.h"
 

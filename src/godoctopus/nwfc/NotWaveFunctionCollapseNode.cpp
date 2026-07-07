@@ -1,5 +1,8 @@
 #include "NotWaveFunctionCollapseNode.h"
 
+#include "core/object/class_db.h"
+#include "core/variant/typed_array.h"
+
 #include "variable/domain/BitsetDomain.hh"
 #include "state/State.hh"
 #include "pickers/value/WeightBasedValuePicker.hh"

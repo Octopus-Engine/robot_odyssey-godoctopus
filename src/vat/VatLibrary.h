@@ -10,7 +10,7 @@ namespace godot {
 class VatLibrary : public Node3D {
 	GDCLASS(VatLibrary, Node3D)
 
-	SET_GET_PARAM(TypedArray<Ref<VatAnimationTrack>>, tracks);
+	SET_GET_PARAM(TypedArray<VatAnimationTrack>, tracks);
 	/// @brief expected duration of a timestep
 	SET_GET_PARAM_DEF(double, time_step, 0.01);
 public:

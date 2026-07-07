@@ -59,7 +59,7 @@ public:
 	SET_GET_NODE_PATH(PickerNode, picker_node);
 	SET_GET_NODE_PATH(ResourceNodeEventBus, resource_node_event_bus);
 	SET_GET_PARAM_DEF(LevelNode*, level_node, nullptr);
-	SET_GET_PARAM(TypedArray<Ref<UnitPrefab>>, unit_prefabs);
+	SET_GET_PARAM(TypedArray<UnitPrefab>, unit_prefabs);
 public:
 	double get_avg_engine_times();
 	int get_entity_count() const { return _entity_count.load(); }

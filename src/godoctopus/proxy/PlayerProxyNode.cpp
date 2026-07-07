@@ -37,8 +37,8 @@ void PlayerProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_periodic_resource", "player_id", "resource_name", "amount", "tickrate"), &PlayerProxyNode::add_periodic_resource);
 }
 
-TypedArray<Ref<PlayerProxyResource>> PlayerProxyNode::get_proxy_from_players() const {
-	TypedArray<Ref<PlayerProxyResource>> result;
+TypedArray<PlayerProxyResource> PlayerProxyNode::get_proxy_from_players() const {
+	TypedArray<PlayerProxyResource> result;
 	std::lock_guard<std::mutex> lock(_mutex);
 	result.resize(_proxy_map.size());
 	int idx = 0;
@@ -63,7 +63,7 @@ int64_t PlayerProxyNode::get_upgrade_level(int player_id, const String &upgrade_
 	if (it == _proxy_map.end()) {
 		return 0;
 	}
-	TypedArray<Ref<PlayerUpgradeEntryResource>> const &upgrades = it->second.get_ref_upgrades();
+	TypedArray<PlayerUpgradeEntryResource> const &upgrades = it->second.get_ref_upgrades();
 	for (int i = 0; i < upgrades.size(); ++i) {
 		Ref<PlayerUpgradeEntryResource> const entry = upgrades[i];
 		if (entry.is_valid() && entry->get_upgrade_name() == upgrade_name) {
@@ -86,25 +86,25 @@ void PlayerProxyNode::add_delta_resources(int player_id, const String &resource_
 ///   Loadout    ///
 ////////////////////
 
-TypedArray<Ref<UnitLoadoutResource>> PlayerProxyNode::get_units(int player_id) const {
+TypedArray<UnitLoadoutResource> PlayerProxyNode::get_units(int player_id) const {
 	std::lock_guard<std::mutex> lock(_mutex);
 	auto it = _proxy_map.find(player_id);
 	if (it == _proxy_map.end()) {
-		return TypedArray<Ref<UnitLoadoutResource>>();
+		return TypedArray<UnitLoadoutResource>();
 	}
 	return it->second.get_ref_units();
 }
 
-TypedArray<Ref<RuneInfoResource>> PlayerProxyNode::get_runes(int player_id) const {
+TypedArray<RuneInfoResource> PlayerProxyNode::get_runes(int player_id) const {
 	std::lock_guard<std::mutex> lock(_mutex);
 	auto it = _proxy_map.find(player_id);
 	if (it == _proxy_map.end()) {
-		return TypedArray<Ref<RuneInfoResource>>();
+		return TypedArray<RuneInfoResource>();
 	}
 	return it->second.get_ref_runes();
 }
 
-void PlayerProxyNode::set_units(int player_id, const TypedArray<Ref<UnitLoadoutResource>> &units) {
+void PlayerProxyNode::set_units(int player_id, const TypedArray<UnitLoadoutResource> &units) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	PlayerUnitLoadout unit_loadout;
 	for (int i = 0; i < units.size(); ++i) {
@@ -116,7 +116,7 @@ void PlayerProxyNode::set_units(int player_id, const TypedArray<Ref<UnitLoadoutR
 	player_actions[player_id].units_loadout = unit_loadout;
 }
 
-void PlayerProxyNode::set_runes(int player_id, const TypedArray<Ref<RuneInfoResource>> &runes) {
+void PlayerProxyNode::set_runes(int player_id, const TypedArray<RuneInfoResource> &runes) {
 	std::lock_guard<std::mutex> lock(_mutex);
 	PlayerRuneLoadout rune_loadout;
 	for (int i = 0; i < runes.size(); ++i) {
@@ -322,7 +322,7 @@ void PlayerProxyNode::setup() {
 				proxy_data.set_team((int)player_info.team);
 
 				// resources
-				TypedArray<Ref<PlayerResourceEntryResource>> resources;
+				TypedArray<PlayerResourceEntryResource> resources;
 				if (resource_stock) {
 					resources.resize((int)resource_stock->resource.data().size());
 					int idx = 0;
@@ -337,7 +337,7 @@ void PlayerProxyNode::setup() {
 				proxy_data.set_resources(resources);
 
 				// Player upgrades
-				TypedArray<Ref<PlayerUpgradeEntryResource>> upgrades;
+				TypedArray<PlayerUpgradeEntryResource> upgrades;
 				if (player_upgrade) {
 					upgrades.resize((int)player_upgrade->upgrades.data().size());
 					int idx = 0;
@@ -352,7 +352,7 @@ void PlayerProxyNode::setup() {
 
 				// Sync loadout units and runes
 				if (player_units) {
-					TypedArray<Ref<UnitLoadoutResource>> units;
+					TypedArray<UnitLoadoutResource> units;
 					for (auto const &unit : player_units->units) {
 						Ref<UnitLoadoutResource> entry = Ref<UnitLoadoutResource>(memnew(UnitLoadoutResource));
 						entry->from_data(unit);
@@ -360,10 +360,10 @@ void PlayerProxyNode::setup() {
 					}
 					proxy_data.set_units(units);
 				} else {
-					proxy_data.set_units(TypedArray<Ref<UnitLoadoutResource>>());
+					proxy_data.set_units(TypedArray<UnitLoadoutResource>());
 				}
 				if (player_runes) {
-					TypedArray<Ref<RuneInfoResource>> runes;
+					TypedArray<RuneInfoResource> runes;
 					for (auto const &rune : player_runes->runes) {
 						Ref<RuneInfoResource> entry = Ref<RuneInfoResource>(memnew(RuneInfoResource));
 						entry->from_data(rune);
@@ -371,7 +371,7 @@ void PlayerProxyNode::setup() {
 					}
 					proxy_data.set_runes(runes);
 				} else {
-					proxy_data.set_runes(TypedArray<Ref<RuneInfoResource>>());
+					proxy_data.set_runes(TypedArray<RuneInfoResource>());
 				}
 
 				// Update production

@@ -139,20 +139,24 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 
 	if (meta_data.has("PlayerProduction")) {
 		Dictionary const &prod_dict = meta_data["PlayerProduction"];
-		Array const &prod_names_0 = prod_dict["0"];
-		octopus::PlayerProduction p0_prod;
-		for (int i = 0; i < prod_names_0.size(); ++i) {
-			const String prod_name = prod_names_0[i];
-			p0_prod.productions[prod_name.utf8().get_data()] = true;
+		if (prod_dict.has("0")) {
+			Array const &prod_names_0 = prod_dict["0"];
+			octopus::PlayerProduction p0_prod;
+			for (int i = 0; i < prod_names_0.size(); ++i) {
+				const String prod_name = prod_names_0[i];
+				p0_prod.productions[prod_name.utf8().get_data()] = true;
+			}
+			p0.set<octopus::PlayerProduction>(p0_prod);
 		}
-		p0.set<octopus::PlayerProduction>(p0_prod);
-		Array const &prod_names_1 = prod_dict["1"];
-		octopus::PlayerProduction p1_prod;
-		for (int i = 0; i < prod_names_1.size(); ++i) {
-			const String prod_name = prod_names_1[i];
-			p1_prod.productions[prod_name.utf8().get_data()] = true;
+		if (prod_dict.has("1")) {
+			Array const &prod_names_1 = prod_dict["1"];
+			octopus::PlayerProduction p1_prod;
+			for (int i = 0; i < prod_names_1.size(); ++i) {
+				const String prod_name = prod_names_1[i];
+				p1_prod.productions[prod_name.utf8().get_data()] = true;
+			}
+			p1.set<octopus::PlayerProduction>(p1_prod);
 		}
-		p1.set<octopus::PlayerProduction>(p1_prod);
 	}
 
 	// Load basic buff for e bots

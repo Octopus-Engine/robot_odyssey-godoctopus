@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from misc.utility.scons_hints import *
 
 Import("env")
 Import("env_modules")
@@ -252,17 +253,17 @@ godoctopus2_sources = [
     "./src/vat/VatMultiMeshInstance.cpp",
 ]
 
-
-
 env_octopus2 = env_modules.Clone()
 
+env_octopus2.add_source_files(env.modules_sources, "*.cpp")
 env_octopus2.add_source_files(env.modules_sources, "src/testing/*.cpp")
+# env_octopus2.add_source_files(env.modules_sources, "tests/*.cpp")
 env_octopus2.add_source_files(env.modules_sources, flecs_sources)
 env_octopus2.add_source_files(env.modules_sources, octopus2_sources)
 env_octopus2.add_source_files(env.modules_sources, godoctopus2_sources)
-env_octopus2.add_source_files(env.modules_sources, "register_types.cpp")
-env_octopus2.Append(CPPPATH="./src/octopus2/src/octopus/src/")
-env_octopus2.Append(CPPPATH="./src/nwfc/src/nwfc/src/")
-env_octopus2.Append(CPPPATH="./src/")
-env_octopus2.Append(CPPPATH="./smart_list/src")
-env_octopus2.Append(CPPPATH="./")
+# env_octopus2.add_source_files(env.modules_sources, "register_types.cpp")
+env_octopus2.Append(CPPPATH=["src/octopus2/src/octopus/src/"])
+env_octopus2.Append(CPPPATH=["src/nwfc/src/nwfc/src/"])
+env_octopus2.Append(CPPPATH=["src/"])
+env_octopus2.Append(CPPPATH=["smart_list/src"])
+env_octopus2.Append(CPPPATH=["."])

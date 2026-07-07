@@ -15,10 +15,10 @@ class PlayerProxyResource : public Resource {
 
 	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(int, team, 0);
-	SET_GET_PARAM(TypedArray<Ref<PlayerResourceEntryResource>>, resources);
-	SET_GET_PARAM(TypedArray<Ref<PlayerUpgradeEntryResource>>, upgrades);
-	SET_GET_PARAM(TypedArray<Ref<UnitLoadoutResource>>, units);
-	SET_GET_PARAM(TypedArray<Ref<RuneInfoResource>>, runes);
+	SET_GET_PARAM(TypedArray<PlayerResourceEntryResource>, resources);
+	SET_GET_PARAM(TypedArray<PlayerUpgradeEntryResource>, upgrades);
+	SET_GET_PARAM(TypedArray<UnitLoadoutResource>, units);
+	SET_GET_PARAM(TypedArray<RuneInfoResource>, runes);
 	SET_GET_PARAM(TypedArray<String>, productions);
 
 public:
@@ -41,7 +41,7 @@ public:
 	}
 
 	int64_t get_resource_amount(String const &resource_name) const {
-		TypedArray<Ref<PlayerResourceEntryResource>> const &resource_entries = get_ref_resources();
+		TypedArray<PlayerResourceEntryResource> const &resource_entries = get_ref_resources();
 		for (int i = 0; i < resource_entries.size(); ++i) {
 			Ref<PlayerResourceEntryResource> const entry = resource_entries[i];
 			if (entry.is_valid() && entry->get_resource_name() == resource_name) {
@@ -52,7 +52,7 @@ public:
 	}
 
 	int64_t get_resource_cap(String const &resource_name) const {
-		TypedArray<Ref<PlayerResourceEntryResource>> const &resource_entries = get_ref_resources();
+		TypedArray<PlayerResourceEntryResource> const &resource_entries = get_ref_resources();
 		for (int i = 0; i < resource_entries.size(); ++i) {
 			Ref<PlayerResourceEntryResource> const entry = resource_entries[i];
 			if (entry.is_valid() && entry->get_resource_name() == resource_name) {
@@ -79,7 +79,7 @@ public:
 	}
 
 	int64_t get_upgrade_level(String const &upgrade_name) const {
-		TypedArray<Ref<PlayerUpgradeEntryResource>> const &upgrade_entries = get_ref_upgrades();
+		TypedArray<PlayerUpgradeEntryResource> const &upgrade_entries = get_ref_upgrades();
 		for (int i = 0; i < upgrade_entries.size(); ++i) {
 			Ref<PlayerUpgradeEntryResource> const entry = upgrade_entries[i];
 			if (entry.is_valid() && entry->get_upgrade_name() == upgrade_name) {

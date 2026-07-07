@@ -1,5 +1,6 @@
 #include "tests/test_macros.h"
 #include "scene/main/node.h"
+#include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
 
 #include "godoctopus/game/GameNode.h"

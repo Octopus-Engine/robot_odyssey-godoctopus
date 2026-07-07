@@ -1,5 +1,7 @@
 #include "TriangulationNode.h"
 
+#include "core/object/class_db.h"
+
 namespace octopus::triangulation {
 
 size_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2) {

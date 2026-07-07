@@ -14,10 +14,10 @@ namespace godot {
 struct PlayerProxyData {
 	SET_GET_PARAM_DEF(int, player, 0);
 	SET_GET_PARAM_DEF(int, team, 0);
-	SET_GET_PARAM(TypedArray<Ref<PlayerResourceEntryResource>>, resources);
-	SET_GET_PARAM(TypedArray<Ref<PlayerUpgradeEntryResource>>, upgrades);
-	SET_GET_PARAM(TypedArray<Ref<UnitLoadoutResource>>, units);
-	SET_GET_PARAM(TypedArray<Ref<RuneInfoResource>>, runes);
+	SET_GET_PARAM(TypedArray<PlayerResourceEntryResource>, resources);
+	SET_GET_PARAM(TypedArray<PlayerUpgradeEntryResource>, upgrades);
+	SET_GET_PARAM(TypedArray<UnitLoadoutResource>, units);
+	SET_GET_PARAM(TypedArray<RuneInfoResource>, runes);
 	SET_GET_PARAM(TypedArray<String>, productions);
 
 public:
@@ -26,8 +26,8 @@ public:
 		copy->set_player(get_player());
 		copy->set_team(get_team());
 
-		TypedArray<Ref<PlayerResourceEntryResource>> const &source_resources = get_ref_resources();
-		TypedArray<Ref<PlayerResourceEntryResource>> resources_copy;
+		TypedArray<PlayerResourceEntryResource> const &source_resources = get_ref_resources();
+		TypedArray<PlayerResourceEntryResource> resources_copy;
 		resources_copy.resize(source_resources.size());
 		for (int i = 0; i < source_resources.size(); ++i) {
 			Ref<PlayerResourceEntryResource> const source = source_resources[i];
@@ -41,8 +41,8 @@ public:
 		}
 		copy->set_resources(resources_copy);
 
-		TypedArray<Ref<PlayerUpgradeEntryResource>> const &source_upgrades = get_ref_upgrades();
-		TypedArray<Ref<PlayerUpgradeEntryResource>> upgrades_copy;
+		TypedArray<PlayerUpgradeEntryResource> const &source_upgrades = get_ref_upgrades();
+		TypedArray<PlayerUpgradeEntryResource> upgrades_copy;
 		upgrades_copy.resize(source_upgrades.size());
 		for (int i = 0; i < source_upgrades.size(); ++i) {
 			Ref<PlayerUpgradeEntryResource> const source = source_upgrades[i];
@@ -55,8 +55,8 @@ public:
 		}
 		copy->set_upgrades(upgrades_copy);
 
-		TypedArray<Ref<UnitLoadoutResource>> const &source_units = get_ref_units();
-		TypedArray<Ref<UnitLoadoutResource>> units_copy;
+		TypedArray<UnitLoadoutResource> const &source_units = get_ref_units();
+		TypedArray<UnitLoadoutResource> units_copy;
 		units_copy.resize(source_units.size());
 		for (int i = 0; i < source_units.size(); ++i) {
 			Ref<UnitLoadoutResource> const source = source_units[i];
@@ -64,8 +64,8 @@ public:
 		}
 		copy->set_units(units_copy);
 
-		TypedArray<Ref<RuneInfoResource>> const &source_runes = get_ref_runes();
-		TypedArray<Ref<RuneInfoResource>> runes_copy;
+		TypedArray<RuneInfoResource> const &source_runes = get_ref_runes();
+		TypedArray<RuneInfoResource> runes_copy;
 		runes_copy.resize(source_runes.size());
 		for (int i = 0; i < source_runes.size(); ++i) {
 			Ref<RuneInfoResource> const source = source_runes[i];

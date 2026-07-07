@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/3d/node_3d.h"
+#include "scene/resources/curve.h"
 #include "vat/SmartMultiMeshInstance.h"
 
 #include "smart_list/smart_list.h"
@@ -47,7 +48,7 @@ class ParticuleSmartMMesh : public MultiMeshInstance3D {
 	GDCLASS(ParticuleSmartMMesh, MultiMeshInstance3D)
 
 	SET_GET_PARAM(Ref<ParticuleSmartResource>, default_resource);
-	SET_GET_PARAM(TypedArray<Ref<ParticuleSmartResource>>, particule_resources);
+	SET_GET_PARAM(TypedArray<ParticuleSmartResource>, particule_resources);
 
 public:
 	~ParticuleSmartMMesh() {}

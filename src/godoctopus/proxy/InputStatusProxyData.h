@@ -23,7 +23,7 @@ class InputStatusResource : public Resource {
 
 	SET_GET_PARAM_DEF(bool, ok, true);
 	SET_GET_PARAM_DEF(int64_t, entity_id, 0);
-	SET_GET_PARAM(TypedArray<Ref<InputStatusResourceCost>>, resource_cost);
+	SET_GET_PARAM(TypedArray<InputStatusResourceCost>, resource_cost);
 	SET_GET_PARAM(TypedArray<String>, missing_upgrades);
 	SET_GET_PARAM(TypedArray<String>, other_explanations);
 	SET_GET_PARAM_DEF(double, cooldown_ratio, 0.0);

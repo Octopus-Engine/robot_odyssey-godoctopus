@@ -48,8 +48,8 @@ void InfoProxyNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("get_last_refresh_time"), &InfoProxyNode::get_last_refresh_time);
 }
 
-TypedArray<Ref<InfoProxyResource>> InfoProxyNode::get_proxy_from_group(Ref<EntityGroup> group) const {
-	TypedArray<Ref<InfoProxyResource>> data_array;
+TypedArray<InfoProxyResource> InfoProxyNode::get_proxy_from_group(Ref<EntityGroup> group) const {
+	TypedArray<InfoProxyResource> data_array;
 	if (!group.is_valid()) {
 		return data_array;
 	}
@@ -72,8 +72,8 @@ static void insert_if_unique(std::vector<octopus::Vector> &targets, octopus::Vec
 	targets.push_back(new_target);
 }
 
-TypedArray<Ref<InfoTargetResource>> InfoProxyNode::get_target_from_group(Ref<EntityGroup> group) const {
-	TypedArray<Ref<InfoTargetResource>> data_array;
+TypedArray<InfoTargetResource> InfoProxyNode::get_target_from_group(Ref<EntityGroup> group) const {
+	TypedArray<InfoTargetResource> data_array;
 	if (!group.is_valid()) {
 		return data_array;
 	}
@@ -116,8 +116,8 @@ TypedArray<Ref<InfoTargetResource>> InfoProxyNode::get_target_from_group(Ref<Ent
 	return data_array;
 }
 
-TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue_from_group(Ref<EntityGroup> group) const {
-	TypedArray<Ref<InfoProductionQueueResource>> result;
+TypedArray<InfoProductionQueueResource> InfoProxyNode::get_production_queue_from_group(Ref<EntityGroup> group) const {
+	TypedArray<InfoProductionQueueResource> result;
 	if (!group.is_valid()) {
 		return result;
 	}
@@ -134,8 +134,8 @@ TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue
 	return result;
 }
 
-TypedArray<Ref<InfoAvailableActionResource>> InfoProxyNode::get_available_actions_from_group(Ref<EntityGroup> group) const {
-	TypedArray<Ref<InfoAvailableActionResource>> result;
+TypedArray<InfoAvailableActionResource> InfoProxyNode::get_available_actions_from_group(Ref<EntityGroup> group) const {
+	TypedArray<InfoAvailableActionResource> result;
 	if (!group.is_valid()) {
 		return result;
 	}
@@ -183,8 +183,8 @@ TypedArray<Ref<InfoAvailableActionResource>> InfoProxyNode::get_available_action
 	return result;
 }
 
-TypedArray<Ref<InfoProductionQueueResource>> InfoProxyNode::get_production_queue_from_player(int player_id) const {
-	TypedArray<Ref<InfoProductionQueueResource>> result;
+TypedArray<InfoProductionQueueResource> InfoProxyNode::get_production_queue_from_player(int player_id) const {
+	TypedArray<InfoProductionQueueResource> result;
 	std::lock_guard<std::mutex> lock(_mutex);
 	if (player_id < 0 || _player_to_production_entities.find((uint32_t)player_id) == _player_to_production_entities.end()) {
 		return result;
@@ -297,7 +297,7 @@ void InfoProxyNode::setup() {
 
 				if (production_queue) {
 					const auto &production_library = ecs.get<octopus::ProductionTemplateLibrary<custom_step_manager>>();
-					TypedArray<Ref<InfoProductionQueueResource>> prod_array;
+					TypedArray<InfoProductionQueueResource> prod_array;
 					bool first = true;
 					int queue_idx = 0;
 					for (const std::string &item : production_queue->queue) {
@@ -325,7 +325,7 @@ void InfoProxyNode::setup() {
 					infos_data.set_production_queue(prod_array);
 				}
 				else {
-					infos_data.set_production_queue(TypedArray<Ref<InfoProductionQueueResource>>());
+					infos_data.set_production_queue(TypedArray<InfoProductionQueueResource>());
 				}
 			});
 		});

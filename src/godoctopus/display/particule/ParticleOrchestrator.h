@@ -1,6 +1,7 @@
 #pragma once
 
 #include "scene/3d/node_3d.h"
+#include "scene/resources/curve.h"
 #include "vat/SmartMultiMeshInstance.h"
 
 #include "smart_list/smart_list.h"
@@ -52,7 +53,7 @@ struct ParticuleTypeData {
 class ParticleOrchestrator : public MultiMeshInstance3D {
 	GDCLASS(ParticleOrchestrator, MultiMeshInstance3D)
 
-	SET_GET_PARAM(TypedArray<Ref<ParticuleTypeResource>>, particule_resources);
+	SET_GET_PARAM(TypedArray<ParticuleTypeResource>, particule_resources);
 
 public:
 	~ParticleOrchestrator() {}

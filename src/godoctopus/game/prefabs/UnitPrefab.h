@@ -164,7 +164,7 @@ public:
 		SET_GET_PARAM_DEF(float, projectile_scale, 0.2);
 		SET_GET_PARAM_DEF(float, projectile_origin, 1.);
 		SET_GET_PARAM_DEF(float, projectile_target, 1.);
-		SET_GET_PARAM(TypedArray<Ref<ParticleOrchestrated>>, impacts);
+		SET_GET_PARAM(TypedArray<ParticleOrchestrated>, impacts);
 		SET_GET_PARAM_DEF(int, impact_effect_id, -1);
 		SET_GET_PARAM_DEF(int, impact_count, 4);
 		SET_GET_PARAM_DEF(float, impact_scale, 0.5);

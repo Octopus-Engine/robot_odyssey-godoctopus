@@ -1,5 +1,7 @@
 #include "DelaunayTriangulationNode.h"
 
+#include "core/object/class_db.h"
+
 namespace godot {
 
 void DelaunayTriangulationNode::draw_triangle(octopus::Triangle const &tri, Color fill_color, Color outline_color) {
