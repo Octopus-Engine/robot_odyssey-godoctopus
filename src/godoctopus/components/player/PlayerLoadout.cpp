@@ -30,6 +30,9 @@ void declare_player_loadout_component(flecs::world &ecs) {
         .member("prefab_name", &UnitLoadout::prefab_name)
         .member("slots", &UnitLoadout::slots);
 
+    ecs.component<std::vector<UnitLoadout>>()
+        .opaque(std_vector_support<UnitLoadout>);
+
     ecs.component<PlayerUnitLoadout>()
         .member("units", &PlayerUnitLoadout::units);
 }
