@@ -1,5 +1,7 @@
 #include "SmartMMeshLibraryHandle.h"
 
+#include <algorithm>
+
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"

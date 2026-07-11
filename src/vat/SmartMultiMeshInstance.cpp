@@ -1,5 +1,7 @@
 #include "SmartMultiMeshInstance.h"
 
+#include <algorithm>
+
 #include "core/os/os.h"
 
 namespace godot {
