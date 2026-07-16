@@ -29,6 +29,9 @@ public:
 	void register_proximity_checker(Vector3 const &position, int range, Callable const &callable);
 	void register_proximity_checker_for_team(Vector3 const &position, int range, int team, Callable const &callable);
 
+	void register_proximity_sentry(Vector3 const &position, int range, Callable const &callable);
+	void register_proximity_sentry_for_team(Vector3 const &position, int range, int team, Callable const &callable);
+
 	void setup();
 	void _process(double delta);
 
@@ -46,6 +49,16 @@ private:
 		bool triggered = false;
 	};
 	smart_list<Checker> checkers;
+
+	struct Sentry {
+		octopus::Vector pos;
+		octopus::Fixed range;
+		Callable callable;
+		int tree_idx = 0;
+		bool triggered = false;
+		bool value = false;
+	};
+	smart_list<Sentry> sentries;
 };
 
 }

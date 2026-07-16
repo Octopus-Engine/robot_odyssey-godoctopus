@@ -13,13 +13,17 @@ void ProximityChecker::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("setup"), &ProximityChecker::setup);
 	ClassDB::bind_method(D_METHOD("register_proximity_checker", "position", "range", "callable"), &ProximityChecker::register_proximity_checker);
 	ClassDB::bind_method(D_METHOD("register_proximity_checker_for_team", "position", "range", "team", "callable"), &ProximityChecker::register_proximity_checker_for_team);
+	ClassDB::bind_method(D_METHOD("register_proximity_sentry", "position", "range", "callable"), &ProximityChecker::register_proximity_sentry);
+	ClassDB::bind_method(D_METHOD("register_proximity_sentry_for_team", "position", "range", "team", "callable"), &ProximityChecker::register_proximity_sentry_for_team);
 }
 
 void ProximityChecker::register_proximity_checker(Vector3 const &position, int range, Callable const &callable) {
+	std::lock_guard<std::mutex> lock(_mutex);
 	checkers.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable});
 }
 
 void ProximityChecker::register_proximity_checker_for_team(Vector3 const &position, int range, int team, Callable const &callable) {
+	std::lock_guard<std::mutex> lock(_mutex);
 	int tree_idx = 0;
 	if (team == 1) {
 		tree_idx = 1;
@@ -28,6 +32,23 @@ void ProximityChecker::register_proximity_checker_for_team(Vector3 const &positi
 		tree_idx = 2;
 	}
 	checkers.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable, tree_idx});
+}
+
+void ProximityChecker::register_proximity_sentry(Vector3 const &position, int range, Callable const &callable) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	sentries.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable});
+}
+
+void ProximityChecker::register_proximity_sentry_for_team(Vector3 const &position, int range, int team, Callable const &callable) {
+	std::lock_guard<std::mutex> lock(_mutex);
+	int tree_idx = 0;
+	if (team == 1) {
+		tree_idx = 1;
+	}
+	else if (team == 0) {
+		tree_idx = 2;
+	}
+	sentries.new_instance({{position.x*WORLD_SCALE, position.z*WORLD_SCALE}, range*WORLD_SCALE, callable, tree_idx});
 }
 
 void ProximityChecker::setup() {
@@ -52,6 +73,18 @@ void ProximityChecker::setup() {
 				};
 				tree_circle_query(pos_context.trees[checker.tree_idx], checker.pos, checker.range, func_l);
 			});
+			sentries.for_each([&pos_context] (Sentry &sentry) {
+				bool old_value = sentry.value;
+				sentry.value = false;
+				std::function<bool(int32_t, flecs::entity)> func_l = [&sentry, &pos_context](int32_t idx_l, flecs::entity e) -> bool {
+					sentry.value = true;
+					return false;
+				};
+				tree_circle_query(pos_context.trees[sentry.tree_idx], sentry.pos, sentry.range, func_l);
+				if (old_value != sentry.value) {
+					sentry.triggered = true;
+				}
+			});
 		});
 }
 
@@ -61,6 +94,12 @@ void ProximityChecker::_process(double delta) {
 		if (checker.triggered) {
 			checker.callable.call();
 			checkers.free_instance(idx);
+		}
+	});
+	sentries.for_each([this] (Sentry &sentry, size_t idx) {
+		if (sentry.triggered) {
+			sentry.callable.call(sentry.value);
+			sentry.triggered = false;
 		}
 	});
 }
