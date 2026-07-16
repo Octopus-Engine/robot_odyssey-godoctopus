@@ -23,6 +23,7 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("spawn_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_dummy_units_in_group", "prefab", "position", "team", "count", "group"), &ActionNode::spawn_dummy_units_in_group);
 	ClassDB::bind_method(D_METHOD("spawn_units_attack_move_in_group", "prefab", "position", "team", "count", "target", "group"), &ActionNode::spawn_units_attack_move_in_group);
+	ClassDB::bind_method(D_METHOD("mod_hp", "group", "hp_delta"), &ActionNode::mod_hp);
 	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "rune_data", "add"), &ActionNode::mod_rune);
 	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
 }
@@ -50,13 +51,14 @@ void ActionNode::setup() {
 	}
 	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
 	flecs::world& ecs = _game_node->get_world().ecs;
+	auto& step_manager = _game_node->get_step_context().step_manager;
 	flecs::query<octopus::PlayerInfo> query_player = ecs.query<octopus::PlayerInfo>();
 	// flecs::query<RuneLoad<DefaultRune>> query_rune = ecs.query<RuneLoad<DefaultRune>>();
 
 	ecs.system<>()
 		.immediate()
 		.kind(ecs.entity(InputPhase))
-		.run([this, ecs, query_player](flecs::iter&) {
+		.run([this, ecs, &step_manager, query_player](flecs::iter&) {
 			// handle actions
 			std::lock_guard<std::mutex> lock(_mutex);
 			for (auto action : _actions) {
@@ -156,6 +158,16 @@ void ActionNode::setup() {
 					};
 					octopus::Logger::getDebug() << "adding prop creation"<<std::endl;
 					ecs.try_get_mut<octopus::StepEntityManager>()->get_last_layer().push_back(step_l);
+				} else if (std::holds_alternative<HpModification>(action)) {
+					HpModification const &hp_mod_action = std::get<HpModification>(action);
+					if (hp_mod_action.group.is_valid()) {
+						for (flecs::entity e : hp_mod_action.group->get_entities()) {
+							if (e.is_valid() && e.is_alive()) {
+								auto& layer = step_manager.get_last_layer().back().template get<octopus::HitPointStep>();
+								layer.add_step(e, {hp_mod_action.hp_delta});
+							}
+						}
+					}
 				}
 			}
 			_actions.clear();

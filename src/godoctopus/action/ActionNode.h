@@ -42,7 +42,12 @@ struct SpawnPropAction {
 	int ray_x100 = 100;
 };
 
-typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction> Action;
+struct HpModification {
+	Ref<EntityGroup> group;
+	int hp_delta = 0;
+};
+
+typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction, HpModification> Action;
 
 class ActionNode : public Node {
 	GDCLASS(ActionNode, Node)
@@ -87,6 +92,11 @@ public:
 			group->set_should_populate();
 			group->increase_expected_population(count);
 		}
+	}
+
+	void mod_hp(Ref<EntityGroup> group, int hp_delta) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(HpModification{group, hp_delta});
 	}
 
 	void mod_rune(String const &unit_type, String const &rune_type, int player_idx, Dictionary rune_data, bool add);
