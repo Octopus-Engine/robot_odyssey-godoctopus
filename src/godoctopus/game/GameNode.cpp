@@ -488,6 +488,7 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("init_load", "file_name", "meta_data"), &GameNode::init_load);
 	ClassDB::bind_method(D_METHOD("init_from_level", "meta_data"), &GameNode::init_from_level);
 	ClassDB::bind_method(D_METHOD("stop"), &GameNode::stop);
+	ClassDB::bind_method(D_METHOD("advance", "ticks"), &GameNode::advance);
 
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
 	ClassDB::bind_method(D_METHOD("get_entity_count"), &GameNode::get_entity_count);

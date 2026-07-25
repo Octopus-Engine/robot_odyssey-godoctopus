@@ -49,6 +49,7 @@ public:
 
 	void stop();
 	void tick(int32_t ticks=1) { _ticks += ticks; while(_ticks > 0) { std::this_thread::yield(); } }
+	void advance(int32_t ticks) { _ticks += ticks; }
 
 	// All nodes
 	void init_nodes();
