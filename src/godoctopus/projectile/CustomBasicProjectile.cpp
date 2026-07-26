@@ -121,7 +121,7 @@ void declare_basic_projectile_systems(flecs::world &ecs, godot::ParticuleSmartMM
 
 	ecs.observer<octopus::Projectile const, octopus::ProjectileConstants const, CustomBasicProjectile const, octopus::Position const>()
 			.event(flecs::OnSet)
-			.each([particules] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &info, octopus::Position const &pos) {
+			.each([] (flecs::entity e, octopus::Projectile const& proj, octopus::ProjectileConstants const& cst, CustomBasicProjectile const &info, octopus::Position const &pos) {
 				octopus::Fixed up = info.origin_y;
 				octopus::Fixed end_up = 0.25;
 				if (proj.target && proj.target.try_get<ProjectileTrajectory>()) {
