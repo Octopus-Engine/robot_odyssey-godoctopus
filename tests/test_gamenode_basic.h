@@ -8,6 +8,7 @@
 #include "testing/UndyingRune.test.h"
 #include "testing/CommandNodeProduction.test.h"
 #include "testing/PlayerProxy.test.h"
+#include "testing/StatsModifiers.test.h"
 
 namespace godoctopus2_tests {
 
@@ -108,6 +109,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Command Production wi
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Player Resource Proxy sync") {
 	test_player_proxy_sync();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] StatsModifierList tests") {
+	test_stats_modifiers();
 }
 
 } // namespace godoctopus2_tests
