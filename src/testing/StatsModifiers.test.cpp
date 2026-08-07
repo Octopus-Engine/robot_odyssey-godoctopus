@@ -138,4 +138,22 @@ void test_stats_modifiers() {
 	ecs.progress(); // run step & validate
 	CHECK(e.get<octopus::Attack>().cst.damage == octopus::Fixed(10));
 	CHECK(e.get<godoctopus::CurrentStats>().stats.values[godoctopus::StatsType::MechanicalPower] == octopus::Fixed(0));
+
+	// Fourth test
+
+	steps.push_back(AddTestModifierB {
+		{godoctopus::StatsType::Damage, octopus::Fixed(0), {0, 0, 0, 1/octopus::Fixed(10), 0, 0, 0, 0, 0}, 2},
+	});
+	steps.push_back(AddTestModifierA {
+		{godoctopus::StatsType::MechanicalPower, octopus::Fixed(100), {0, 0, 0, 0, 0, 0, 0, 0, 0}, 1},
+	});
+	ecs.progress(); // run step & validate
+	CHECK(e.get<octopus::Attack>().cst.damage == octopus::Fixed(20));
+	CHECK(e.get<godoctopus::CurrentStats>().stats.values[godoctopus::StatsType::MechanicalPower] == octopus::Fixed(100));
+
+	steps.push_back(RemoveTestModifierB());
+	steps.push_back(RemoveTestModifierA());
+	ecs.progress(); // run step & validate
+	CHECK(e.get<octopus::Attack>().cst.damage == octopus::Fixed(10));
+	CHECK(e.get<godoctopus::CurrentStats>().stats.values[godoctopus::StatsType::MechanicalPower] == octopus::Fixed(0));
 }
