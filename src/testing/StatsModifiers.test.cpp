@@ -2,8 +2,8 @@
 #include "tests/test_macros.h"
 
 #include "godoctopus/components/stats/StatsModifier.h"
-#include "godoctopus/components/stats/StatsModifierList.h"
 #include "godoctopus/components/stats/StatsModifierRegister.h"
+#include "godoctopus/components/stats/StatsModifierRecorder.h"
 #include "godoctopus/components/stats/StatsUpdateSystems.h"
 #include "octopus/systems/Systems.hh"
 #include "octopus/serialization/utils/UtilsSupport.hh"
@@ -16,7 +16,7 @@ static flecs::entity create_test_entity(flecs::world &ecs) {
 	auto e = ecs.entity();
 	e.set<godoctopus::BaseStats>({{{250, 10, 5, 0, 0, 0, 0, 1, 0}}});
 	e.set<godoctopus::CurrentStats>({{{250, 10, 5, 0, 0, 0, 0, 1, 0}}});
-	e.add<godoctopus::StatsModifierList>();
+	e.add<godoctopus::StatsModifierRegister>();
 	octopus::AttackConstants attack_cst {100, 10, octopus::Fixed(5), octopus::Fixed(10)};
 	e.set<octopus::Attack>({attack_cst});
 	e.set<octopus::HitPoint>({{100}});
@@ -24,10 +24,10 @@ static flecs::entity create_test_entity(flecs::world &ecs) {
 	return e;
 }
 
-using AddTestModifierA = octopus::AddComponentStep<godoctopus::StatsModifierRegister<TestModifierA>>;
-using RemoveTestModifierA = octopus::RemoveComponentStep<godoctopus::StatsModifierRegister<TestModifierA>>;
-using AddTestModifierB = octopus::AddComponentStep<godoctopus::StatsModifierRegister<TestModifierB>>;
-using RemoveTestModifierB = octopus::RemoveComponentStep<godoctopus::StatsModifierRegister<TestModifierB>>;
+using AddTestModifierA = octopus::AddComponentStep<godoctopus::StatsModifierRecorder<TestModifierA>>;
+using RemoveTestModifierA = octopus::RemoveComponentStep<godoctopus::StatsModifierRecorder<TestModifierA>>;
+using AddTestModifierB = octopus::AddComponentStep<godoctopus::StatsModifierRecorder<TestModifierB>>;
+using RemoveTestModifierB = octopus::RemoveComponentStep<godoctopus::StatsModifierRecorder<TestModifierB>>;
 
 template<typename T>
 void apply(octopus::DefaultStepContext<custom_variant>& step_context, flecs::entity e, T const &step) {
@@ -61,7 +61,7 @@ void test_stats_modifiers() {
 	std::vector<StatsModifierStepVariant> steps;
 	ecs.system<>()
 		.kind(ecs.entity(EndUpdatePhase))
-		.with<godoctopus::StatsModifierList>()
+		.with<godoctopus::StatsModifierRegister>()
 		.each([&step_context, &steps](flecs::entity e) {
 			for (auto const &step : steps) {
 				std::visit([&step_context, &e](auto&& arg) { apply(step_context, e, arg); }, step);

@@ -8,7 +8,7 @@
 #include "octopus/serialization/utils/UtilsSupport.hh"
 #include "octopus/serialization/containers/VectorSupport.hh"
 #include "StatsSet.h"
-#include "StatsModifierList.h"
+#include "StatsModifierRegister.h"
 
 namespace godoctopus {
 
@@ -44,6 +44,9 @@ void declare_stateupdate_systems(flecs::world &ecs) {
 		.member("slots", &StatsModifierList::slots)
 		.member("free_head", &StatsModifierList::free_head);
 
+	ecs.component<StatsModifierRegister>()
+		.member("lists", &StatsModifierRegister::lists);
+
 	using namespace octopus;
 	// reset stats to base stats at the beginning of each update
 	ecs.system<BaseStats const, CurrentStats>()
@@ -54,12 +57,16 @@ void declare_stateupdate_systems(flecs::world &ecs) {
 		});
 
 	// apply all modifiers
-	ecs.system<StatsModifierList, CurrentStats>()
+	ecs.system<StatsModifierRegister, CurrentStats>()
 		.kind(ecs.entity(ValidatePhase))
 		.multi_threaded()
-		.each([](flecs::entity e, StatsModifierList &list, CurrentStats &current) {
-			compact(list);
-			apply_modifiers(current.stats, list);
+		.each([](flecs::entity e, StatsModifierRegister &reg, CurrentStats &current) {
+			compact(reg.lists[0]);
+			apply_modifiers(current.stats, reg.lists[0]);
+			compact(reg.lists[1]);
+			apply_modifiers(current.stats, reg.lists[1]);
+			compact(reg.lists[2]);
+			apply_modifiers(current.stats, reg.lists[2]);
 		});
 
 	// update engine stats base on current stats
