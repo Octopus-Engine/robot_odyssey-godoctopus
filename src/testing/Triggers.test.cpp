@@ -74,10 +74,9 @@ void test_gamenode_trigger_armor_buff() {
 	// Create a no-damage unit prefab for both teams
 	auto no_damage_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	no_damage_prefab->set_prefab_name("rambot");
-	no_damage_prefab->set_armor(0);
 	no_damage_prefab->set_hitpoint(1000);  // Give sufficient HP for damage calculation
 	no_damage_prefab->set_windup_x10(1);
-	no_damage_prefab->set_reload_x10(1);
+	no_damage_prefab->set_speed(5000);
 	no_damage_prefab->set_range_x10(30);
 
 	GameNodeTestContextWithCustomPrefab context(no_damage_prefab);
@@ -124,10 +123,10 @@ void test_gamenode_trigger_damage_buff_area() {
 	// Create a unit prefab for testing
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
-	prefab->set_damage_x10(0);  // Set base damage to 0 for testing
+	prefab->set_damage(0);  // Set base damage to 0 for testing
 	prefab->set_hitpoint(1000);
 	prefab->set_windup_x10(1);
-	prefab->set_reload_x10(1);
+	prefab->set_speed(5000); // should set reload to 5 ticks (formula is 5000/speed)
 	prefab->set_range_x10(30);
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
@@ -185,10 +184,10 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	// Create a unit prefab for testing
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
-	prefab->set_damage_x10(0);  // Set base damage to 0 for testing
+	prefab->set_damage(0);  // Set base damage to 0 for testing
 	prefab->set_hitpoint(1000);
 	prefab->set_windup_x10(1); // 0.1 seconds = 5 ticks with tickrate 50
-	prefab->set_reload_x10(1); // 0.1 seconds = 5 ticks with tickrate 50
+	prefab->set_speed(1000); // should set reload to 5 ticks (formula is 5000/speed)
 	prefab->set_range_x10(30);
 
 	GameNodeTestContextWithCustomPrefab context(prefab);

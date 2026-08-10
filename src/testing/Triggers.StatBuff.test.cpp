@@ -15,10 +15,10 @@ static Ref<godot::UnitPrefab> create_default_prefab(std::string name = "rambot")
 	prefab->set_prefab_name(name.c_str());
 	prefab->set_hitpoint(1000);
 	prefab->set_windup_x10(1);
-	prefab->set_reload_x10(100);
+	prefab->set_speed(10); // should set reload to 500 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
-	prefab->set_armor(0);
-	prefab->set_damage_x10(0);
+	prefab->set_shield(0);
+	prefab->set_damage(0);
 	return prefab;
 }
 
@@ -48,17 +48,17 @@ static double run_single_unit_rune_stat(
 }
 
 static void setup_damage_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
-	prefab->set_damage_x10(0);
+	prefab->set_damage(0);
 	prefab->set_special_x10(100); // special = 10
 }
 
 static void setup_armor_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
-	prefab->set_armor(0);
+	prefab->set_shield(0);
 	prefab->set_special_x10(100); // special = 10
 }
 
 static void setup_reload_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
-	prefab->set_reload_x10(100); // 10.0s
+	prefab->set_speed(10); // should set reload to 500 tick (formula is 5000/speed)
 	prefab->set_special_x10(100); // special = 10
 }
 
@@ -125,7 +125,7 @@ void test_gamenode_damage_buff_rune_regular_flat_buff() {
 
 void test_gamenode_conditional_damage_buff_high_life_tier1() {
 	Ref<godot::UnitPrefab> prefab = create_default_prefab();
-	prefab->set_damage_x10(0);
+	prefab->set_damage(0);
 	prefab->set_special_x10(100); // special = 10
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
@@ -150,8 +150,8 @@ void test_gamenode_conditional_damage_buff_high_life_tier1() {
 void test_gamenode_apply_armor_buff_area_on_rune_load() {
 	Ref<godot::UnitPrefab> prefab = create_default_prefab();
 	Ref<godot::UnitPrefab> prefab_2 = create_default_prefab("gunbot");
-	prefab->set_reload_x10(1);
-	prefab->set_damage_x10(10); // Ensure attacks register damage and rune loads increase.
+	prefab->set_speed(5000); // 5000 ticks
+	prefab->set_damage(10); // Ensure attacks register damage and rune loads increase.
 
 	GameNodeTestContextWithCustomPrefab context(prefab, prefab_2);
 	StringName unit_name = "rambot";

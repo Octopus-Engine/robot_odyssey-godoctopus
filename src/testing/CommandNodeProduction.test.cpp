@@ -44,9 +44,9 @@ struct GameNodeTestContextWithProduction {
 		auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 		prefab->set_prefab_name("gunbot");
 		prefab->set_hitpoint(100);
-		prefab->set_armor(0);
-		prefab->set_damage_x10(100);
-		prefab->set_reload_x10(1);
+		prefab->set_shield(0);
+		prefab->set_damage(10);
+		prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 		prefab->set_range_x10(300);
 		prefab->set_windup_x10(1);
 		prefab->set_cost_basic_x10(0);

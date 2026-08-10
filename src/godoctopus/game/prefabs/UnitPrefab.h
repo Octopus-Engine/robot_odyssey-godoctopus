@@ -47,9 +47,9 @@ public:
 		ClassDB::add_property_group("UnitPrefab", "Damage");
 		// Damage
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_enabled);
-		ADD_SIMPLE_PROP(UnitPrefab, INT, damage_x10);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_is_mechanical);
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_is_pure);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, windup_x10);
-		ADD_SIMPLE_PROP(UnitPrefab, INT, reload_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, range_x10);
 		ClassDB::add_property_subgroup("UnitPrefab", "BasicProjectile");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, basic_projectile);
@@ -94,10 +94,19 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, INT, cost_pop_x10);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, production_duration);
 		ADD_ARRAY_OBJECT_PROP(UnitPrefab, String, required_technologies);
+		// Statistics
+		ClassDB::add_property_group("UnitPrefab", "Statistics");
+		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, damage);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, shield);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, mechanical_power);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, mechanical_armor);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, plasma_power);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, plasma_armor);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, speed);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, affinity);
 		// Health bar
 		ClassDB::add_property_group("UnitPrefab", "Health");
-		ADD_SIMPLE_PROP(UnitPrefab, INT, hitpoint);
-		ADD_SIMPLE_PROP(UnitPrefab, INT, armor);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_offset_y);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, health_bar_width);
 		ClassDB::add_property_group("UnitPrefab", "DeathParticle");
@@ -154,8 +163,8 @@ public:
 	SET_GET_PARAM_DEF(int, affinity_x10, 10);
 	// Damage
 	SET_GET_PARAM_DEF(bool, attack_enabled, true);
-	SET_GET_PARAM_DEF(int, damage_x10, 30);
-	SET_GET_PARAM_DEF(int, reload_x10, 10);
+	SET_GET_PARAM_DEF(bool, attack_is_mechanical, true);
+	SET_GET_PARAM_DEF(bool, attack_is_pure, true);
 	SET_GET_PARAM_DEF(int, windup_x10, 10);
 	SET_GET_PARAM_DEF(int, range_x10, 10);
 		// Projectile
@@ -198,9 +207,17 @@ public:
 	SET_GET_PARAM_DEF(int, cost_pop_x10, 10);
 	SET_GET_PARAM_DEF(int, production_duration, 10);
 	SET_GET_PARAM(TypedArray<String>, required_technologies);
-	// Health bar
+	// Statistics
 	SET_GET_PARAM_DEF(int, hitpoint, 75);
-	SET_GET_PARAM_DEF(int, armor, 0);
+	SET_GET_PARAM_DEF(int, damage, 3);
+	SET_GET_PARAM_DEF(int, shield, 0);
+	SET_GET_PARAM_DEF(int, mechanical_power, 100);
+	SET_GET_PARAM_DEF(int, mechanical_armor, 100);
+	SET_GET_PARAM_DEF(int, plasma_power, 100);
+	SET_GET_PARAM_DEF(int, plasma_armor, 100);
+	SET_GET_PARAM_DEF(int, speed, 100);
+	SET_GET_PARAM_DEF(int, affinity, 0);
+	// Health bar
 	SET_GET_PARAM_DEF(float, health_bar_offset_y, 2.0);
 	SET_GET_PARAM_DEF(float, health_bar_width, 32.);
 	// Death particle

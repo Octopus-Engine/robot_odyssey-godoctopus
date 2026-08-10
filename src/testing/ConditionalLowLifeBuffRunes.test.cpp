@@ -8,10 +8,10 @@ void test_gamenode_conditional_armor_buff_low_life_tier1() {
 	// Create a unit prefab for testing
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
-	prefab->set_armor(0);
+	prefab->set_shield(0);
 	prefab->set_hitpoint(1000);  // Max HP
 	prefab->set_windup_x10(1);
-	prefab->set_reload_x10(1);
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
 	prefab->set_special_x10(100);  // 10 special for scaling (x10)
 
@@ -53,10 +53,10 @@ void test_gamenode_conditional_damage_buff_low_life_tier1() {
 	// Create a unit prefab for testing
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
-	prefab->set_damage_x10(0);  // Start with 0 damage
+	prefab->set_damage(0);  // Start with 0 damage
 	prefab->set_hitpoint(1000);  // Max HP
 	prefab->set_windup_x10(1);
-	prefab->set_reload_x10(1);
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
 	prefab->set_special_x10(100);  // 10 special for scaling (x10)
 
@@ -98,10 +98,10 @@ void test_gamenode_conditional_reload_buff_low_life_tier1() {
 	// Create a unit prefab for testing
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
-	prefab->set_damage_x10(10);
+	prefab->set_damage(1);
 	prefab->set_hitpoint(1000);  // Max HP
 	prefab->set_windup_x10(1);
-	prefab->set_reload_x10(100);  // Base reload
+	prefab->set_speed(10); // should set reload to 500 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
 	prefab->set_special_x10(100);  // 10 special for scaling (x10)
 

@@ -40,6 +40,9 @@
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 #include "godoctopus/pickable/Pickable.h"
+#include "godoctopus/components/stats/StatsSet.h"
+#include "godoctopus/components/stats/StatsModifierRegister.h"
+#include "godoctopus/components/stats/StatsUpdateSystems.h"
 
 namespace godot
 {
@@ -106,7 +109,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		.set<PrefabType>({unit_prefab->get_prefab_name().utf8().get_data()})
 		.auto_override<custom_queue>()
 		.auto_override<Selected>()
-		.set_auto_override<octopus::Armor>({unit_prefab->get_armor()})
+		.set_auto_override<octopus::Armor>({unit_prefab->get_shield()})
 		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
 		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
@@ -129,15 +132,30 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		prefab.add<Building>();
 	}
 
+	godoctopus::StatsSet stats {{
+		unit_prefab->get_hitpoint(),
+		unit_prefab->get_damage(),
+		unit_prefab->get_shield(),
+		unit_prefab->get_mechanical_power(),
+		unit_prefab->get_mechanical_armor(),
+		unit_prefab->get_plasma_power(),
+		unit_prefab->get_plasma_armor(),
+		unit_prefab->get_speed(),
+		unit_prefab->get_affinity()
+	}};
+
 	if (attack_enabled) {
 		prefab
 			.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 			.set_auto_override<octopus::Attack>({{
 				unit_prefab->get_windup_x10() * (TICK_RATE / 10),
-				unit_prefab->get_reload_x10() * (TICK_RATE / 10),
-				unit_prefab->get_damage_x10()/10.,
+				static_cast<int32_t>((5000/stats.values[godoctopus::StatsType::Speed]).to_int()),
+				unit_prefab->get_damage(),
 				unit_prefab->get_range_x10()/10.}});
 	}
+	prefab.set_auto_override<godoctopus::BaseStats>({stats});
+	prefab.set_auto_override<godoctopus::CurrentStats>({stats});
+	prefab.auto_override<godoctopus::StatsModifierRegister>();
 
 	if (destroyable) {
 		prefab.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})

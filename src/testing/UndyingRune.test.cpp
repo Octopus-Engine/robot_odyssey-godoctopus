@@ -12,9 +12,8 @@ void test_gamenode_undying_rune_applies_buff_at_rune_load_5() {
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(100);
-	prefab->set_armor(0);
-	prefab->set_damage_x10(100);
-	prefab->set_reload_x10(1);
+	prefab->set_damage(10);
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
@@ -64,18 +63,16 @@ void test_gamenode_undying_buff_expires_after_15_seconds() {
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(60);
-	prefab->set_armor(0);
-	prefab->set_damage_x10(1);
-	prefab->set_reload_x10(1);
+	prefab->set_damage(1);
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
 	auto other_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	other_prefab->set_hitpoint(1000);
 	other_prefab->set_prefab_name("bladebot");
-	other_prefab->set_armor(0);
-	other_prefab->set_damage_x10(100);
-	other_prefab->set_reload_x10(1);
+	other_prefab->set_damage(100);
+	other_prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	other_prefab->set_range_x10(300);
 	other_prefab->set_windup_x10(1);
 
@@ -122,18 +119,16 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(60);
-	prefab->set_armor(0);
-	prefab->set_damage_x10(100);
-	prefab->set_reload_x10(1);
+	prefab->set_damage(10);
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
 	auto other_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 	other_prefab->set_hitpoint(50);
 	other_prefab->set_prefab_name("bladebot");
-	other_prefab->set_armor(0);
-	other_prefab->set_damage_x10(100);
-	other_prefab->set_reload_x10(1);
+	other_prefab->set_damage(10);
+	other_prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	other_prefab->set_range_x10(300);
 	other_prefab->set_windup_x10(1);
 
