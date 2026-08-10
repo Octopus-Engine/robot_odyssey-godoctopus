@@ -41,6 +41,7 @@
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/components/stats/StatsSet.h"
+#include "godoctopus/components/stats/StatsDamageModifier.h"
 #include "godoctopus/components/stats/StatsModifierRegister.h"
 #include "godoctopus/components/stats/StatsUpdateSystems.h"
 
@@ -315,6 +316,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	flecs::world &ecs = _world.ecs;
 
 	_world.attack_retarget_wait = 32;
+	_world.damage_modifier = std::make_unique<godoctopus::StatsDamageModifier>();
 	auto flock_manager = ecs.entity("flock_manager")
 							.add<FlockManager>();
 	ecs.add<octopus::Input<custom_variant, custom_step_manager> >();
