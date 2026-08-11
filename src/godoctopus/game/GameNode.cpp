@@ -150,7 +150,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 			.set_auto_override<octopus::AttackCommand>({flecs::entity()})
 			.set_auto_override<octopus::Attack>({{
 				unit_prefab->get_windup_x10() * (TICK_RATE / 10),
-				static_cast<int32_t>((5000/stats.values[godoctopus::StatsType::Speed]).to_int()),
+				static_cast<int32_t>(((100*TICK_RATE)/stats.values[godoctopus::StatsType::Speed]).to_int()),
 				unit_prefab->get_damage(),
 				unit_prefab->get_range_x10()/10.}});
 	}
@@ -348,6 +348,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_resource_producer_component(ecs);
 	declare_rune_load_component<DefaultRune>(ecs);
 	declare_player_loadout_component(ecs);
+	godoctopus::declare_stateupdate_systems(ecs);
 
 	//
 	// Systems

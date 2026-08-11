@@ -5,10 +5,13 @@
 #include "octopus/components/basic/attack/Attack.hh"
 #include "octopus/components/basic/hitpoint/HitPoint.hh"
 #include "octopus/components/basic/hitpoint/HitPointMax.hh"
+#include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/serialization/utils/UtilsSupport.hh"
 #include "octopus/serialization/containers/VectorSupport.hh"
 #include "StatsSet.h"
 #include "StatsModifierRegister.h"
+
+#include "octopus_types.h"
 
 namespace godoctopus {
 
@@ -72,10 +75,13 @@ void declare_stateupdate_systems(flecs::world &ecs) {
 	// update engine stats base on current stats
 	ecs.system<CurrentStats const, Attack>()
 		.kind(ecs.entity(ValidatePhase))
-		.multi_threaded()
+		// .multi_threaded()
 		.each([](flecs::entity e, CurrentStats const &current, Attack &attack) {
+			// std::cout<<"Updating attack stats for entity " << e.name() << std::endl;
+			// std::cout<<"Current damage: " << current.stats.values[Damage] << std::endl;
+			// std::cout<<"Current speed: " << current.stats.values[Speed] << std::endl;
 			attack.cst.damage = current.stats.values[Damage];
-			attack.cst.reload_time = (5000/current.stats.values[Speed]).to_int();
+			attack.cst.reload_time = static_cast<int32_t>(((100*TICK_RATE)/current.stats.values[Speed]).to_int());
 		});
 
 	ecs.system<CurrentStats const, HitPoint, HitPointMax>()
@@ -90,6 +96,13 @@ void declare_stateupdate_systems(flecs::world &ecs) {
 			if (hp.qty > hp_max.qty) {
 				hp.qty = hp_max.qty;
 			}
+		});
+
+	ecs.system<CurrentStats const, Armor>()
+		.kind(ecs.entity(ValidatePhase))
+		.multi_threaded()
+		.each([](flecs::entity e, CurrentStats const &current, Armor &armor) {
+			armor.qty = current.stats.values[Shield];
 		});
 }
 

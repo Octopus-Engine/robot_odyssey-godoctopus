@@ -37,6 +37,7 @@ static double run_single_unit_rune_stat(
 
 	context.action_node->mod_rune("rambot", rune_name, 0, rune_data, true);
 	context.game_node->tick();
+	context.game_node->tick();
 
 	auto proxies = context.proxy_node->get_proxy_from_group(group);
 	CHECK(proxies.size() == 1);
@@ -94,8 +95,8 @@ void test_gamenode_armor_buff_rune_special_upgrade_affects_bonus() {
 			setup_armor_upgrade_prefab,
 			read_armor);
 
-	CHECK(armor_without_upgrade == 1);
-	CHECK(armor_with_upgrade == 3);
+	CHECK(armor_without_upgrade == 10);
+	CHECK(armor_with_upgrade == 30);
 }
 
 void test_gamenode_reload_buff_rune_special_upgrade_affects_bonus() {
@@ -110,8 +111,8 @@ void test_gamenode_reload_buff_rune_special_upgrade_affects_bonus() {
 			setup_reload_upgrade_prefab,
 			read_reload);
 
-	CHECK(reload_without_upgrade == 9.8);
-	CHECK(reload_with_upgrade == 9.4);
+	CHECK(reload_without_upgrade == 5);
+	CHECK(reload_with_upgrade == 2.5);
 }
 
 void test_gamenode_damage_buff_rune_regular_flat_buff() {
@@ -136,11 +137,13 @@ void test_gamenode_conditional_damage_buff_high_life_tier1() {
 
 	context.action_node->mod_rune("rambot", "ConditionalDamageBuffHighLifeRuneTier1", 0, create_rune_data(1, 0, 18, 0, 0, 0, 0), true);
 	context.game_node->tick();
+	context.game_node->tick();
 
 	double damage_high_life = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group)[0])->get_damage();
 	CHECK(damage_high_life == 18);
 
 	group->get_entities()[0].set<octopus::HitPoint>({100}); // 10% hp, condition should be inactive
+	context.game_node->tick();
 	context.game_node->tick();
 
 	double damage_low_life = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group)[0])->get_damage();
@@ -188,8 +191,8 @@ void test_gamenode_apply_armor_buff_area_on_rune_load() {
 		armor[i] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groups[i])[0])->get_armor();
 	}
 
-	CHECK(armor[0] == 1); // source gets the buff
-	CHECK(armor[2] == 1); // in-range ally gets the buff
+	CHECK(armor[0] == 10); // source gets the buff
+	CHECK(armor[2] == 10); // in-range ally gets the buff
 	CHECK(armor[1] == 0); // enemy does not get ally area buff
 	CHECK(armor[3] == 0); // out-of-range ally does not get buff
 }

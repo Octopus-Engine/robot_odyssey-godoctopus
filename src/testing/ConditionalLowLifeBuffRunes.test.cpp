@@ -27,21 +27,24 @@ void test_gamenode_conditional_armor_buff_low_life_tier1() {
 	// Apply ConditionalArmorBuffLowLifeRuneTier1 rune with level 1
 	context.action_node->mod_rune("rambot", "ConditionalArmorBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 40, 0, 0, 0, 0), true);
 	context.game_node->tick();
+	context.game_node->tick();
 
 	// Verify armor is 0 at high HP (buff should not be active)
 	double armor_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_armor();
 	CHECK(armor_high_hp == 0);  // Buff inactive at high HP
 
 	// Modify entity hp manually to lower it
-	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 40% to activate buff
+	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 10% to activate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify armor is more than 0 at low HP (buff should be active)
 	armor_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_armor();
-	CHECK(armor_high_hp == 4);  // Buff active at low HP (2 base + 0.2 * 10 special = 4 total)
+	CHECK(armor_high_hp == 40);  // Buff active at low HP
 
 	// Modify entity hp manually to increase it
 	group_high_hp->get_entities()[0].set<octopus::HitPoint>({1000});  // Set HP to 100% to deactivate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify armor is 0 at high HP (buff should not be active)
@@ -72,21 +75,24 @@ void test_gamenode_conditional_damage_buff_low_life_tier1() {
 	// Apply ConditionalDamageBuffLowLifeRuneTier1 rune with level 1
 	context.action_node->mod_rune("rambot", "ConditionalDamageBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 18, 0, 0, 0, 0), true);
 	context.game_node->tick();
+	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)
 	double damage_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_damage();
 	CHECK(damage_high_hp == 0);  // Buff inactive at high HP
 
 	// Modify entity hp manually to lower it
-	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 40% to activate buff
+	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 10% to activate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify damage is more than 0 at low HP (buff should be active)
 	damage_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_damage();
-	CHECK(damage_high_hp == 18);  // Buff active at low HP (8 base + 0.1 * 10 special = 18 total)
+	CHECK(damage_high_hp == 18);  // Buff active at low HP
 
 	// Modify entity hp manually to increase it
 	group_high_hp->get_entities()[0].set<octopus::HitPoint>({1000});  // Set HP to 100% to deactivate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)
@@ -117,21 +123,24 @@ void test_gamenode_conditional_reload_buff_low_life_tier1() {
 	// Apply ConditionalReloadBuffLowLifeRuneTier1 rune with level 1
 	context.action_node->mod_rune("rambot", "ConditionalReloadBuffLowLifeRuneTier1", 0, create_rune_data(1, 0, 40, 0, 0, 0, 0), true);
 	context.game_node->tick();
+	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)
 	double reload_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_reload_time();
 	CHECK(reload_high_hp == 10);  // Buff inactive at high HP
 
 	// Modify entity hp manually to lower it
-	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 40% to activate buff
+	group_high_hp->get_entities()[0].set<octopus::HitPoint>({100});  // Set HP to 10% to activate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify damage is more than 0 at low HP (buff should be active)
 	reload_high_hp = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(group_high_hp)[0])->get_reload_time();
-	CHECK(reload_high_hp == 9.2);  // Buff active at low HP (Reduction is 20 ticks + 2 * 10 special -> 40 total which is 0.8 seconds)
+	CHECK(reload_high_hp == 2);  // Buff active at low HP
 
 	// Modify entity hp manually to increase it
 	group_high_hp->get_entities()[0].set<octopus::HitPoint>({1000});  // Set HP to 100% to deactivate buff
+	context.game_node->tick();
 	context.game_node->tick();
 
 	// Verify damage is 0 at high HP (buff should not be active)

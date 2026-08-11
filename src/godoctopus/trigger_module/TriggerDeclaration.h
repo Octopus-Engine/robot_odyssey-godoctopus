@@ -47,39 +47,33 @@ struct AoeHealBasedOnDamageOnDeath : AreaScalingRuneInfo { int32_t level = 0; };
 struct AoeDamageConsumeRuneOnHit : AreaScalingRuneInfo { int32_t level = 0; };
 
 // Regular buffs runes
-struct DamageBuffRuneRegular : FlatBuff<LeveledDamageBuff, octopus::Attack> { int32_t level = 0; };
-struct HitPointBuffRuneRegular : FlatBuff<LeveledHitPointBuff, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
-struct ReloadBuffRuneRegular : FlatBuff<LeveledAttackSpeedBuff, octopus::Attack> { int32_t level = 0; };
-struct ArmorBuffRuneRegular : FlatBuff<LeveledArmorBuff, octopus::Armor> { int32_t level = 0; };
+struct DamageBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Damage>, godoctopus::BaseStats> { int32_t level = 0; };
+struct HitPointBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::HitPoints>, godoctopus::BaseStats> { int32_t level = 0; };
+struct ReloadBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Speed>, godoctopus::BaseStats> { int32_t level = 0; };
+struct ArmorBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Shield>, godoctopus::BaseStats> { int32_t level = 0; };
 struct SpecialBuffRuneRegular : FlatBuff<LeveledSpecialBuff, Special> { int32_t level = 0; };
-struct AffinityBuffRuneRegular : FlatBuff<LeveledAffinityBuff, Special> { int32_t level = 0; };
-
-// Core buff runes
-struct HitPointBuffRuneCore : SpecialScaledBuff<HitPointBuffRuneCore, LeveledHitPointBuff, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
-struct ArmorBuffRuneCore : SpecialScaledBuff<ArmorBuffRuneCore, LeveledArmorBuff, octopus::Armor> { int32_t level = 0; };
-struct DamageBuffRuneCore : SpecialScaledBuff<DamageBuffRuneCore, LeveledDamageBuff, octopus::Attack> { int32_t level = 0; };
-struct ReloadBuffRuneCore : SpecialScaledBuff<ReloadBuffRuneCore, LeveledAttackSpeedBuff, octopus::Attack> { int32_t level = 0; };
+struct AffinityBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Affinity>, godoctopus::BaseStats> { int32_t level = 0; };
 
 // Special buff runes
-struct HitPointBuffRuneSpecial : SpecialScaledBuff<HitPointBuffRuneSpecial, LeveledHitPointBuff, octopus::HitPoint, octopus::HitPointMax> { int32_t level = 0; };
-struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledArmorBuff, octopus::Armor> { int32_t level = 0; };
-struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledDamageBuff, octopus::Attack> { int32_t level = 0; };
-struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledAttackSpeedBuff, octopus::Attack> { int32_t level = 0; };
+struct HitPointBuffRuneSpecial : SpecialScaledBuff<HitPointBuffRuneSpecial, LeveledStatBuff<godoctopus::StatsType::HitPoints>, godoctopus::BaseStats> { int32_t level = 0; };
+struct ArmorBuffRuneSpecial : SpecialScaledBuff<ArmorBuffRuneSpecial, LeveledStatBuff<godoctopus::StatsType::Shield>, godoctopus::BaseStats> { int32_t level = 0; };
+struct DamageBuffRuneSpecial : SpecialScaledBuff<DamageBuffRuneSpecial, LeveledStatBuff<godoctopus::StatsType::Damage>, godoctopus::BaseStats> { int32_t level = 0; };
+struct ReloadBuffRuneSpecial : SpecialScaledBuff<ReloadBuffRuneSpecial, LeveledStatBuff<godoctopus::StatsType::Speed>, godoctopus::BaseStats> { int32_t level = 0; };
 
 // Conditional Special buff runes
-struct ConditionalArmorBuffLowLifeRuneTier1 : ConditionalArmorBuffLowLifeRune<ConditionalArmorBuffLowLifeRuneTier1, /* under = */ true> {};
-struct ConditionalArmorBuffLowLifeRuneTier2 : ConditionalArmorBuffLowLifeRune<ConditionalArmorBuffLowLifeRuneTier2, /* under = */ true> {};
-struct ConditionalDamageBuffLowLifeRuneTier1 : ConditionalDamageBuffLowLifeRune<ConditionalDamageBuffLowLifeRuneTier1, /* under = */ true> {};
-struct ConditionalDamageBuffLowLifeRuneTier2 : ConditionalDamageBuffLowLifeRune<ConditionalDamageBuffLowLifeRuneTier2, /* under = */ true> {};
-struct ConditionalReloadBuffLowLifeRuneTier1 : ConditionalReloadBuffLowLifeRune<ConditionalReloadBuffLowLifeRuneTier1, /* under = */ true> {};
-struct ConditionalReloadBuffLowLifeRuneTier2 : ConditionalReloadBuffLowLifeRune<ConditionalReloadBuffLowLifeRuneTier2, /* under = */ true> {};
+struct ConditionalArmorBuffLowLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalArmorBuffLowLifeRuneTier1, godoctopus::StatsType::Shield, /* under = */ true> {};
+struct ConditionalArmorBuffLowLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalArmorBuffLowLifeRuneTier2, godoctopus::StatsType::Shield, /* under = */ true> {};
+struct ConditionalDamageBuffLowLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalDamageBuffLowLifeRuneTier1, godoctopus::StatsType::Damage, /* under = */ true> {};
+struct ConditionalDamageBuffLowLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalDamageBuffLowLifeRuneTier2, godoctopus::StatsType::Damage, /* under = */ true> {};
+struct ConditionalReloadBuffLowLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffLowLifeRuneTier1, godoctopus::StatsType::Speed, /* under = */ true> {};
+struct ConditionalReloadBuffLowLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffLowLifeRuneTier2, godoctopus::StatsType::Speed, /* under = */ true> {};
 
-struct ConditionalArmorBuffHighLifeRuneTier1 : ConditionalArmorBuffLowLifeRune<ConditionalArmorBuffHighLifeRuneTier1, /* under = */ false> {};
-struct ConditionalArmorBuffHighLifeRuneTier2 : ConditionalArmorBuffLowLifeRune<ConditionalArmorBuffHighLifeRuneTier2, /* under = */ false> {};
-struct ConditionalDamageBuffHighLifeRuneTier1 : ConditionalDamageBuffLowLifeRune<ConditionalDamageBuffHighLifeRuneTier1, /* under = */ false> {};
-struct ConditionalDamageBuffHighLifeRuneTier2 : ConditionalDamageBuffLowLifeRune<ConditionalDamageBuffHighLifeRuneTier2, /* under = */ false> {};
-struct ConditionalReloadBuffHighLifeRuneTier1 : ConditionalReloadBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier1, /* under = */ false> {};
-struct ConditionalReloadBuffHighLifeRuneTier2 : ConditionalReloadBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier2, /* under = */ false> {};
+struct ConditionalArmorBuffHighLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalArmorBuffHighLifeRuneTier1, godoctopus::StatsType::Shield, /* under = */ false> {};
+struct ConditionalArmorBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalArmorBuffHighLifeRuneTier2, godoctopus::StatsType::Shield, /* under = */ false> {};
+struct ConditionalDamageBuffHighLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalDamageBuffHighLifeRuneTier1, godoctopus::StatsType::Damage, /* under = */ false> {};
+struct ConditionalDamageBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalDamageBuffHighLifeRuneTier2, godoctopus::StatsType::Damage, /* under = */ false> {};
+struct ConditionalReloadBuffHighLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier1, godoctopus::StatsType::Speed, /* under = */ false> {};
+struct ConditionalReloadBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::StatsType::Speed, /* under = */ false> {};
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library = nullptr);
 

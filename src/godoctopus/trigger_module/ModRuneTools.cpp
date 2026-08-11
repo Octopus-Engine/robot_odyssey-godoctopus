@@ -7,6 +7,7 @@
 #include "octopus/systems/player/buff/PlayerBuffSystems.hh"
 
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/components/stats/StatsUpdateSystems.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
@@ -96,19 +97,19 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	const int range = rune_data.range;
 	const int duration_ticks = rune_data.duration_ticks;
 	if (rune_name == "AffinityBuffRuneRegular") {
-		mod_rune_type<AffinityBuffRuneRegular, Special>(e, add, type, makeFlatBuff<AffinityBuffRuneRegular>(flat_buff));
+		mod_rune_type<AffinityBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<AffinityBuffRuneRegular>(flat_buff));
 	}
 	else if (rune_name == "ArmorBuffRuneRegular") {
-		mod_rune_type<ArmorBuffRuneRegular, octopus::Armor>(e, add, type, makeFlatBuff<ArmorBuffRuneRegular>(flat_buff));
+		mod_rune_type<ArmorBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<ArmorBuffRuneRegular>(flat_buff));
 	}
 	else if (rune_name == "DamageBuffRuneRegular") {
-		mod_rune_type<DamageBuffRuneRegular, octopus::Attack>(e, add, type, makeFlatBuff<DamageBuffRuneRegular>(flat_buff));
+		mod_rune_type<DamageBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<DamageBuffRuneRegular>(flat_buff));
 	}
 	else if (rune_name == "HitPointBuffRuneRegular") {
-		mod_rune_type<HitPointBuffRuneRegular, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeFlatBuff<HitPointBuffRuneRegular>(flat_buff));
+		mod_rune_type<HitPointBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<HitPointBuffRuneRegular>(flat_buff));
 	}
 	else if (rune_name == "ReloadBuffRuneRegular") {
-		mod_rune_type<ReloadBuffRuneRegular, octopus::Attack>(e, add, type, makeFlatBuff<ReloadBuffRuneRegular>(flat_buff));
+		mod_rune_type<ReloadBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<ReloadBuffRuneRegular>(flat_buff));
 	}
 	else if (rune_name == "SpecialBuffRuneRegular") {
 		mod_rune_type<SpecialBuffRuneRegular, Special>(e, add, type, makeFlatBuff<SpecialBuffRuneRegular>(flat_buff));
@@ -171,37 +172,38 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 		mod_rune_type_add_component(e, add, type, ApplyUndyingBuffOnRuneLoad{level});
 	}
 	else if (rune_name == "ArmorBuffRuneSpecial") {
-		mod_rune_type<ArmorBuffRuneSpecial, octopus::Armor>(e, add, type, makeScaling<ArmorBuffRuneSpecial>(base, upgrade));
+		mod_rune_type<ArmorBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<ArmorBuffRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "ConditionalArmorBuffHighLifeRuneTier1") {
-		mod_rune_type<ConditionalArmorBuffHighLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalArmorBuffHighLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalArmorBuffHighLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalArmorBuffHighLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "ConditionalArmorBuffLowLifeRuneTier1") {
-		mod_rune_type<ConditionalArmorBuffLowLifeRuneTier1, octopus::Armor, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalArmorBuffLowLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalArmorBuffLowLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalArmorBuffLowLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "ConditionalDamageBuffHighLifeRuneTier1") {
-		mod_rune_type<ConditionalDamageBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalDamageBuffHighLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalDamageBuffHighLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalDamageBuffHighLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "ConditionalDamageBuffLowLifeRuneTier1") {
-		mod_rune_type<ConditionalDamageBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalDamageBuffLowLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalDamageBuffLowLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalDamageBuffLowLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "ConditionalReloadBuffHighLifeRuneTier1") {
-		mod_rune_type<ConditionalReloadBuffHighLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalReloadBuffHighLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalReloadBuffHighLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalReloadBuffHighLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "ConditionalReloadBuffLowLifeRuneTier1") {
-		mod_rune_type<ConditionalReloadBuffLowLifeRuneTier1, octopus::Attack, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalReloadBuffLowLifeRuneTier1>(base, upgrade, 80));
+		mod_rune_type<ConditionalReloadBuffLowLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalReloadBuffLowLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "DamageBuffRuneSpecial") {
-		mod_rune_type<DamageBuffRuneSpecial, octopus::Attack>(e, add, type, makeScaling<DamageBuffRuneSpecial>(base, upgrade));
+		std::cout<<"Adding Rune DamageBuffRuneSpecial with base: " << base << ", upgrade: " << upgrade << std::endl;
+		mod_rune_type<DamageBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<DamageBuffRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "HitPointBuffRuneSpecial") {
-		mod_rune_type<HitPointBuffRuneSpecial, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScaling<HitPointBuffRuneSpecial>(base, upgrade));
+		mod_rune_type<HitPointBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<HitPointBuffRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "LifestealRuneSpecial") {
 		mod_rune_type_add_component<LifestealRuneSpecial>(e, add, type, makeScaling<LifestealRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "ReloadBuffRuneSpecial") {
-		mod_rune_type<ReloadBuffRuneSpecial, octopus::Attack>(e, add, type, makeScaling<ReloadBuffRuneSpecial>(base, upgrade));
+		mod_rune_type<ReloadBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<ReloadBuffRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "SpawnCloneUnitRune") {
 		mod_rune_type_add_component(e, add, type, SpawnCloneUnitRune{level});

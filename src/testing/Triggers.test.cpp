@@ -93,7 +93,7 @@ void test_gamenode_trigger_armor_buff() {
 	context.game_node->tick();
 
 	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 10, 0, 1, 0, 15), true);
+	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 1, 0, 1, 0, 15), true);
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
 
@@ -126,7 +126,7 @@ void test_gamenode_trigger_damage_buff_area() {
 	prefab->set_damage(0);  // Set base damage to 0 for testing
 	prefab->set_hitpoint(1000);
 	prefab->set_windup_x10(1);
-	prefab->set_speed(5000); // should set reload to 5 ticks (formula is 5000/speed)
+	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
@@ -161,7 +161,7 @@ void test_gamenode_trigger_damage_buff_area() {
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow unit A to attack and reach rune load 3
-	for (int i = 0; i < 50; ++i) {
+	for (int i = 0; i < 30; ++i) {
 		context.game_node->tick();
 	}
 
@@ -215,7 +215,7 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	context.game_node->tick();
 
 	// Apply ApplyAttackSpeedDebuffAreaOnRuneLoad rune to rambot (all instances)
-	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, create_rune_data(1, 0, -30, 0, 0, 5, 500), true);
+	context.action_node->mod_rune("rambot", "ApplyAttackSpeedDebuffAreaOnRuneLoad", 0, create_rune_data(1, 0, -900, 0, 0, 5, 500), true);
 	// Apply AddRuneLoadOnAttack to enable rune load accumulation on attack
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();
@@ -232,7 +232,7 @@ void test_gamenode_trigger_attack_speed_debuff_area() {
 	reload_times[3] = Ref<godot::InfoProxyResource>(context.proxy_node->get_proxy_from_group(groupD)[0])->get_reload_time();
 
 	CHECK(reload_times[0] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
-	CHECK(reload_times[1] == 0.7); // Base reload time 5 which is 0.1 seconds with tickrate 50 (enemy in range)
-	CHECK(reload_times[2] == 0.1); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50 (enemy out of range)
+	CHECK(reload_times[1] == 1.0); // Base reload time 35 (5 + 30 debuff) which is 0.7 seconds with tickrate 50 (enemy out of range)
+	CHECK(reload_times[2] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (enemy in range)
 	CHECK(reload_times[3] == 0.1); // Base reload time 5 which is 0.1 seconds with tickrate 50 (ally)
 }
