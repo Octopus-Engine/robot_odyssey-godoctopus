@@ -21,4 +21,14 @@ struct StatsSet {
 	octopus::Fixed values[StatsTypeCount];
 };
 
+struct BaseStats {
+	StatsSet stats;
+};
+
+struct CurrentStats {
+	StatsSet stats;
+};
+
+octopus::Fixed compute_delta(StatsSet const &stats, octopus::Fixed const &base_delta, octopus::Fixed const coefficients[StatsTypeCount]);
+
 } // godoctopus

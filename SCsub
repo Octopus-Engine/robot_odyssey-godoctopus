@@ -212,6 +212,7 @@ godoctopus2_sources = [
     "./src/godoctopus/components/special/Special.cpp",
     "./src/godoctopus/components/stats/StatsModifier.cpp",
     "./src/godoctopus/components/stats/StatsModifierList.cpp",
+    "./src/godoctopus/components/stats/StatsSet.cpp",
     "./src/godoctopus/components/stats/StatsUpdateSystems.cpp",
     "./src/godoctopus/components/player/PlayerLoadout.cpp",
     "./src/godoctopus/components/proximity_custom_signal/ProximityCustomSignal.cpp",

@@ -1,7 +1,6 @@
 #include "AoePulseRune.h"
 
-#include "godoctopus/components/stats/StatsModifier.h"
-#include "godoctopus/components/stats/StatsUpdateSystems.h"
+#include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
 
 /// @brief Tracking component for periodic trigger timing
