@@ -28,7 +28,7 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode units take damage") {
 	test_gamenode_units_take_damage();
 }
 
-TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode AoePulseDamageBasedOnHitpoint rune") {
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode AoePulseDamages rune") {
 	test_gamenode_aoe_pulse_damage_based_on_hitpoint();
 }
 

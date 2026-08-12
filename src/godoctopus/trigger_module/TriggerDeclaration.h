@@ -3,7 +3,7 @@
 #include "flecs.h"
 #include "octopus/world/position/PositionContext.hh"
 
-#include "godoctopus/components/stats/StatsSet.h"
+#include "godoctopus/runes/ModRuneData.h"
 #include "godoctopus/trigger_module/buffs/ArmorBuff.h"
 #include "godoctopus/trigger_module/buffs/AttackSpeedBuff.h"
 #include "godoctopus/trigger_module/buffs/DamageBuff.h"
@@ -76,18 +76,5 @@ struct ConditionalReloadBuffHighLifeRuneTier1 : ConditionalStatBuffLowLifeRune<C
 struct ConditionalReloadBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::StatsType::Speed, /* under = */ false> {};
 
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library = nullptr);
-
-struct ModRuneData {
-	int level = 0;
-	int flat_buff = 0;
-	int base = 0;
-	int level_upgrade = 0;
-	int upgrade = 0;
-	int range = 0;
-	int duration_ticks = 0;
-	godoctopus::StatsSet stats_set_coef;
-	godoctopus::StatsType stats_type = godoctopus::StatsType::Affinity;
-	int modifier_priority = 0;
-};
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, ModRuneData const &rune_data);

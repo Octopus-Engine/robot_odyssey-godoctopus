@@ -21,6 +21,11 @@ struct RuneDataBuilder {
 		return *this;
 	}
 
+	RuneDataBuilder &set_range(int level) {
+		rune_data["range"] = level;
+		return *this;
+	}
+
 	RuneDataBuilder &set_base(int base) {
 		rune_data["base"] = base;
 		return *this;

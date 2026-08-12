@@ -13,9 +13,10 @@
 #include "godoctopus/components/stats/StatsUpdateSystems.h"
 #include "godoctopus/components/stats/StatsModifierRecorder.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
-#include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
 #include "godoctopus/trigger_module/UndyingRune.h"
+
+#include "godoctopus/runes/AoePulseRune.h"
 
 #include "StatsModifiersRuneDeclaration.h"
 
@@ -154,18 +155,6 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	else if (rune_name == "AoeHealBasedOnHitpointOnDeath") {
 		mod_rune_type_add_component<AoeHealBasedOnHitpointOnDeath>(e, add, type, makeScalingRange<AoeHealBasedOnHitpointOnDeath>(base, upgrade, range));
 	}
-	else if (rune_name == "AoePulseDamageBasedOnDamage") {
-		mod_rune_type_add_component<AoePulseDamageBasedOnDamage>(e, add, type, makeScalingRange<AoePulseDamageBasedOnDamage>(base, upgrade, range));
-	}
-	else if (rune_name == "AoePulseDamageBasedOnHitpoint") {
-		mod_rune_type_add_component<AoePulseDamageBasedOnHitpoint>(e, add, type, makeScalingRange<AoePulseDamageBasedOnHitpoint>(base, upgrade, range));
-	}
-	else if (rune_name == "AoePulseHealBasedOnDamage") {
-		mod_rune_type_add_component<AoePulseHealBasedOnDamage>(e, add, type, makeScalingRange<AoePulseHealBasedOnDamage>(base, upgrade, range));
-	}
-	else if (rune_name == "AoePulseHealBasedOnHitpoint") {
-		mod_rune_type_add_component<AoePulseHealBasedOnHitpoint>(e, add, type, makeScalingRange<AoePulseHealBasedOnHitpoint>(base, upgrade, range));
-	}
 	else if (rune_name == "ApplyArmorBuffAreaOnRuneLoad") {
 		mod_rune_type_add_component<ApplyArmorBuffAreaOnRuneLoad>(e, add, type, makeScalingRangeDurationTicks<ApplyArmorBuffAreaOnRuneLoad>(base, upgrade, range, duration_ticks));
 	}
@@ -228,6 +217,7 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	else if (rune_name == "ApplyDamageBuffAreaOnRuneLoad") {
 		mod_rune_type_add_component(e, add, type, makeScalingRangeDurationTicks<ApplyDamageBuffAreaOnRuneLoad>(base, upgrade, range, duration_ticks));
 	}
+	// New Gen
 	else if (rune_name == "RuneStats1") {
 		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats1>(base, rune_data));
 	}
@@ -254,6 +244,9 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "RuneStats9") {
 		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats9>(base, rune_data));
+	}
+	else if (rune_name == "AoePulseDamages") {
+		mod_rune_type_add_component<AoePulseDamages>(e, add, type, make_aoe_pulse_rune<AoePulseDamages>(rune_data));
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());

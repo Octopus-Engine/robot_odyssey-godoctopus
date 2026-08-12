@@ -8,6 +8,7 @@
 #include "octopus/components/step/BuffComponentStep.hh"
 
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/runes/AoePulseRune.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
 #include "godoctopus/trigger_module/TriggerSystem.h"
 #include "godoctopus/trigger_module/conditions/AlwaysCondition.h"
@@ -21,7 +22,6 @@
 #include "godoctopus/trigger_module/trigger_systems/AttackTriggerSystem.h"
 #include "godoctopus/trigger_module/trigger_systems/LifeTriggerSystem.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
-#include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
 #include "godoctopus/trigger_module/UndyingRune.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
@@ -161,16 +161,7 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
 	// declare periodic pulse rune buff systems
-	declare_trigger_buff<AoePulseHealBasedOnHitpoint>(ecs);
-	declare_trigger_buff<AoePulseHealBasedOnHitpointTier2>(ecs);
-	declare_trigger_buff<AoePulseHealBasedOnDamage>(ecs);
-	declare_trigger_buff<AoePulseHealBasedOnDamageTier2>(ecs);
-	declare_trigger_buff<AoePulseDamageBasedOnHitpoint>(ecs);
-	declare_trigger_buff<AoePulseDamageBasedOnHitpointTier2>(ecs);
-	declare_trigger_buff<AoePulseDamageBasedOnDamage>(ecs);
-	declare_trigger_buff<AoePulseDamageBasedOnDamageTier2>(ecs);
-
-	declare_aoe_pulse_triggers(ecs, ctx);
+	declare_aoe_pulse_runes(ecs, ctx);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
 

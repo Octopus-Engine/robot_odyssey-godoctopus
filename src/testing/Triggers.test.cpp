@@ -40,8 +40,14 @@ void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 		}
 	}
 
-	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
-	context.action_node->mod_rune("rambot", "AoePulseDamageBasedOnHitpoint", 0, create_rune_data(1, 0, 2, 0, 1, 2, 0), true);
+	// Apply AoePulseDamages rune level 0 to the team 0 unit via ActionNode
+	context.action_node->mod_rune("rambot", "AoePulseDamages", 0,
+		RuneDataBuilder()
+			.set_base(0)
+			.set_range(3)  // Set AoE range to 3 units
+			.setHitPointsCoefPercent(2)  // Base damage is 2% of target's HP
+			.build()
+		, true);
 	context.game_node->tick();
 
 	// Tick the game multiple times to allow the AoE pulse to trigger
@@ -92,7 +98,6 @@ void test_gamenode_trigger_armor_buff() {
 	context.action_node->spawn_units(unit_name, Vector2(102, 100), 0, 1);
 	context.game_node->tick();
 
-	// Apply AoePulseDamageBasedOnHitpoint rune level 0 to the team 0 unit via ActionNode
 	context.action_node->mod_rune("rambot", "ApplyArmorBuffOnRuneLoad", 0, create_rune_data(1, 0, 1, 0, 1, 0, 15), true);
 	context.action_node->mod_rune("rambot", "AddRuneLoadOnAttack", 0, create_rune_data(), true);
 	context.game_node->tick();

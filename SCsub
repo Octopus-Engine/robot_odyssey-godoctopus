@@ -199,7 +199,7 @@ octopus2_sources = [
 godoctopus2_sources = [
     "./src/godoctopus/death/DeathParticle.cpp",
     "./src/godoctopus/event_bus/ProductionNodeEventBus.cpp",
-    "./src/godoctopus/trigger_module/AoePulseRune.cpp",
+    "./src/godoctopus/runes/AoePulseRune.cpp",
     "./src/godoctopus/trigger_module/ModRuneTools.cpp",
     "./src/godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.cpp",
     "./src/godoctopus/trigger_module/SpawnUnitRune.cpp",

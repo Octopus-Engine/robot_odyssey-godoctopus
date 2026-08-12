@@ -24,13 +24,15 @@ void declare_player_buff_systems_all_units(flecs::world &ecs, bool add_debuff_al
 	for_each_bot_type(BuffDeclarer<BuffType, ComponentType...>{ecs, add_debuff_all_system});
 }
 
-template<typename Trigger>
+template<typename Trigger, bool declare_component = true>
 void declare_trigger_buff(flecs::world &ecs)
 {
 	// component declaration
-	ecs.component<Trigger>()
-		.member("level", &Trigger::level)
-	;
+	if constexpr (declare_component) {
+		ecs.component<Trigger>()
+			.member("level", &Trigger::level)
+		;
+	}
 	ecs.component<octopus::BuffAddComponent<Trigger>>()
 		.member("placeholder", &octopus::BuffAddComponent<Trigger>::placeholder)
 	;
