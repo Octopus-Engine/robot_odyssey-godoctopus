@@ -9,6 +9,7 @@
 #include "testing/CommandNodeProduction.test.h"
 #include "testing/PlayerProxy.test.h"
 #include "testing/StatsModifiers.test.h"
+#include "testing/Rune.StatsModifier.test.h"
 
 namespace godoctopus2_tests {
 
@@ -41,6 +42,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Damage Buff A
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Attack Speed Debuff Area rune") {
 	test_gamenode_trigger_attack_speed_debuff_area();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Stats Modifier Test") {
+	test_gamenode_stats_modifier_rune();
 }
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode DamageBuffRuneSpecial upgrade scales bonus") {

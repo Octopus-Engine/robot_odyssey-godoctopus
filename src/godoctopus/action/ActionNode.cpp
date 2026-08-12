@@ -37,6 +37,17 @@ static ModRuneData createRuneData(Dictionary rune_data) {
 	data.upgrade = rune_data.get("upgrade", 0);
 	data.range = rune_data.get("range", 0);
 	data.duration_ticks = rune_data.get("duration_ticks", 0);
+	data.stats_set_coef.values[godoctopus::StatsType::HitPoints] = octopus::Fixed(int(rune_data.get("HitPointsCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::Damage] = octopus::Fixed(int(rune_data.get("DamageCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::Shield] = octopus::Fixed(int(rune_data.get("ShieldCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::MechanicalPower] = octopus::Fixed(int(rune_data.get("MechanicalPowerCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::MechanicalArmor] = octopus::Fixed(int(rune_data.get("MechanicalArmorCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::PlasmaPower] = octopus::Fixed(int(rune_data.get("PlasmaPowerCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::PlasmaArmor] = octopus::Fixed(int(rune_data.get("PlasmaArmorCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::Speed] = octopus::Fixed(int(rune_data.get("SpeedCoefPercent", 0)))/100;
+	data.stats_set_coef.values[godoctopus::StatsType::Affinity] = octopus::Fixed(int(rune_data.get("AffinityCoefPercent", 0)))/100;
+	data.stats_type = static_cast<godoctopus::StatsType>(rune_data.get("Type", 0));
+	data.modifier_priority = rune_data.get("ModifierPriority", 0);
 	return data;
 }
 

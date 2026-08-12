@@ -139,7 +139,6 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_classic_buff<DamageBuffRuneRegular, godoctopus::BaseStats>(ecs);
 	declare_classic_buff<HitPointBuffRuneRegular, godoctopus::BaseStats>(ecs);
 	declare_classic_buff<ReloadBuffRuneRegular, godoctopus::BaseStats>(ecs);
-	declare_classic_buff<SpecialBuffRuneRegular, Special>(ecs);
 	// specials
 	declare_updatable_buff<HitPointBuffRuneSpecial, godoctopus::BaseStats>(ecs);
 	declare_updatable_buff<ArmorBuffRuneSpecial, godoctopus::BaseStats>(ecs);

@@ -3,6 +3,7 @@
 #include "flecs.h"
 #include "octopus/world/position/PositionContext.hh"
 
+#include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/trigger_module/buffs/ArmorBuff.h"
 #include "godoctopus/trigger_module/buffs/AttackSpeedBuff.h"
 #include "godoctopus/trigger_module/buffs/DamageBuff.h"
@@ -51,7 +52,6 @@ struct DamageBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::D
 struct HitPointBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::HitPoints>, godoctopus::BaseStats> { int32_t level = 0; };
 struct ReloadBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Speed>, godoctopus::BaseStats> { int32_t level = 0; };
 struct ArmorBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Shield>, godoctopus::BaseStats> { int32_t level = 0; };
-struct SpecialBuffRuneRegular : FlatBuff<LeveledSpecialBuff, Special> { int32_t level = 0; };
 struct AffinityBuffRuneRegular : FlatBuff<LeveledStatBuff<godoctopus::StatsType::Affinity>, godoctopus::BaseStats> { int32_t level = 0; };
 
 // Special buff runes
@@ -85,6 +85,9 @@ struct ModRuneData {
 	int upgrade = 0;
 	int range = 0;
 	int duration_ticks = 0;
+	godoctopus::StatsSet stats_set_coef;
+	godoctopus::StatsType stats_type = godoctopus::StatsType::Affinity;
+	int modifier_priority = 0;
 };
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, ModRuneData const &rune_data);

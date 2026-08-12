@@ -38,6 +38,7 @@
 #include "godoctopus/game/ability/circular/BuildingSlotSpawnAbility.h"
 #include "godoctopus/production/UnitProduction.h"
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
+#include "godoctopus/trigger_module/StatsModifiersRuneDeclaration.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/components/stats/StatsSet.h"
@@ -364,6 +365,7 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	declare_proximity_beacon_ability(ecs, *this);
 	declare_circular_spawn_ability(ecs, *this);
 	declare_building_slot_spawn_ability(ecs, *this);
+	declare_stats_modifiers_rune(ecs);
 
 	if (_vat_library) {
 		declare_vat_library_systems(ecs, _vat_library);

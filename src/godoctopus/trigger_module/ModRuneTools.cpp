@@ -1,5 +1,8 @@
 #include "TriggerDeclaration.h"
 
+#include <algorithm>
+#include <iterator>
+
 #include "flecs.h"
 #include "core/variant/variant.h"
 #include "core/string/print_string.h"
@@ -8,10 +11,13 @@
 
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/stats/StatsUpdateSystems.h"
+#include "godoctopus/components/stats/StatsModifierRecorder.h"
 #include "godoctopus/trigger_module/TemporaryBuffTriggerDeclaration.h"
 #include "godoctopus/trigger_module/AoePulseRune.h"
 #include "godoctopus/trigger_module/SpawnUnitRune.h"
 #include "godoctopus/trigger_module/UndyingRune.h"
+
+#include "StatsModifiersRuneDeclaration.h"
 
 template<typename RuneType, typename... ComponentType>
 struct ModRune {
@@ -50,6 +56,16 @@ template<typename RuneType>
 RuneType makeFlatBuff(int flat_buff) {
 	RuneType rune;
 	rune.qty = flat_buff;
+	return rune;
+}
+
+template<typename RuneType>
+godoctopus::StatsModifierRecorder<RuneType> makeStatsModifierRecorder(int base, ModRuneData const &data) {
+	godoctopus::StatsModifierRecorder<RuneType> rune;
+	rune.modifier.base_delta = base;
+	std::copy(std::begin(data.stats_set_coef.values), std::end(data.stats_set_coef.values), std::begin(rune.modifier.coefficients));
+	rune.modifier.type = data.stats_type;
+	rune.list_idx = data.modifier_priority;
 	return rune;
 }
 
@@ -110,9 +126,6 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "ReloadBuffRuneRegular") {
 		mod_rune_type<ReloadBuffRuneRegular, godoctopus::BaseStats>(e, add, type, makeFlatBuff<ReloadBuffRuneRegular>(flat_buff));
-	}
-	else if (rune_name == "SpecialBuffRuneRegular") {
-		mod_rune_type<SpecialBuffRuneRegular, Special>(e, add, type, makeFlatBuff<SpecialBuffRuneRegular>(flat_buff));
 	}
 	else if(rune_name == "AddRuneLoadOnAttack") {
 		mod_rune_type_add_component(e, add, type, AddRuneLoadOnAttack{level});
@@ -214,6 +227,33 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "ApplyDamageBuffAreaOnRuneLoad") {
 		mod_rune_type_add_component(e, add, type, makeScalingRangeDurationTicks<ApplyDamageBuffAreaOnRuneLoad>(base, upgrade, range, duration_ticks));
+	}
+	else if (rune_name == "RuneStats1") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats1>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats2") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats2>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats3") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats3>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats4") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats4>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats5") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats5>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats6") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats6>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats7") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats7>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats8") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats8>(base, rune_data));
+	}
+	else if (rune_name == "RuneStats9") {
+		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats9>(base, rune_data));
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());
