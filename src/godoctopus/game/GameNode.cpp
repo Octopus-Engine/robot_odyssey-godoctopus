@@ -158,6 +158,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 	prefab.set_auto_override<godoctopus::BaseStats>({stats});
 	prefab.set_auto_override<godoctopus::CurrentStats>({stats});
 	prefab.auto_override<godoctopus::StatsModifierRegister>();
+	prefab.set_auto_override<godoctopus::DamageType>({unit_prefab->get_attack_is_mechanical(), unit_prefab->get_attack_is_pure()});
 
 	if (destroyable) {
 		prefab.set_auto_override<octopus::HitPoint>({unit_prefab->get_hitpoint()})
