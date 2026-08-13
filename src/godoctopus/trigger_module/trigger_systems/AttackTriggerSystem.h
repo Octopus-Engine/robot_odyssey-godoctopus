@@ -19,28 +19,4 @@ void declare_trigger_attack_system(flecs::world &ecs)
 				.entity(e)
 				.emit();
 		});
-
-	// trigger simple damage dealt
-	ecs.system<AttackTrigger const>()
-		.kind(ecs.entity(EndUpdatePhase))
-		.without<NoInstantDamage>()
-		.each([&](flecs::entity e, AttackTrigger const& trigger) {
-			//dealt
-			ecs.event<trigger_module::DamageDealt>()
-				.id<AttackTrigger>()
-				.entity(e)
-				.emit();
-		});
-
-	// trigger simple damage received event
-	ecs.system<AttackTrigger const>()
-		.kind(ecs.entity(EndUpdatePhase))
-		.without<NoInstantDamage>()
-		.each([&](flecs::entity e, AttackTrigger const& trigger) {
-			// received
-			ecs.event<trigger_module::DamageReceived>()
-				.id<HitPoint>()
-				.entity(trigger.target)
-				.emit();
-		});
 }

@@ -9,11 +9,19 @@ void declare_lifesteal_rune(flecs::world &ecs) {
 		.member("coef", &LifestealRune::coef)
 		.member("base", &LifestealRune::base)
 	;
-	ecs.observer<LifestealRune const, godoctopus::CurrentStats const, octopus::AttackTrigger const, octopus::Attack const, octopus::HitPoint>()
+
+	ecs.system<>()
+		.with<LifestealRune>()
+		.without<trigger_module::DamageDealt>()
+		.write<trigger_module::DamageDealt>()
+		.each([](flecs::entity e) {
+			e.add<trigger_module::DamageDealt>();
+		});
+
+	ecs.observer<LifestealRune const, godoctopus::CurrentStats const, trigger_module::DamageDealt const, octopus::Attack const, octopus::HitPoint>()
 		.template event<trigger_module::DamageDealt>()
-		.each([](flecs::entity e, const LifestealRune& rune, godoctopus::CurrentStats const &stats_set, octopus::AttackTrigger const &trigger, octopus::Attack const &atk, octopus::HitPoint &hp) {
-			const octopus::Fixed value = godoctopus::compute_value(stats_set.stats, rune.base, rune.coef);
-			hp.qty += std::max(atk.cst.damage * value, octopus::Fixed::One());
+		.each([](flecs::entity e, const LifestealRune& rune, godoctopus::CurrentStats const &stats_set, trigger_module::DamageDealt const &damage_dealt, octopus::Attack const &atk, octopus::HitPoint &hp) {
+			hp.qty += std::max(atk.cst.damage * damage_dealt.amount, octopus::Fixed::One());
 		});
 
 	declare_trigger_buff<LifestealRune, false>(ecs);

@@ -82,6 +82,7 @@ void test_gamenode_lifesteal_rune() {
 	prefab->set_prefab_name("rambot");
 	prefab->set_damage(10);  // Set base damage to 10 for testing
 	prefab->set_hitpoint(100);  // Set HP to 100 for testing
+	prefab->set_mechanical_power(200); // Set armor to 200 to increase damage taken by 10%
 	prefab->set_windup_x10(1);
 	prefab->set_speed(500); // should set reload to 10 ticks (formula is 5000/speed)
 	prefab->set_range_x10(30);
@@ -127,8 +128,8 @@ void test_gamenode_lifesteal_rune() {
 		}
 	}
 	// Verify that the attacker healed from lifesteal
-	CHECK(attacker_final_hp >= 100);
-	CHECK(target_final_hp < 100);
+	CHECK(attacker_final_hp == 100);
+	CHECK(target_final_hp == 78);
 }
 
 void test_gamenode_trigger_armor_buff() {

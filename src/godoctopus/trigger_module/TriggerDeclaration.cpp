@@ -16,7 +16,6 @@
 #include "godoctopus/trigger_module/conditions/HitpointCondition.h"
 #include "godoctopus/trigger_module/conditions/RuneCondition.h"
 #include "godoctopus/trigger_module/events/attack/FactorDamageEvent.h"
-#include "godoctopus/trigger_module/events/attack/LifestealEvent.h"
 #include "godoctopus/trigger_module/events/HitpointEvent.h"
 #include "godoctopus/trigger_module/events/RuneEvent.h"
 #include "godoctopus/trigger_module/events/UtilsEvent.h"
@@ -98,9 +97,12 @@ void declare_conditional_updatable_buff(flecs::world &ecs)
 void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library)
 {
 	ecs.component<trigger_module::Death>();
-	ecs.component<trigger_module::Attack>();
-	ecs.component<trigger_module::DamageDealt>();
-	ecs.component<trigger_module::DamageReceived>();
+	ecs.component<trigger_module::Attack>()
+		.member("damage", &trigger_module::Attack::damage);
+	ecs.component<trigger_module::DamageDealt>()
+		.member("amount", &trigger_module::DamageDealt::amount);
+	ecs.component<trigger_module::DamageReceived>()
+		.member("amount", &trigger_module::DamageReceived::amount);
 	ecs.component<trigger_module::Death>();
 	ecs.component<trigger_module::RuneConsumed<DefaultRune>>();
 	ecs.component<trigger_module::RuneLoaded<DefaultRune>>();
