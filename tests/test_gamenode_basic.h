@@ -32,6 +32,10 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode AoePulseDamages rune"
 	test_gamenode_aoe_pulse_damage_based_on_hitpoint();
 }
 
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Lifesteal rune") {
+	test_gamenode_lifesteal_rune();
+}
+
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode Trigger Armor Buff rune") {
 	test_gamenode_trigger_armor_buff();
 }

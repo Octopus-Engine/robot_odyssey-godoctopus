@@ -2,5 +2,6 @@
 
 void test_gamenode_aoe_pulse_damage_based_on_hitpoint();
 void test_gamenode_trigger_armor_buff();
+void test_gamenode_lifesteal_rune();
 void test_gamenode_trigger_damage_buff_area();
 void test_gamenode_trigger_attack_speed_debuff_area();

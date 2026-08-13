@@ -9,6 +9,7 @@
 
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/runes/AoePulseRune.h"
+#include "godoctopus/runes/LifeStealRune.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
 #include "godoctopus/trigger_module/TriggerSystem.h"
 #include "godoctopus/trigger_module/conditions/AlwaysCondition.h"
@@ -111,7 +112,6 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_attack_trigger_system<AddRuneLoadOnTargetOnAttack, trigger_module::DamageDealt, AlwaysCondition, TargetEvent<RuneEvent<DefaultRune, 1>>>(ecs);
 	declare_trigger_system<AddRuneLoadOnHit, trigger_module::DamageReceived, AlwaysCondition, RuneEvent<DefaultRune, 1>>(ecs);
 
-	declare_attack_trigger_system<LifestealRuneSpecial, trigger_module::DamageDealt, AlwaysCondition, LifestealEventSpecialScaled>(ecs);
 	declare_attack_area_trigger_system<AoeDamageSpecial, trigger_module::DamageDealt, AlwaysCondition, DamageAreaEventSpecialScaled>(ecs, ctx);
 
 	declare_area_trigger_system<AoeDamageBasedOnHitpointOnDeath, trigger_module::Death, AlwaysCondition, DamageAreaEventHitpointBasedSpecialScaled>(ecs, ctx);
@@ -124,7 +124,6 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_trigger_buff<AddRuneLoadOnAttack>(ecs);
 	declare_trigger_buff<AddRuneLoadOnTargetOnAttack>(ecs);
 	declare_trigger_buff<AddRuneLoadOnHit>(ecs);
-	declare_trigger_buff<LifestealRuneSpecial>(ecs);
 	declare_trigger_buff<AoeDamageSpecial>(ecs);
 	declare_trigger_buff<AoeDamageBasedOnHitpointOnDeath>(ecs);
 	declare_trigger_buff<AoeDamageBasedOnDamageOnDeath>(ecs);
@@ -162,6 +161,7 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 
 	// declare periodic pulse rune buff systems
 	declare_aoe_pulse_runes(ecs, ctx);
+	declare_lifesteal_rune(ecs);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
 
