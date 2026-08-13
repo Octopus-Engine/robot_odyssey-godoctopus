@@ -29,6 +29,6 @@ struct CurrentStats {
 	StatsSet stats;
 };
 
-octopus::Fixed compute_delta(StatsSet const &stats, octopus::Fixed const &base_delta, octopus::Fixed const coefficients[StatsTypeCount]);
+octopus::Fixed compute_value(StatsSet const &stats, octopus::Fixed const &base_value, octopus::Fixed const coefficients[StatsTypeCount]);
 
 } // godoctopus

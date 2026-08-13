@@ -46,7 +46,7 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 		.kind(ecs.entity(UpdatePhase))
 		.each([&ctx, tick_interval](flecs::entity e, Rune const &rune, godoctopus::CurrentStats const &stats_set, octopus::Position const &pos, octopus::Team const &team, PulseRuneTriggerTime<Rune> *trigger_time) {
 			int64_t current_time = octopus::get_time_stamp(e.world());
-			const octopus::Fixed value = godoctopus::compute_delta(stats_set.stats, rune.base, rune.coef);
+			const octopus::Fixed value = godoctopus::compute_value(stats_set.stats, rune.base, rune.coef);
 
 			// Check if enough ticks have passed since last trigger
 			if(!trigger_time || current_time - trigger_time->last_trigger_time >= tick_interval) {

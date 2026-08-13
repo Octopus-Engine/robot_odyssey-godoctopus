@@ -2,12 +2,12 @@
 
 namespace godoctopus {
 
-octopus::Fixed compute_delta(StatsSet const &stats, octopus::Fixed const &base_delta, octopus::Fixed const coefficients[StatsTypeCount]) {
-	octopus::Fixed delta = base_delta;
+octopus::Fixed compute_value(StatsSet const &stats, octopus::Fixed const &base_value, octopus::Fixed const coefficients[StatsTypeCount]) {
+	octopus::Fixed value = base_value;
 	for (size_t i = 0; i < StatsType::StatsTypeCount; ++i) {
-		delta += stats.values[i] * coefficients[i];
+		value += stats.values[i] * coefficients[i];
 	}
-	return delta;
+	return value;
 }
 
 } // namespace godoctopus
