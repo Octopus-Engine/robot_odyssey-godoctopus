@@ -22,13 +22,21 @@ struct InfoProxyData {
 	SET_GET_PARAM(std::string, type);
 	SET_GET_PARAM_DEF(int, team, 0);
 	SET_GET_PARAM_DEF(int, player, 0);
+	SET_GET_PARAM_DEF(double, armor, 0); // deprecated
+	SET_GET_PARAM_DEF(double, reload_time, 0); // deprecated
+	SET_GET_PARAM_DEF(double, special, 0); // deprecated
+	// Stats
 	SET_GET_PARAM_DEF(double, hp, 0);
 	SET_GET_PARAM_DEF(double, hp_max, 0);
-	SET_GET_PARAM_DEF(double, armor, 0);
 	SET_GET_PARAM_DEF(double, damage, 0);
-	SET_GET_PARAM_DEF(double, reload_time, 0);
-	SET_GET_PARAM_DEF(double, special, 0);
+	SET_GET_PARAM_DEF(double, shield, 0);
+	SET_GET_PARAM_DEF(double, mechanical_power, 0);
+	SET_GET_PARAM_DEF(double, mechanical_armor, 0);
+	SET_GET_PARAM_DEF(double, plasma_power, 0);
+	SET_GET_PARAM_DEF(double, plasma_armor, 0);
+	SET_GET_PARAM_DEF(double, speed, 0);
 	SET_GET_PARAM_DEF(double, affinity, 0);
+	// Stats - End
 	SET_GET_PARAM_DEF(bool, proximity_sensor_activated, false);
 	SET_GET_PARAM_DEF(int, pickable_id, -1);
 	SET_GET_PARAM_DEF(int, rune_loads, 0);

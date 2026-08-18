@@ -5,6 +5,7 @@
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/components/building/Building.h"
 #include "godoctopus/components/rune_load/RuneLoad.h"
+#include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "octopus/components/basic/armor/Armor.hh"
 #include "octopus/components/basic/attack/Attack.hh"
@@ -218,8 +219,8 @@ void InfoProxyNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 
 	// Create Position, Velocity query that matches empty archetypes.
-	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*> update_query =
-		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*>();
+	flecs::query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*, godoctopus::CurrentStats*> update_query =
+		ecs.query<Position, PrefabType*, PlayerAppartenance*, Team*, HitPoint*, HitPointMax*, Armor*, Attack*, Special*, ProximitySensor*, MoveCommand*, AttackCommand*, PickableSetUp*, RuneLoad<DefaultRune>*, ProductionQueue*, godoctopus::CurrentStats*>();
 
 	ecs.system<>()
 		.kind(ecs.entity(DisplaySyncPhase))
@@ -250,7 +251,8 @@ void InfoProxyNode::setup() {
 				AttackCommand *atk_cmd,
 				PickableSetUp *pickable,
 				RuneLoad<DefaultRune> *rune_load,
-				ProductionQueue *production_queue)
+				ProductionQueue *production_queue,
+				godoctopus::CurrentStats *current_stats)
 			{
 				InfoProxyData &infos_data = _proxy_map[e.id()];
 				infos_data.entity = e;
@@ -275,6 +277,15 @@ void InfoProxyNode::setup() {
 				if (atk) {
 					infos_data.set_damage(atk->cst.damage.to_double());
 					infos_data.set_reload_time((double)(atk->cst.reload_time)/TICK_RATE);
+				}
+				if (current_stats) {
+					infos_data.set_damage(current_stats->stats.values[godoctopus::StatsType::Damage].to_double());
+					infos_data.set_shield(current_stats->stats.values[godoctopus::StatsType::Shield].to_double());
+					infos_data.set_mechanical_power(current_stats->stats.values[godoctopus::StatsType::MechanicalPower].to_double());
+					infos_data.set_mechanical_armor(current_stats->stats.values[godoctopus::StatsType::MechanicalArmor].to_double());
+					infos_data.set_plasma_power(current_stats->stats.values[godoctopus::StatsType::PlasmaPower].to_double());
+					infos_data.set_plasma_armor(current_stats->stats.values[godoctopus::StatsType::PlasmaArmor].to_double());
+					infos_data.set_speed(current_stats->stats.values[godoctopus::StatsType::Speed].to_double());
 				}
 				if (spec) {
 					infos_data.set_special(spec->value.to_double());
