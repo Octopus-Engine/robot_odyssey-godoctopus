@@ -202,9 +202,6 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	else if (rune_name == "HitPointBuffRuneSpecial") {
 		mod_rune_type<HitPointBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<HitPointBuffRuneSpecial>(base, upgrade));
 	}
-	else if (rune_name == "LifestealRuneSpecial") {
-		mod_rune_type_add_component<LifestealRuneSpecial>(e, add, type, makeScaling<LifestealRuneSpecial>(base, upgrade));
-	}
 	else if (rune_name == "ReloadBuffRuneSpecial") {
 		mod_rune_type<ReloadBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<ReloadBuffRuneSpecial>(base, upgrade));
 	}

@@ -38,7 +38,6 @@ struct AreaScalingRuneInfo : ScalingRuneInfo {
 };
 
 struct AddRuneLoadOnTargetOnAttack : ScalingRuneInfo { int32_t level = 0; };
-struct LifestealRuneSpecial : ScalingRuneInfo { int32_t level = 0; };
 struct AoeDamageSpecial : AreaScalingRuneInfo { int32_t level = 0; };
 struct AoeDamageBasedOnHitpointOnDeath : AreaScalingRuneInfo { int32_t level = 0; };
 struct AoeDamageBasedOnDamageOnDeath : AreaScalingRuneInfo { int32_t level = 0; };

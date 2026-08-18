@@ -8,6 +8,7 @@
 #include "octopus/components/step/BuffComponentStep.hh"
 
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/runes/AoeOnDeath.h"
 #include "godoctopus/runes/AoePulseRune.h"
 #include "godoctopus/runes/LifeStealRune.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
@@ -161,8 +162,10 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(ecs);
 	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
+	declare_aoe_on_death_runes(ecs, ctx);
 	// declare periodic pulse rune buff systems
 	declare_aoe_pulse_runes(ecs, ctx);
+	// declare lifesteal rune buff systems
 	declare_lifesteal_rune(ecs);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);

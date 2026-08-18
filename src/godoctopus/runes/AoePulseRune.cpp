@@ -2,6 +2,7 @@
 
 #include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
+#include "godoctopus/runes/helpers/apply_hit_point_delta_area.h"
 
 /// @brief Tracking component for periodic trigger timing
 template<typename Rune>
@@ -9,26 +10,6 @@ struct PulseRuneTriggerTime
 {
 	int64_t last_trigger_time = -TICK_RATE;  // Initialize to trigger on first check
 };
-
-static void apply_hit_point_delta(flecs::entity source, octopus::Vector const &center, uint16_t team, octopus::PositionContext const &ctx,
-	octopus::Fixed range, octopus::Fixed delta)
-{
-	using namespace octopus;
-
-	auto apply_delta = [&](int32_t idx_l, flecs::entity ent) -> bool {
-		const bool check_team = ent.try_get<Team>() && (delta > 0
-			? ent.try_get<Team>()->team == team
-			: ent.try_get<Team>()->team != team);
-		if(check_team && ent.try_get<HitPoint>())
-		{
-			HitPoint * hp = ent.try_get_mut<HitPoint>();
-			hp->qty += delta;
-		}
-		return true;
-	};
-
-	tree_circle_query<flecs::entity>(ctx.trees[0], center, range, apply_delta);
-}
 
 /// @brief Periodic trigger system that applies an AoE effect every N ticks
 /// Requires the entity to have the Rune component, and will check conditions and apply events on intervals
@@ -56,9 +37,9 @@ void declare_periodic_area_trigger_system(flecs::world &ecs, octopus::PositionCo
 					e.set<PulseRuneTriggerTime<Rune>>({current_time});
 				}
 				if (heal) {
-					apply_hit_point_delta(e, pos.pos, team.team, ctx, rune.range, value);
+					apply_hit_point_delta_area(e, pos.pos, team.team, ctx, rune.range, value);
 				} else {
-					apply_hit_point_delta(e, pos.pos, team.team, ctx, rune.range, -value);
+					apply_hit_point_delta_area(e, pos.pos, team.team, ctx, rune.range, -value);
 				}
 			}
 		});
