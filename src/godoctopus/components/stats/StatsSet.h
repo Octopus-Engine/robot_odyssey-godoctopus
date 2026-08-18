@@ -31,4 +31,6 @@ struct CurrentStats {
 
 octopus::Fixed compute_value(StatsSet const &stats, octopus::Fixed const &base_value, octopus::Fixed const coefficients[StatsTypeCount]);
 
+StatsType type_from_string(std::string const &str);
+
 } // godoctopus

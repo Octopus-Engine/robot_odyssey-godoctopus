@@ -286,10 +286,10 @@ void InfoProxyNode::setup() {
 					infos_data.set_plasma_power(current_stats->stats.values[godoctopus::StatsType::PlasmaPower].to_double());
 					infos_data.set_plasma_armor(current_stats->stats.values[godoctopus::StatsType::PlasmaArmor].to_double());
 					infos_data.set_speed(current_stats->stats.values[godoctopus::StatsType::Speed].to_double());
+					infos_data.set_affinity(current_stats->stats.values[godoctopus::StatsType::Affinity].to_double());
 				}
 				if (spec) {
 					infos_data.set_special(spec->value.to_double());
-					infos_data.set_affinity(spec->affinity.to_double());
 				}
 				if (proximity_sensor) {
 					infos_data.set_proximity_sensor_activated(proximity_sensor->activated);

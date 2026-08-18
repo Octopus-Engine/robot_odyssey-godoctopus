@@ -75,6 +75,16 @@ public:
 		copy->set_rune_loads(get_rune_loads());
 		copy->set_alive(get_alive());
 		copy->set_building(get_building());
+		copy->set_hp(get_hp());
+		copy->set_hp_max(get_hp_max());
+		copy->set_damage(get_damage());
+		copy->set_shield(get_shield());
+		copy->set_mechanical_power(get_mechanical_power());
+		copy->set_mechanical_armor(get_mechanical_armor());
+		copy->set_plasma_power(get_plasma_power());
+		copy->set_plasma_armor(get_plasma_armor());
+		copy->set_speed(get_speed());
+		copy->set_affinity(get_affinity());
 		return copy;
 	}
 

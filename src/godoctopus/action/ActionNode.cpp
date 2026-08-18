@@ -46,8 +46,9 @@ static ModRuneData createRuneData(Dictionary rune_data) {
 	data.stats_set_coef.values[godoctopus::StatsType::PlasmaArmor] = octopus::Fixed(int(rune_data.get("PlasmaArmorCoefPercent", 0)))/100;
 	data.stats_set_coef.values[godoctopus::StatsType::Speed] = octopus::Fixed(int(rune_data.get("SpeedCoefPercent", 0)))/100;
 	data.stats_set_coef.values[godoctopus::StatsType::Affinity] = octopus::Fixed(int(rune_data.get("AffinityCoefPercent", 0)))/100;
-	data.stats_type = static_cast<godoctopus::StatsType>(rune_data.get("Type", 0));
-	data.modifier_priority = rune_data.get("ModifierPriority", 0);
+	const String stats_type_str = rune_data.get("StatsType", "Affinity");
+	data.stats_type = godoctopus::type_from_string(stats_type_str.utf8().get_data());
+	data.modifier_priority = rune_data.get("stats_modifier_priority", 0);
 	return data;
 }
 
