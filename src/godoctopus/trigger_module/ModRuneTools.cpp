@@ -18,6 +18,7 @@
 
 #include "godoctopus/runes/AoePulseRune.h"
 #include "godoctopus/runes/LifestealRune.h"
+#include "godoctopus/runes/AoeOnDeath.h"
 
 #include "StatsModifiersRuneDeclaration.h"
 
@@ -248,6 +249,12 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 	}
 	else if (rune_name == "LifestealRune") {
 		mod_rune_type_add_component<LifestealRune>(e, add, type, make_lifesteal_rune(rune_data));
+	}
+	else if (rune_name == "DamageOnDeathRune") {
+		mod_rune_type_add_component(e, add, type, make_aoe_on_death_rune<DamageOnDeathRune>(rune_data));
+	}
+	else if (rune_name == "HealOnDeathRune") {
+		mod_rune_type_add_component(e, add, type, make_aoe_on_death_rune<HealOnDeathRune>(rune_data));
 	}
 	else {
 		print_line("mod_rune_based_on_names: Unknown rune name ", rune_name.c_str());

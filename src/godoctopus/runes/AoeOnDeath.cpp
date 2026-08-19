@@ -1,5 +1,6 @@
 #include "AoeOnDeath.h"
 
+#include "octopus/components/basic/hitpoint/Destroyable.hh"
 #include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
@@ -13,9 +14,9 @@ void declare_aoe_on_death_system(flecs::world &ecs, octopus::PositionContext con
 		.member("base", &Rune::base)
 		.member("range", &Rune::range);
 
-	ecs.observer<godoctopus::CurrentStats const, octopus::Position const, octopus::Team const, Rune const>()
+	ecs.observer<octopus::Destroyable const, godoctopus::CurrentStats const, octopus::Position const, octopus::Team const, Rune const>()
 		.template event<trigger_module::Death>()
-		.each([&ctx](flecs::entity e, godoctopus::CurrentStats const &stats_set, octopus::Position const &pos, octopus::Team const &team, Rune const &rune) {
+		.each([&ctx](flecs::entity e, octopus::Destroyable const&, godoctopus::CurrentStats const &stats_set, octopus::Position const &pos, octopus::Team const &team, Rune const &rune) {
 			const octopus::Fixed value = godoctopus::compute_value(stats_set.stats, rune.base, rune.coef);
 			if constexpr (heal) {
 				apply_hit_point_delta_area(e, pos.pos, team.team, ctx, rune.range, value);
