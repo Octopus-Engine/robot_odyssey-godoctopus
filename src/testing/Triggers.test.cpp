@@ -5,6 +5,71 @@
 #include "testing/utils/GameNodeTestContextWithCustomPrefab.h"
 #include "testing/utils/ModRuneDataHelper.h"
 
+void test_gamenode_damage_on_death_rune() {
+	// Create a no-damage unit prefab
+	auto no_damage_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
+	no_damage_prefab->set_prefab_name("rambot");
+	no_damage_prefab->set_attack_enabled(false);
+	no_damage_prefab->set_hitpoint(10);
+	no_damage_prefab->set_range_x10(30);
+	// Create a damage unit prefab
+	auto damage_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
+	damage_prefab->set_prefab_name("gunbot");
+	damage_prefab->set_hitpoint(100);
+	damage_prefab->set_attack_enabled(true);
+	damage_prefab->set_damage(20);
+	damage_prefab->set_windup_x10(1);
+	damage_prefab->set_speed(5000);
+	damage_prefab->set_range_x10(30);
+
+	GameNodeTestContextWithCustomPrefab context(no_damage_prefab, damage_prefab);
+
+	// Spawn a unit for team 1 at position (100, 100) - the target
+	context.action_node->spawn_units("rambot", Vector2(100, 100), 1, 1);
+	context.game_node->tick();
+
+	// Spawn a unit for team 0 at position (100, 101) - the attacker
+	context.action_node->spawn_units("gunbot", Vector2(100, 101), 0, 1);
+	context.game_node->tick();
+
+	// Apply DamageOnDeathRune to deal 50 damage to nearby enemies when the unit dies
+	context.action_node->mod_rune("rambot", "DamageOnDeathRune", 1,
+		RuneDataBuilder()
+			.set_base(40)
+			.set_range(3)
+			.setHitPointsCoefPercent(100)
+			.build()
+		, true);
+	context.game_node->tick();
+
+	// Tick the game multiple times to allow the attacker to attack and kill the target
+	for (int i = 0; i < 50; ++i) {
+		context.game_node->tick();
+	}
+
+	// Get final HP values and verify the target took damage
+	double team0_final_hp = 0;
+	double team1_final_hp = 0;
+	{
+		auto locker = context.proxy_node->get_data_locker();
+		auto const &proxy_map = locker.proxy_map;
+
+		for (auto const &[entity_id, proxy_data] : proxy_map) {
+			if (proxy_data.get_team() == 0) {
+				team0_final_hp = proxy_data.get_hp();
+			}
+			else if (proxy_data.get_team() == 1) {
+				team1_final_hp = proxy_data.get_hp();
+			}
+		}
+	}
+
+	// Damage should be 50 and the target's initial HP was 100, so final HP should be 50
+	CHECK(team0_final_hp == 50);
+	// Should be dead
+	CHECK(team1_final_hp == 0);
+}
+
 void test_gamenode_aoe_pulse_damage_based_on_hitpoint() {
 	// Create a no-damage unit prefab for both teams
 	auto no_damage_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
