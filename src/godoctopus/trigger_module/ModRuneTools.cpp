@@ -245,10 +245,10 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 		mod_rune_type_add_component(e, add, type, makeStatsModifierRecorder<RuneStats9>(base, rune_data));
 	}
 	else if (rune_name == "AoePulseDamages") {
-		mod_rune_type_add_component<AoePulseDamages>(e, add, type, make_aoe_pulse_rune<AoePulseDamages>(rune_data));
+		mod_rune_type_add_component(e, add, type, make_aoe_pulse_rune<AoePulseDamages>(rune_data));
 	}
 	else if (rune_name == "LifestealRune") {
-		mod_rune_type_add_component<LifestealRune>(e, add, type, make_lifesteal_rune(rune_data));
+		mod_rune_type_add_component(e, add, type, make_lifesteal_rune(rune_data));
 	}
 	else if (rune_name == "DamageOnDeathRune") {
 		mod_rune_type_add_component(e, add, type, make_aoe_on_death_rune<DamageOnDeathRune>(rune_data));
