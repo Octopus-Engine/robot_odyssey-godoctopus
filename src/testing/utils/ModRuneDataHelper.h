@@ -67,12 +67,12 @@ struct RuneDataBuilder {
 		rune_data["AffinityCoefPercent"] = percent;
 		return *this;
 	}
-	RuneDataBuilder &setType(godoctopus::StatsType type) {
-		rune_data["Type"] = static_cast<int>(type);
+	RuneDataBuilder &setType(std::string const &type) {
+		rune_data["StatsType"] = String(type.c_str());
 		return *this;
 	}
 	RuneDataBuilder &setModifierPriority(int prio) {
-		rune_data["ModifierPriority"] = prio;
+		rune_data["stats_modifier_priority"] = prio;
 		return *this;
 	}
 
