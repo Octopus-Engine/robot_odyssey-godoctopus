@@ -25,12 +25,14 @@ static Ref<godot::UnitPrefab> create_default_prefab(std::string name = "rambot")
 struct RuneNameData {
 	String const rune_name;
 	Dictionary const rune_data;
+	bool add = true;
 };
 
 static double run_single_unit_multi_rune_stat(
 		std::vector<RuneNameData> const &runes,
 		void (*prefab_setup)(Ref<godot::UnitPrefab> &),
-		double (*read_stat)(Ref<godot::InfoProxyResource> const &)) {
+		double (*read_stat)(Ref<godot::InfoProxyResource> const &),
+		std::vector<RuneNameData> const &runes_wave_2 = {}) {
 	Ref<godot::UnitPrefab> prefab = create_default_prefab();
 	prefab_setup(prefab);
 	GameNodeTestContextWithCustomPrefab context(prefab);
@@ -40,11 +42,14 @@ static double run_single_unit_multi_rune_stat(
 	context.game_node->tick();
 
 	for (auto const &rune : runes) {
-		context.action_node->mod_rune("rambot", rune.rune_name, 0, rune.rune_data, true);
+		context.action_node->mod_rune("rambot", rune.rune_name, 0, rune.rune_data, rune.add);
 	}
 	context.game_node->tick();
-	context.game_node->tick();
 
+	for (auto const &rune : runes_wave_2) {
+		context.action_node->mod_rune("rambot", rune.rune_name, 0, rune.rune_data, rune.add);
+	}
+	context.game_node->tick();
 	auto proxies = context.proxy_node->get_proxy_from_group(group);
 	CHECK(proxies.size() == 1);
 	if (proxies.size() != 1) {
@@ -66,7 +71,7 @@ void test_gamenode_stats_modifier_rune() {
 			{
 				{"RuneStats1", RuneDataBuilder()
 					.set_base(10)
-					.setType(godoctopus::StatsType::Damage)
+					.setType("Damage")
 					.setMechanicalPowerCoefPercent(10)
 					.setModifierPriority(1)
 					.build()}
@@ -77,13 +82,13 @@ void test_gamenode_stats_modifier_rune() {
 			{
 				{"RuneStats1", RuneDataBuilder()
 					.set_base(10)
-					.setType(godoctopus::StatsType::Damage)
+					.setType("Damage")
 					.setMechanicalPowerCoefPercent(10)
 					.setModifierPriority(1)
 					.build()},
 				{"RuneStats2", RuneDataBuilder()
 					.set_base(100)
-					.setType(godoctopus::StatsType::MechanicalPower)
+					.setType("MechanicalPower")
 					.setModifierPriority(0)
 					.build()},
 
@@ -95,29 +100,64 @@ void test_gamenode_stats_modifier_rune() {
 			{
 				{"RuneStats1", RuneDataBuilder()
 					.set_base(10)
-					.setType(godoctopus::StatsType::Damage)
+					.setType("Damage")
 					.setMechanicalPowerCoefPercent(10)
 					.setModifierPriority(2)
 					.build()},
 				{"RuneStats2", RuneDataBuilder()
 					.set_base(100)
-					.setType(godoctopus::StatsType::MechanicalPower)
+					.setType("MechanicalPower")
 					.setAffinityCoefPercent(100)
 					.setModifierPriority(1)
 					.build()},
 				{"RuneStats3", RuneDataBuilder()
 					.set_base(100)
-					.setType(godoctopus::StatsType::Affinity)
+					.setType("Affinity")
 					.setModifierPriority(0)
 					.build()},
 
 			},
 			setup_damage_upgrade_prefab,
 			read_damage);
+	const double damage_unequipped = run_single_unit_multi_rune_stat(
+			{
+				{"RuneStats1", RuneDataBuilder()
+					.set_base(10)
+					.setType("Damage")
+					.setMechanicalPowerCoefPercent(10)
+					.setModifierPriority(1)
+					.build()}
+			},
+			setup_damage_upgrade_prefab,
+			read_damage,
+			{
+				{"RuneStats1", {}, false}
+			});
+	const double damage_same_tick_replace = run_single_unit_multi_rune_stat(
+			{
+				{"RuneStats1", RuneDataBuilder()
+					.set_base(10)
+					.setType("Damage")
+					.setMechanicalPowerCoefPercent(10)
+					.setModifierPriority(1)
+					.build()}
+			},
+			setup_damage_upgrade_prefab,
+			read_damage,
+			{
+				{"RuneStats1", {}, false},
+				{"RuneStats1", RuneDataBuilder()
+					.set_base(20)
+					.setType("HitPoints")
+					.setModifierPriority(1)
+					.build()}
+			});
 
 	// 100 mechanical power by default
 	CHECK(damage_without_upgrade == 20); // 100 * 10% + 10 = 20
 	CHECK(damage_with_upgrade == 30); // 200 * 10% + 10 = 30
 	// 100 affinity from rune 3, so rune 2's mechanical power is increased by 100 (100% affinity), so total mechanical power is 300
 	CHECK(damage_with_double_upgrade == 40); // 300 * 10% + 10 = 40
+	CHECK(damage_unequipped == 0); // No buff after removing rune
+	CHECK(damage_same_tick_replace == 0); // Buff should have been removed
 }
