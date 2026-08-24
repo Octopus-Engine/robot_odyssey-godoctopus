@@ -137,7 +137,7 @@ void ActionNode::setup() {
 					ModRuneAction const &mod_rune_action = std::get<ModRuneAction>(action);
 					std::string unit_type = mod_rune_action.unit_type.utf8().get_data();
 					std::string rune_type = mod_rune_action.rune_type.utf8().get_data();
-					int player_idx = mod_rune_action.player_idx;
+					uint32_t player_idx = static_cast<uint32_t>(mod_rune_action.player_idx);
 					bool add = mod_rune_action.add;
 
 					// get player info

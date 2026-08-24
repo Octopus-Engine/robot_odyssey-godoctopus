@@ -197,7 +197,6 @@ void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::stri
 		mod_rune_type<ConditionalReloadBuffLowLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(e, add, type, makeScalingPercent<ConditionalReloadBuffLowLifeRuneTier1>(base, upgrade, 80));
 	}
 	else if (rune_name == "DamageBuffRuneSpecial") {
-		std::cout<<"Adding Rune DamageBuffRuneSpecial with base: " << base << ", upgrade: " << upgrade << std::endl;
 		mod_rune_type<DamageBuffRuneSpecial, godoctopus::BaseStats>(e, add, type, makeScaling<DamageBuffRuneSpecial>(base, upgrade));
 	}
 	else if (rune_name == "HitPointBuffRuneSpecial") {

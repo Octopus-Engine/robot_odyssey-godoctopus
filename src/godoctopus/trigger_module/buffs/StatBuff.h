@@ -10,7 +10,6 @@ struct LeveledStatBuff
 	template<typename... Components>
 	void apply(flecs::entity, octopus::Fixed const &qty, godoctopus::BaseStats &base, Components&... components) const
 	{
-		std::cout<<"Applying stat buff of type " << static_cast<int>(type) << " with qty " << qty << std::endl;
 		base.stats.values[type] += qty;
 	}
 
@@ -19,7 +18,6 @@ struct LeveledStatBuff
 	template<typename... Components>
 	void revert(flecs::entity, octopus::Fixed const &qty, godoctopus::BaseStats &base, Components&... components) const
 	{
-		std::cout<<"Reverting stat buff of type " << static_cast<int>(type) << " with qty " << qty << std::endl;
 		base.stats.values[type] -= qty;
 	}
 };

@@ -27,8 +27,12 @@ struct StatsDamageModifier : public octopus::ArmorDamageModifier {
 			}
 			const auto delta = power - armor;
 			if (delta >= octopus::Fixed::Zero()) {
+				// Positive delta means attacker has more power than target's armor, so we increase damage
+				// The bonus is: 0.1 x delta %
 				damage = attack.cst.damage * (1 + delta/1000);
 			} else {
+				// Negative delta means attacker has less power than target's armor, so we decrease damage
+				// The reduction is: delta %
 				damage = attack.cst.damage * (1 / (1 - delta/100));
 			}
 			damage = std::max(octopus::Fixed::One(), damage - target_stats->stats.values[StatsType::Shield]);
