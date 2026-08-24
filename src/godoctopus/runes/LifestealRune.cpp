@@ -1,4 +1,4 @@
-#include "LifeStealRune.h"
+#include "LifestealRune.h"
 
 #include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/trigger_module/BuffDeclarer.h"
@@ -9,14 +9,6 @@ void declare_lifesteal_rune(flecs::world &ecs) {
 		.member("coef", &LifestealRune::coef)
 		.member("base", &LifestealRune::base)
 	;
-
-	ecs.system<>()
-		.with<LifestealRune>()
-		.without<trigger_module::DamageDealt>()
-		.write<trigger_module::DamageDealt>()
-		.each([](flecs::entity e) {
-			e.add<trigger_module::DamageDealt>();
-		});
 
 	ecs.observer<LifestealRune const, godoctopus::CurrentStats const, trigger_module::DamageDealt const, octopus::Attack const, octopus::HitPoint>()
 		.template event<trigger_module::DamageDealt>()

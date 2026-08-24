@@ -20,13 +20,13 @@ namespace trigger_module
 	/// @brief when damage is dealt to a unit (event push to the damage dealer)
 	struct DamageDealt
 	{
-		typedef octopus::AttackTrigger component;
+		typedef DamageDealt component;
 		octopus::Fixed amount;
 	};
 	/// @brief when damage is received by a unit (event push to the damage receiver)
 	struct DamageReceived
 	{
-		typedef octopus::HitPoint component;
+		typedef DamageReceived component;
 		octopus::Fixed amount;
 	};
 	/// @brief when unit dies

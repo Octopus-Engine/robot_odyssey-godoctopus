@@ -40,6 +40,7 @@
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 #include "godoctopus/trigger_module/StatsModifiersRuneDeclaration.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/trigger_module/TriggerTypes.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/components/stats/StatsSet.h"
 #include "godoctopus/components/stats/StatsDamageModifier.h"
@@ -119,6 +120,8 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		.auto_override<octopus::Destroyable>()
 		.auto_override<Pickable>()
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
+		.auto_override<trigger_module::DamageDealt>()
+		.auto_override<trigger_module::DamageReceived>()
 	;
 
 	if (unit_prefab->get_producer()) {
