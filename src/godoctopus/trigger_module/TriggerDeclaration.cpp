@@ -10,7 +10,7 @@
 #include "godoctopus/components/types/Types.h"
 #include "godoctopus/runes/AoeOnDeath.h"
 #include "godoctopus/runes/AoePulseRune.h"
-#include "godoctopus/runes/LifeStealRune.h"
+#include "godoctopus/runes/LifestealRune.h"
 #include "godoctopus/trigger_module/TriggerTypes.h"
 #include "godoctopus/trigger_module/TriggerSystem.h"
 #include "godoctopus/trigger_module/conditions/AlwaysCondition.h"

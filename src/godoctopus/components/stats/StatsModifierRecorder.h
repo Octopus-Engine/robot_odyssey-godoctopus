@@ -54,7 +54,7 @@ void declare_modifier_register(flecs::world &ecs) {
 
 	ecs.observer<StatsModifierRegister, StatsModifierRecorder<T>>()
 		.event(flecs::OnSet)
-		.write<StatsModifierRecord<T>>()
+		.template write<StatsModifierRecord<T>>()
 		.each([](flecs::entity e, StatsModifierRegister &stats_modifier_register, StatsModifierRecorder<T> &rec) {
 			remove_stats_modifier_record<T>(e, stats_modifier_register);
 			add_stats_modifier_record<T>(e, stats_modifier_register, rec);
@@ -62,7 +62,7 @@ void declare_modifier_register(flecs::world &ecs) {
 
 	ecs.observer<StatsModifierRegister, StatsModifierRecorder<T>>()
 		.event(flecs::OnRemove)
-		.write<StatsModifierRecord<T>>()
+		.template write<StatsModifierRecord<T>>()
 		.each([](flecs::entity e, StatsModifierRegister &stats_modifier_register, StatsModifierRecorder<T> &rec) {
 			remove_stats_modifier_record<T>(e, stats_modifier_register);
 		});

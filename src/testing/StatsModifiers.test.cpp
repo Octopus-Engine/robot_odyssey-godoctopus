@@ -62,9 +62,9 @@ void test_stats_modifiers() {
 	ecs.system<>()
 		.kind(ecs.entity(EndUpdatePhase))
 		.with<godoctopus::StatsModifierRegister>()
-		.each([&step_context, &steps](flecs::entity e) {
+		.each([&step_context, &steps](flecs::entity ent) {
 			for (auto const &step : steps) {
-				std::visit([&step_context, &e](auto&& arg) { apply(step_context, e, arg); }, step);
+				std::visit([&step_context, &ent](auto&& arg) { apply(step_context, ent, arg); }, step);
 			}
 			steps.clear();
 		});
