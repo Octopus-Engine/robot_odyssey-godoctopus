@@ -75,11 +75,8 @@ void declare_stateupdate_systems(flecs::world &ecs) {
 	// update engine stats base on current stats
 	ecs.system<CurrentStats const, Attack>()
 		.kind(ecs.entity(ValidatePhase))
-		// .multi_threaded()
+		.multi_threaded()
 		.each([](flecs::entity e, CurrentStats const &current, Attack &attack) {
-			// std::cout<<"Updating attack stats for entity " << e.name() << std::endl;
-			// std::cout<<"Current damage: " << current.stats.values[Damage] << std::endl;
-			// std::cout<<"Current speed: " << current.stats.values[Speed] << std::endl;
 			attack.cst.damage = current.stats.values[Damage];
 			attack.cst.reload_time = static_cast<int32_t>(((100*TICK_RATE)/current.stats.values[Speed]).to_int());
 		});
