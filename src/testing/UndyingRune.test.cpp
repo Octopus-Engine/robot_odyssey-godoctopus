@@ -13,7 +13,7 @@ void test_gamenode_undying_rune_applies_buff_at_rune_load_5() {
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(100);
 	prefab->set_damage(10);
-	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
+	prefab->set_speed(1000); // should set reload to 5 ticks (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
@@ -33,12 +33,12 @@ void test_gamenode_undying_rune_applies_buff_at_rune_load_5() {
 	// (Note: We can't directly check for buff presence without additional infrastructure,
 	// but we verify the unit is alive and has normal HP)
 	auto proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	double initial_hp = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(initial_hp == 100);  // Should have full HP
 
 	// 5. Apply ApplyUndyingBuffOnRuneLoad & AddRuneLoadOnHit
-	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, create_rune_data(), true);
+	context.action_node->mod_rune(unit_name, "ApplyUndyingBuffOnRuneLoad", 0, RuneDataBuilder().setDurationTicks(15).build(), true);
 	// Apply AddRuneLoadOnHit to enable rune load accumulation on attack
 	context.action_node->mod_rune(unit_name, "AddRuneLoadOnHit", 0, create_rune_data(), true);
 	context.game_node->tick();
@@ -51,7 +51,7 @@ void test_gamenode_undying_rune_applies_buff_at_rune_load_5() {
 	// The buff will consume 5 runes and apply itself for 15 seconds
 	// For now, we just verify the unit has 1 hitpoint (undying buff should prevent death) and is alive
 	proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	double hp_undying = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(hp_undying == 1);  // Unit should still be alive
 	CHECK(Ref<godot::InfoProxyResource>(proxy_resources[0])->get_alive() == true);
@@ -64,7 +64,7 @@ void test_gamenode_undying_buff_expires_after_15_seconds() {
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(60);
 	prefab->set_damage(1);
-	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
+	prefab->set_speed(1000); // should set reload to 5 ticks (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
@@ -92,7 +92,7 @@ void test_gamenode_undying_buff_expires_after_15_seconds() {
 	// (Note: We can't directly check for buff presence without additional infrastructure,
 	// but we verify the unit is alive and has normal HP)
 	auto proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	double initial_hp = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(initial_hp == 60);  // Should have full HP
 
@@ -120,7 +120,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	prefab->set_prefab_name("rambot");
 	prefab->set_hitpoint(60);
 	prefab->set_damage(10);
-	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
+	prefab->set_speed(1000); // should set reload to 5 ticks (formula is 5000/speed)
 	prefab->set_range_x10(300);
 	prefab->set_windup_x10(1);
 
@@ -128,7 +128,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	other_prefab->set_hitpoint(50);
 	other_prefab->set_prefab_name("bladebot");
 	other_prefab->set_damage(10);
-	other_prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
+	other_prefab->set_speed(1000); // should set reload to 5 ticks (formula is 5000/speed)
 	other_prefab->set_range_x10(300);
 	other_prefab->set_windup_x10(1);
 
@@ -148,7 +148,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	// (Note: We can't directly check for buff presence without additional infrastructure,
 	// but we verify the unit is alive and has normal HP)
 	auto proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	double initial_hp = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(initial_hp == 60);  // Should have full HP
 
@@ -166,7 +166,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	// 8. Unit should have died because buff should not be active anymore
 	// and should still be alive because it killed all enemies
 	proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	double hp_undying = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(hp_undying == 1);  // Unit should still be alive
 	CHECK(Ref<godot::InfoProxyResource>(proxy_resources[0])->get_alive() == true);
@@ -176,7 +176,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	context.game_node->tick();
 
 	proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	hp_undying = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(hp_undying == 60);  // Unit should be max hp
 
@@ -192,7 +192,7 @@ void test_gamenode_undying_buff_reapplied_after_cooldown_expires() {
 	// 10. Unit should have died because buff should not be active anymore
 	// and should still be alive because it killed all enemies
 	proxy_resources = context.proxy_node->get_proxy_from_group(group0);
-	CHECK(proxy_resources.size() == 1);
+	REQUIRE(proxy_resources.size() == 1);
 	hp_undying = Ref<godot::InfoProxyResource>(proxy_resources[0])->get_hp();
 	CHECK(hp_undying == 1);  // Unit should still be alive
 	CHECK(Ref<godot::InfoProxyResource>(proxy_resources[0])->get_alive() == true);

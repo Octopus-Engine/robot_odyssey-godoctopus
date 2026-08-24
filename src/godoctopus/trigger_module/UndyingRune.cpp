@@ -58,23 +58,12 @@ void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manag
 		.with<TemporaryUndyingBuff_15s>()
 		.each([&ecs](flecs::entity e) {
 			// When buff is applied, apply cooldown
-			// Calculate duration: (15 * TICK_RATE) / (1 + special_value * 0.1)
-			Special const *special = e.try_get<Special>();
-			if(special)
-			{
-				int64_t base_cooldown_ticks = 15 * TICK_RATE + TemporaryUndyingBuff_15s::DURATION_TICKS;
-				// Convert special value to integer for division
-				int64_t special_int = static_cast<int64_t>((special->value * 0.1).to_int());
-				// Avoid division by zero
-				int64_t divisor = 1 + special_int;
-				int64_t cooldown_duration = base_cooldown_ticks / divisor;
+			int64_t cooldown_duration = 15 * TICK_RATE + TemporaryUndyingBuff_15s::DURATION_TICKS;
+			int64_t current_tick = octopus::get_time_stamp(e.world());
+			int64_t cooldown_end_tick = current_tick + cooldown_duration;
 
-				int64_t current_tick = octopus::get_time_stamp(e.world());
-				int64_t cooldown_end_tick = current_tick + cooldown_duration;
-
-				// Apply cooldown and prevention components
-				e.set<UndyingBuffCooldown>({cooldown_end_tick});
-			}
+			// Apply cooldown and prevention components
+			e.set<UndyingBuffCooldown>({cooldown_end_tick});
 		});
 
 	// System to monitor cooldown expiration and remove the cooldown component
@@ -152,5 +141,5 @@ void declare_undying_rune_triggers(flecs::world &ecs, custom_step_manager& manag
 			.run([library](flecs::iter&) {
 				library->_mutex.unlock();
 			});
-		}
+	}
 }

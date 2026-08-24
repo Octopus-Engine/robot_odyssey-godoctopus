@@ -75,6 +75,23 @@ struct RuneDataBuilder {
 		rune_data["stats_modifier_priority"] = prio;
 		return *this;
 	}
+	RuneDataBuilder &setDurationTicks(int duration_ticks) {
+		rune_data["duration_ticks"] = duration_ticks;
+		return *this;
+	}
+	RuneDataBuilder &setFlatBuff(int flat_buff) {
+		rune_data["flat_buff"] = flat_buff;
+		return *this;
+	}
+	RuneDataBuilder &setLevelUpgrade(int level_upgrade) {
+		rune_data["level_upgrade"] = level_upgrade;
+		return *this;
+	}
+	RuneDataBuilder &setUpgrade(int upgrade) {
+		rune_data["upgrade"] = upgrade;
+		return *this;
+	}
+
 
 	Dictionary build() {
 		return rune_data;
