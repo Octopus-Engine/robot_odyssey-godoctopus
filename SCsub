@@ -264,6 +264,8 @@ env_octopus2 = env_modules.Clone()
 
 env_octopus2.add_source_files(env.modules_sources, "*.cpp")
 env_octopus2.add_source_files(env.modules_sources, "src/testing/*.cpp")
+env_octopus2.add_source_files(env.modules_sources, "src/testing/utils/*.cpp")
+env_octopus2.add_source_files(env.modules_sources, "src/testing/runes/*.cpp")
 # env_octopus2.add_source_files(env.modules_sources, "tests/*.cpp")
 env_octopus2.add_source_files(env.modules_sources, flecs_sources)
 env_octopus2.add_source_files(env.modules_sources, octopus2_sources)

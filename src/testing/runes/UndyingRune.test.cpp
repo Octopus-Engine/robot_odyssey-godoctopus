@@ -2,7 +2,6 @@
 #include "godoctopus/entity_group/EntityGroup.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 
-#include "testing/UndyingRune.test.h"
 #include "testing/utils/GameNodeTestContextWithCustomPrefab.h"
 #include "testing/utils/ModRuneDataHelper.h"
 

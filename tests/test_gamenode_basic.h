@@ -5,7 +5,7 @@
 #include "testing/Triggers.test.h"
 #include "testing/ConditionalLowLifeBuffRunes.test.h"
 #include "testing/SpawnCloneUnitRune.test.h"
-#include "testing/UndyingRune.test.h"
+#include "testing/runes/Rune.test.h"
 #include "testing/CommandNodeProduction.test.h"
 #include "testing/PlayerProxy.test.h"
 #include "testing/StatsModifiers.test.h"
