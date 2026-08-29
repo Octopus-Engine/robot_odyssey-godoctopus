@@ -515,7 +515,11 @@ void GameNode::_bind_methods()
 	ClassDB::bind_method(D_METHOD("init_load", "file_name", "meta_data"), &GameNode::init_load);
 	ClassDB::bind_method(D_METHOD("init_from_level", "meta_data"), &GameNode::init_from_level);
 	ClassDB::bind_method(D_METHOD("stop"), &GameNode::stop);
+	ClassDB::bind_method(D_METHOD("tick", "ticks"), &GameNode::tick, DEFVAL(1));
 	ClassDB::bind_method(D_METHOD("advance", "ticks"), &GameNode::advance);
+	ClassDB::bind_method(D_METHOD("set_auto_tick", "auto_tick"), &GameNode::set_auto_tick);
+	ClassDB::bind_method(D_METHOD("is_auto_tick_enabled"), &GameNode::is_auto_tick_enabled);
+	ClassDB::add_property("GameNode", PropertyInfo(Variant::BOOL, "auto_tick"), "set_auto_tick", "is_auto_tick_enabled");
 
 	ClassDB::bind_method(D_METHOD("get_avg_engine_times"), &GameNode::get_avg_engine_times);
 	ClassDB::bind_method(D_METHOD("get_entity_count"), &GameNode::get_entity_count);
@@ -589,15 +593,15 @@ void GameNode::loop()
 	}
 }
 
-void GameNode::_process(double delta_p)
-{
-	if(!_init)
-	{
+void GameNode::_process(double delta_p) {
+	if(!_init) {
 		return;
 	}
 	_elapsed += delta_p;
-	while(_elapsed >= _time_step)
-	{
+	if (!_auto_tick) {
+		return;
+	}
+	while(_elapsed >= _time_step) {
 		++_ticks;
 		_elapsed -= _time_step;
 	}

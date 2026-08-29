@@ -48,8 +48,10 @@ public:
 	void init_from_level(Dictionary const &meta_data);
 
 	void stop();
-	void tick(int32_t ticks=1) { _ticks += ticks; while(_ticks > 0) { std::this_thread::yield(); } }
+	void tick(int32_t ticks=1) { _ticks += ticks; while(_ticks > 0 && !_over) { std::this_thread::yield(); } }
 	void advance(int32_t ticks) { _ticks += ticks; }
+	void set_auto_tick(bool auto_tick) { _auto_tick = auto_tick; }
+	bool is_auto_tick_enabled() const { return _auto_tick; }
 
 	// All nodes
 	void init_nodes();
@@ -101,6 +103,7 @@ private:
 	std::thread * _loop_thread = nullptr;
 	bool _over = false;
 	bool _paused = false;
+	bool _auto_tick = true;
 
 	/// @brief mutex used to lock when the engine is progressing
 	std::mutex _progress_mutex;
