@@ -180,6 +180,21 @@ void ActionNode::setup() {
 							}
 						}
 					}
+				} else if (std::holds_alternative<KillUnitAction>(action)) {
+					KillUnitAction const &kill_action = std::get<KillUnitAction>(action);
+					if (kill_action.group.is_valid()) {
+						for (flecs::entity e : kill_action.group->get_entities()) {
+							if (e.is_valid() && e.is_alive()) {
+								if (e.has<Dummy>()) {
+									e.destruct();
+								} else if (e.has<octopus::HitPointMax>()) {
+									const auto& hp_max = e.get<octopus::HitPointMax>();
+									auto& layer = step_manager.get_last_layer().back().template get<octopus::HitPointStep>();
+									layer.add_step(e, { -10 * hp_max.qty });
+								}
+							}
+						}
+					}
 				}
 			}
 			_actions.clear();

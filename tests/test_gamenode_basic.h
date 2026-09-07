@@ -1,5 +1,6 @@
 #pragma once
 
+#include "testing/ActionNodeBasic.test.h"
 #include "testing/GameNodeBasic.test.h"
 #include "testing/Triggers.StatBuff.test.h"
 #include "testing/Triggers.test.h"
@@ -19,6 +20,13 @@ namespace godoctopus2_tests {
  * without crashing, and that basic world setup works correctly.
  */
 
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] ActionNode kill dummy") {
+	test_actionnode_kill_dummy();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] ActionNode kill non-dummy") {
+	test_actionnode_kill_non_dummy();
+}
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode instantiation") {
 	test_gamenode_basic();

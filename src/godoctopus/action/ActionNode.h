@@ -29,6 +29,10 @@ struct SpawnUnitsAction {
 	bool dummy = false;
 };
 
+struct KillUnitAction {
+	Ref<EntityGroup> group;
+};
+
 struct ModRuneAction {
 	String unit_type;
 	String rune_type;
@@ -47,7 +51,7 @@ struct HpModification {
 	int hp_delta = 0;
 };
 
-typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction, HpModification> Action;
+typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction, HpModification, KillUnitAction> Action;
 
 class ActionNode : public Node {
 	GDCLASS(ActionNode, Node)
@@ -92,6 +96,11 @@ public:
 			group->set_should_populate();
 			group->increase_expected_population(count);
 		}
+	}
+
+	void kill_units(Ref<EntityGroup> group) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		_actions.push_back(KillUnitAction{group});
 	}
 
 	void mod_hp(Ref<EntityGroup> group, int hp_delta) {
