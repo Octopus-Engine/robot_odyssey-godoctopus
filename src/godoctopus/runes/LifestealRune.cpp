@@ -13,7 +13,8 @@ void declare_lifesteal_rune(flecs::world &ecs) {
 	ecs.observer<LifestealRune const, godoctopus::CurrentStats const, trigger_module::DamageDealt const, octopus::Attack const, octopus::HitPoint>()
 		.template event<trigger_module::DamageDealt>()
 		.each([](flecs::entity e, const LifestealRune& rune, godoctopus::CurrentStats const &stats_set, trigger_module::DamageDealt const &damage_dealt, octopus::Attack const &atk, octopus::HitPoint &hp) {
-			hp.qty += std::max(atk.cst.damage * damage_dealt.amount, octopus::Fixed::One());
+			const auto lifesteal_value = godoctopus::compute_value(stats_set.stats, rune.base, rune.coef) / 100;
+			hp.qty += std::max(lifesteal_value * damage_dealt.amount, octopus::Fixed::One());
 		});
 
 	declare_trigger_buff<LifestealRune, false>(ecs);
