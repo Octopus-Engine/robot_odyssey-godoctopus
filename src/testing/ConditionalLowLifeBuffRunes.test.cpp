@@ -13,7 +13,7 @@ void test_gamenode_conditional_armor_buff_low_life_tier1() {
 	prefab->set_windup_x10(1);
 	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
-	prefab->set_special_x10(100);  // 10 special for scaling (x10)
+	prefab->set_affinity(10);  // 10 special for scaling (x10)
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
 
@@ -61,7 +61,7 @@ void test_gamenode_conditional_damage_buff_low_life_tier1() {
 	prefab->set_windup_x10(1);
 	prefab->set_speed(5000); // should set reload to 1 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
-	prefab->set_special_x10(100);  // 10 special for scaling (x10)
+	prefab->set_affinity(10);  // 10 special for scaling (x10)
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
 
@@ -109,7 +109,7 @@ void test_gamenode_conditional_reload_buff_low_life_tier1() {
 	prefab->set_windup_x10(1);
 	prefab->set_speed(10); // should set reload to 500 tick (formula is 5000/speed)
 	prefab->set_range_x10(30);
-	prefab->set_special_x10(100);  // 10 special for scaling (x10)
+	prefab->set_affinity(10);  // 10 special for scaling (x10)
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
 

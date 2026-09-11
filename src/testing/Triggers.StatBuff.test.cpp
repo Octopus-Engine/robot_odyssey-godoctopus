@@ -50,17 +50,17 @@ static double run_single_unit_rune_stat(
 
 static void setup_damage_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
 	prefab->set_damage(0);
-	prefab->set_special_x10(100); // special = 10
+	prefab->set_affinity(10); // special = 10
 }
 
 static void setup_armor_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
 	prefab->set_shield(0);
-	prefab->set_special_x10(100); // special = 10
+	prefab->set_affinity(10); // special = 10
 }
 
 static void setup_reload_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
 	prefab->set_speed(10); // should set reload to 500 tick (formula is 5000/speed)
-	prefab->set_special_x10(100); // special = 10
+	prefab->set_affinity(10); // special = 10
 }
 
 static double read_damage(Ref<godot::InfoProxyResource> const &proxy) { return proxy->get_damage(); }
@@ -127,7 +127,7 @@ void test_gamenode_damage_buff_rune_regular_flat_buff() {
 void test_gamenode_conditional_damage_buff_high_life_tier1() {
 	Ref<godot::UnitPrefab> prefab = create_default_prefab();
 	prefab->set_damage(0);
-	prefab->set_special_x10(100); // special = 10
+	prefab->set_affinity(10); // special = 10
 
 	GameNodeTestContextWithCustomPrefab context(prefab);
 	Ref<godot::EntityGroup> group = memnew(godot::EntityGroup);

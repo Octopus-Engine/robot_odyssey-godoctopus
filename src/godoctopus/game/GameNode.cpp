@@ -113,7 +113,6 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		.auto_override<custom_queue>()
 		.auto_override<Selected>()
 		.set_auto_override<octopus::Armor>({unit_prefab->get_shield()})
-		.set_auto_override<Special>({unit_prefab->get_special_x10()/10., unit_prefab->get_affinity_x10()/10.})
 		.set_auto_override<octopus::Collision>(collision)
 		.auto_override<octopus::PositionInTree>()
 		.set_auto_override<VatLibraryHandle>({unit_prefab->get_track_idx()})

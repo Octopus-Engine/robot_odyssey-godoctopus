@@ -40,10 +40,6 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, is_static);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, is_building);
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, destroyable);
-		ClassDB::add_property_group("UnitPrefab", "Rune");
-		// Rune
-		ADD_SIMPLE_PROP(UnitPrefab, INT, special_x10);
-		ADD_SIMPLE_PROP(UnitPrefab, INT, affinity_x10);
 		ClassDB::add_property_group("UnitPrefab", "Damage");
 		// Damage
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_enabled);
@@ -158,9 +154,6 @@ public:
 	SET_GET_PARAM_DEF(bool, is_static, false);
 	SET_GET_PARAM_DEF(bool, is_building, false);
 	SET_GET_PARAM_DEF(bool, destroyable, true);
-	// Rune
-	SET_GET_PARAM_DEF(int, special_x10, 0);
-	SET_GET_PARAM_DEF(int, affinity_x10, 10);
 	// Damage
 	SET_GET_PARAM_DEF(bool, attack_enabled, true);
 	SET_GET_PARAM_DEF(bool, attack_is_mechanical, true);

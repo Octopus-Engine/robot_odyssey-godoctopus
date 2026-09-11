@@ -61,7 +61,6 @@ static double run_single_unit_multi_rune_stat(
 
 static void setup_damage_upgrade_prefab(Ref<godot::UnitPrefab> &prefab) {
 	prefab->set_damage(0);
-	prefab->set_special_x10(100); // special = 10
 }
 
 static double read_damage(Ref<godot::InfoProxyResource> const &proxy) { return proxy->get_damage(); }
