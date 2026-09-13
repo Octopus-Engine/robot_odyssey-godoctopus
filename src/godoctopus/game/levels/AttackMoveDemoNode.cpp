@@ -27,7 +27,7 @@
 #include "godoctopus/game/ability/unit/EarbotSteam.h"
 #include "godoctopus/game/player_buffs/PlayerDamageBuff.h"
 #include "godoctopus/game/player_buffs/PlayerHealthBuff.h"
-#include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/on_screen_ui/HealthBarNode.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/projectile/HeavyfireBotProjectile.h"

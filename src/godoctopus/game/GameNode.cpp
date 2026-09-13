@@ -18,7 +18,8 @@
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/components/Explorator.h"
-#include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/on_screen_ui/HealthBarNode.h"
+#include "godoctopus/on_screen_ui/DamageTextNode.h"
 #include "godoctopus/projectile/CustomBasicProjectile.h"
 #include "godoctopus/components/building/Building.h"
 #include "godoctopus/components/types/Types.h"
@@ -121,6 +122,7 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 		.set_auto_override<ProjectileTrajectory>({unit_prefab->get_projectile_target()})
 		.auto_override<trigger_module::DamageDealt>()
 		.auto_override<trigger_module::DamageReceived>()
+		.auto_override<trigger_module::DamageText>()
 	;
 
 	if (unit_prefab->get_producer()) {

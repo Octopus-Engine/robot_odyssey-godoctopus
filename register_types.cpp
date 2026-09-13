@@ -19,7 +19,8 @@
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/game/levels/AttackMoveDemoNode.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
-#include "godoctopus/health_bar/HealthBarNode.h"
+#include "godoctopus/on_screen_ui/HealthBarNode.h"
+#include "godoctopus/on_screen_ui/DamageTextNode.h"
 #include "godoctopus/info/InfoNode.h"
 #include "godoctopus/info/VisionNode.h"
 #include "godoctopus/pickable/PickerNode.h"
@@ -60,6 +61,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::LevelNode>();
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
+	ClassDB::register_class<godot::DamageTextNode>();
 	ClassDB::register_class<godot::InfoNode>();
 	ClassDB::register_class<godot::StatsInfo>();
 	ClassDB::register_class<godot::AbilityCastableInfo>();

@@ -2,6 +2,7 @@
 
 #include "octopus/commands/basic/move/DamageModifier.hh"
 #include "godoctopus/trigger_module/TriggerTypes.h"
+#include "godoctopus/on_screen_ui/DamageTextNode.h"
 #include "StatsSet.h"
 
 namespace godoctopus {
@@ -40,6 +41,7 @@ struct StatsDamageModifier : public octopus::ArmorDamageModifier {
 			damage = octopus::ArmorDamageModifier::modify_attack(attacker, target, attack);
 		}
 		trigger_module::emit_damage_triggers(attacker, target, damage);
+		trigger_module::emit_damage_text_trigger(target, damage, false);
 		return damage;
 	}
 };
