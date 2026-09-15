@@ -166,13 +166,13 @@ void AttackMoveDemoNode::setup(Dictionary const &meta_data, GameNode &game) {
 			Dictionary const &health_buff_dict = buff_dict["HealthBuff"];
 			PlayerHealthBuff health_buff;
 			health_buff.hp_bonus = octopus::Fixed(int(health_buff_dict["hp_bonus"]));
-			p1.set<octopus::PlayerBuff<Unit, PlayerHealthBuff, octopus::HitPoint, octopus::HitPointMax>>({health_buff});
+			p1.set<octopus::PlayerBuff<Unit, PlayerHealthBuff, octopus::HitPoint, godoctopus::BaseStats>>({health_buff});
 		}
 		if (buff_dict.has("DamageBuff")) {
 			Dictionary const &damage_buff_dict = buff_dict["DamageBuff"];
 			PlayerDamageBuff damage_buff;
 			damage_buff.damage_bonus = octopus::Fixed(int(damage_buff_dict["damage_bonus"]));
-			p1.set<octopus::PlayerBuff<Unit, PlayerDamageBuff, octopus::Attack>>({damage_buff});
+			p1.set<octopus::PlayerBuff<Unit, PlayerDamageBuff, godoctopus::BaseStats>>({damage_buff});
 		}
 	}
 }
@@ -191,7 +191,7 @@ void AttackMoveDemoNode::system_setup(Dictionary const &meta_data, GameNode &gam
 	if (_particules) {
 		declare_death_particle_systems(ecs, _particules);
 	}
-	declare_triggers(ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library());
+	declare_triggers(ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library(), game.get_particle_library());
 }
 
 }

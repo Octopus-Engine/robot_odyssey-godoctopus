@@ -6,24 +6,26 @@
 #include "octopus/utils/FixedPoint.hh"
 #include "octopus/systems/player/buff/PlayerBuffSystems.hh"
 
+// For Unit
 #include "godoctopus/components/building/Building.h"
+#include "godoctopus/components/stats/StatsSet.h"
 
 struct PlayerDamageBuff {
 	octopus::Fixed damage_bonus = 0;
 
-	void apply(flecs::entity e, octopus::Attack &attack) const
+	void apply(flecs::entity e, godoctopus::BaseStats &stats) const
 	{
-		attack.cst.damage += damage_bonus;
+		stats.stats.values[godoctopus::Damage] += damage_bonus;
 	}
 
-	void revert(flecs::entity e, octopus::Attack &attack) const
+	void revert(flecs::entity e, godoctopus::BaseStats &stats) const
 	{
-		attack.cst.damage -= damage_bonus;
+		stats.stats.values[godoctopus::Damage] -= damage_bonus;
 	}
 };
 
 inline void declare_damage_buff_systems(flecs::world &ecs) {
 	ecs.component<PlayerDamageBuff>()
 		.member("damage_bonus", &PlayerDamageBuff::damage_bonus);
-	octopus::declare_player_buff_systems<Unit, PlayerDamageBuff, octopus::Attack>(ecs);
+	octopus::declare_player_buff_systems<Unit, PlayerDamageBuff, godoctopus::BaseStats>(ecs);
 }
