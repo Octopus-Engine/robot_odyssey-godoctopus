@@ -8,6 +8,7 @@
 #include "octopus/components/step/BuffComponentStep.hh"
 
 #include "godoctopus/components/types/Types.h"
+#include "godoctopus/display/particule/ParticleLibrary.h"
 #include "godoctopus/runes/AoeOnDeath.h"
 #include "godoctopus/runes/AoePulseRune.h"
 #include "godoctopus/runes/LifestealRune.h"
@@ -95,7 +96,7 @@ void declare_conditional_updatable_buff(flecs::world &ecs)
 	declare_updatable_buff<BuffType, ComponentType...>(ecs);
 }
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library)
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library, godot::ParticleLibrary *particle_library)
 {
 	ecs.component<trigger_module::Death>();
 	ecs.component<trigger_module::Attack>()
@@ -162,11 +163,11 @@ void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, cu
 	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier1, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(ecs);
 	declare_conditional_updatable_buff<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::BaseStats, octopus::HitPoint, octopus::HitPointMax>(ecs);
 
-	declare_aoe_on_death_runes(ecs, ctx);
+	declare_aoe_on_death_runes(ecs, ctx, particle_library);
 	// declare periodic pulse rune buff systems
 	declare_aoe_pulse_runes(ecs, ctx);
 	// declare lifesteal rune buff systems
-	declare_lifesteal_rune(ecs);
+	declare_lifesteal_rune(ecs, particle_library);
 
 	declare_temporary_buff_triggers(ecs, manager, ctx);
 

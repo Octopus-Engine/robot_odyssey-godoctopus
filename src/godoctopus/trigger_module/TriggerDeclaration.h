@@ -17,6 +17,7 @@
 
 namespace godot {
 	class SmartMMeshLibrary;
+	class ParticleLibrary;
 }
 
 struct AddRuneLoadOnAttack { int32_t level = 0; };
@@ -74,6 +75,6 @@ struct ConditionalDamageBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<C
 struct ConditionalReloadBuffHighLifeRuneTier1 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier1, godoctopus::StatsType::Speed, /* under = */ false> {};
 struct ConditionalReloadBuffHighLifeRuneTier2 : ConditionalStatBuffLowLifeRune<ConditionalReloadBuffHighLifeRuneTier2, godoctopus::StatsType::Speed, /* under = */ false> {};
 
-void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library = nullptr);
+void declare_triggers(flecs::world &ecs, octopus::PositionContext const &ctx, custom_step_manager &manager, godot::SmartMMeshLibrary *library = nullptr, godot::ParticleLibrary *particle_library = nullptr);
 
 void mod_rune_based_on_names(flecs::entity e, std::string const &type, std::string const &rune_name, bool add, ModRuneData const &rune_data);

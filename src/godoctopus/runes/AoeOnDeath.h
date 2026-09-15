@@ -2,6 +2,7 @@
 
 #include "flecs.h"
 #include "godoctopus/runes/ModRuneData.h"
+#include "godoctopus/display/particule/ParticleLibrary.h"
 
 #include "octopus_types.h"
 
@@ -14,7 +15,7 @@ struct AoeOnDeathInfo {
 struct DamageOnDeathRune : AoeOnDeathInfo {};
 struct HealOnDeathRune : AoeOnDeathInfo {};
 
-void declare_aoe_on_death_runes(flecs::world &ecs, octopus::PositionContext const &ctx);
+void declare_aoe_on_death_runes(flecs::world &ecs, octopus::PositionContext const &ctx, godot::ParticleLibrary *particle_library);
 void fill_aoe_on_death_info(AoeOnDeathInfo &info, ModRuneData const&data);
 
 template<typename RuneType>
