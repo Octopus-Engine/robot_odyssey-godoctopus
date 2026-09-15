@@ -443,7 +443,7 @@ void GameNode::init_from_level(Dictionary const &meta_data)
 				.add<PlayerUnitLoadout>()
 				.add<PlayerRuneLoadout>()
 				.add<octopus::PlayerUpgrade>();
-			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library());
+			declare_triggers(game.get_world().ecs, game.get_world().position_context, game.get_step_context().step_manager, game.get_smart_mmesh_library(), game.get_particle_library());
 		});
 	}
 	else
