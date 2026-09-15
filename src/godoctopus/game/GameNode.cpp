@@ -474,6 +474,7 @@ void GameNode::stop() {
 void GameNode::init_nodes()
 {
 	INIT_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
+	INIT_NODE_PATH(ParticleLibrary, particle_library);
 	INIT_NODE_PATH(ParticuleSmartMMesh, particules);
 	INIT_NODE_PATH(VatLibrary, vat_library);
 	INIT_NODE_PATH(PickerNode, picker_node);
@@ -501,6 +502,7 @@ int GameNode::get_particle_count() const {
 void GameNode::_bind_methods()
 {
 	BIND_NODE_PATH(GameNode, SmartMMeshLibrary, smart_mmesh_library);
+	BIND_NODE_PATH(GameNode, ParticleLibrary, particle_library);
 	BIND_NODE_PATH(GameNode, ParticuleSmartMMesh, particules);
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
 	BIND_NODE_PATH(GameNode, PickerNode, picker_node);

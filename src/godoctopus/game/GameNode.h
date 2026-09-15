@@ -10,6 +10,7 @@
 #include "vat/SmartMMeshLibrary.h"
 #include "vat/VatLibrary.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
+#include "godoctopus/display/particule/ParticleLibrary.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/pickable/PickerNode.h"
 
@@ -57,6 +58,7 @@ public:
 	void init_nodes();
 
 	SET_GET_NODE_PATH(SmartMMeshLibrary, smart_mmesh_library);
+	SET_GET_NODE_PATH(ParticleLibrary, particle_library);
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);

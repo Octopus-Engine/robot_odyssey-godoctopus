@@ -29,6 +29,11 @@ class ParticuleSmartResource : public Resource {
 	SET_GET_PARAM_DEF(double, scatter, 1.0);
 	SET_GET_PARAM_DEF(int, count, 8);
 	SET_GET_PARAM_DEF(double, time_spread, 1.0);
+	SET_GET_PARAM_DEF(bool, use_color_as_instance_data, true);
+	SET_GET_PARAM(Ref<Curve>, instance_data_r);
+	SET_GET_PARAM(Ref<Curve>, instance_data_g);
+	SET_GET_PARAM(Ref<Curve>, instance_data_b);
+	SET_GET_PARAM(Ref<Curve>, instance_data_a);
 public:
 	ParticuleSmartResource() {}
 	~ParticuleSmartResource() {}
@@ -41,12 +46,18 @@ public:
 		ADD_SIMPLE_PROP(ParticuleSmartResource, FLOAT, scatter);
 		ADD_SIMPLE_PROP(ParticuleSmartResource, INT, count);
 		ADD_SIMPLE_PROP(ParticuleSmartResource, FLOAT, time_spread);
+		ADD_SIMPLE_PROP(ParticuleSmartResource, BOOL, use_color_as_instance_data);
+		ADD_OBJECT_PROP(ParticuleSmartResource, Curve, instance_data_r);
+		ADD_OBJECT_PROP(ParticuleSmartResource, Curve, instance_data_g);
+		ADD_OBJECT_PROP(ParticuleSmartResource, Curve, instance_data_b);
+		ADD_OBJECT_PROP(ParticuleSmartResource, Curve, instance_data_a);
 	}
 };
 
 class ParticuleSmartMMesh : public MultiMeshInstance3D {
 	GDCLASS(ParticuleSmartMMesh, MultiMeshInstance3D)
 
+	SET_GET_PARAM(String, key);
 	SET_GET_PARAM(Ref<ParticuleSmartResource>, default_resource);
 	SET_GET_PARAM(TypedArray<ParticuleSmartResource>, particule_resources);
 
@@ -56,6 +67,7 @@ public:
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
 	static void _bind_methods() {
+		ADD_SIMPLE_PROP(ParticuleSmartMMesh, STRING, key);
 		ADD_OBJECT_PROP(ParticuleSmartMMesh, ParticuleSmartResource, default_resource);
 		ADD_ARRAY_OBJECT_PROP(ParticuleSmartMMesh, ParticuleSmartResource, particule_resources);
 

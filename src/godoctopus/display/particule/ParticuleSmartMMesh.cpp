@@ -45,7 +45,17 @@ void ParticuleSmartMMesh::_process(double delta) {
 				transform.origin = d.position[i];
 				mesh->set_instance_transform(instance_id, transform);
 				mesh->set_instance_color(instance_id, d.color);
-				mesh->set_instance_custom_data(instance_id, d.color);
+				if (current_resource->get_use_color_as_instance_data()) {
+					mesh->set_instance_custom_data(instance_id, d.color);
+				} else {
+					Color custom_data(
+						current_resource->get_instance_data_r()->sample_baked(lifetime),
+						current_resource->get_instance_data_g()->sample_baked(lifetime),
+						current_resource->get_instance_data_b()->sample_baked(lifetime),
+						current_resource->get_instance_data_a()->sample_baked(lifetime)
+					);
+					mesh->set_instance_custom_data(instance_id, custom_data);
+				}
 
 				++instance_id;
 				// one instance is enough to keep this data

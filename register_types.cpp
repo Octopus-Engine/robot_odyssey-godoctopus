@@ -14,6 +14,7 @@
 #include "godoctopus/custom_signal/CustomSignalNode.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/display/particule/ParticleOrchestrator.h"
+#include "godoctopus/display/particule/ParticleLibrary.h"
 #include "godoctopus/entity_group/EntityGroup.h"
 #include "godoctopus/entity_group/SelectionGroup.h"
 #include "godoctopus/game/GameNode.h"
@@ -57,6 +58,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ParticuleSmartResource>();
 	ClassDB::register_class<godot::ParticuleTypeResource>();
 	ClassDB::register_class<godot::ParticleOrchestrator>();
+	ClassDB::register_class<godot::ParticleLibrary>();
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
 	ClassDB::register_class<godot::LevelNode>();
 	ClassDB::register_class<godot::GameNode>();
