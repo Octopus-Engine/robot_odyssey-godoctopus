@@ -19,7 +19,7 @@ struct StatsDamageModifier : public octopus::ArmorDamageModifier {
 		const auto *attacker_damage_type = attacker.try_get<DamageType>();
 
 		octopus::Fixed damage = octopus::Fixed::Zero();
-		if (attacker_stats && target_stats && attacker_damage_type) {
+		if (attacker_stats && target_stats && attacker_damage_type && attack.cst.damage > octopus::Fixed::Zero()) {
 			octopus::Fixed power = attacker_stats->stats.values[StatsType::MechanicalPower];
 			octopus::Fixed armor = target_stats->stats.values[StatsType::MechanicalArmor];
 			if (!attacker_damage_type->is_mechanical) {
@@ -37,11 +37,12 @@ struct StatsDamageModifier : public octopus::ArmorDamageModifier {
 				damage = attack.cst.damage * (1 / (1 - delta/100));
 			}
 			damage = std::max(octopus::Fixed::One(), damage - target_stats->stats.values[StatsType::Shield]);
+			// Only emit damage triggers if the damage is greater than zero
+			trigger_module::emit_damage_triggers(attacker, target, damage);
 		} else {
 			damage = octopus::ArmorDamageModifier::modify_attack(attacker, target, attack);
 		}
-		trigger_module::emit_damage_triggers(attacker, target, damage);
-		trigger_module::emit_damage_text_trigger(target, damage, false);
+		trigger_module::emit_damage_text_trigger(target, damage, damage < octopus::Fixed::Zero());
 		return damage;
 	}
 };
