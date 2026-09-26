@@ -11,9 +11,11 @@
 
 namespace octopus::triangulation {
 
+constexpr size_t NO_INDEX = 99999;
+
 struct Triangle {
 	std::array<size_t, 3> vertices;
-	std::array<size_t, 3> opposites {99999, 99999, 99999}; // indices of opposite triangles, 99999 if no opposite
+	std::array<size_t, 3> opposites {NO_INDEX, NO_INDEX, NO_INDEX}; // indices of opposite triangles, 99999 if no opposite
 };
 
 size_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2);
@@ -130,14 +132,15 @@ class TriangulationNode : public Node2D {
 	// Will be called by Godot when the class is registered
 	// Use this to add properties to your class
 	static void _bind_methods();
+	int get_no_index() const { return static_cast<int>(octopus::triangulation::NO_INDEX); }
 protected:
 	void _notification(int p_notification);
 
 	void draw_triangle(size_t triangle_index, Color color);
 
 	octopus::triangulation::Triangulation triangulation;
-	size_t selected_triangle_index = -1;
-	size_t selected_vertex_index = -1;
+	size_t selected_triangle_index = octopus::triangulation::NO_INDEX;
+	size_t selected_vertex_index = octopus::triangulation::NO_INDEX;
 };
 
 }

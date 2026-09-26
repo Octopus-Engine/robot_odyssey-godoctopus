@@ -17,21 +17,21 @@ size_t find_opposite_vertex_idx(Triangle const &tri1, Triangle const &tri2) {
 			return edge1;
 		}
 	}
-	return -1;
+	return NO_INDEX;
 }
 
 void connect_opposites(Triangulation &triangulation, size_t tri1, size_t tri2) {
 	size_t edge1 = find_opposite_vertex_idx(triangulation.triangles[tri1], triangulation.triangles[tri2]);
-	if (edge1 != -1) {
+	if (edge1 != NO_INDEX) {
 		triangulation.triangles[tri1].opposites[edge1] = tri2;
 	}
 	size_t edge2 = find_opposite_vertex_idx(triangulation.triangles[tri2], triangulation.triangles[tri1]);
-	if (edge2 != -1) {
+	if (edge2 != NO_INDEX) {
 		triangulation.triangles[tri2].opposites[edge2] = tri1;
 	}
 }
 
-}
+} // namespace octopus::triangulation
 
 namespace godot {
 
@@ -53,18 +53,18 @@ void TriangulationNode::_draw() {
 	for (size_t i = 0; i < triangulation.triangles.size(); ++i) {
 		draw_triangle(i, Color(0, 1, 0));
 	}
-	if (selected_triangle_index >= 0) {
+	if (selected_triangle_index != octopus::triangulation::NO_INDEX) {
 		draw_triangle(selected_triangle_index, Color(1, 0, 0));
 	}
 
-	if (selected_vertex_index >= 0) {
+	if (selected_vertex_index != octopus::triangulation::NO_INDEX) {
 		octopus::Vector const &v = triangulation.vertices[selected_vertex_index];
 		draw_circle(Vector2(v.x.to_double(), v.y.to_double()), 5, Color(1, 1, 0));
 
-		if (selected_triangle_index >= 0) {
+		if (selected_triangle_index != octopus::triangulation::NO_INDEX) {
 			for (size_t edge = 0; edge < 3; ++edge) {
 				if (triangulation.triangles[selected_triangle_index].vertices[edge] == selected_vertex_index &&
-					triangulation.triangles[selected_triangle_index].opposites[edge] != -1) {
+					triangulation.triangles[selected_triangle_index].opposites[edge] != octopus::triangulation::NO_INDEX) {
 					draw_triangle(triangulation.triangles[selected_triangle_index].opposites[edge], Color(0, 0, 1));
 				}
 			}
@@ -93,7 +93,7 @@ void TriangulationNode::select_vertex(Vector2 const &point) {
 }
 
 void TriangulationNode::unselect_vertex() {
-	selected_vertex_index = -1;
+	selected_vertex_index = octopus::triangulation::NO_INDEX;
 	queue_redraw();
 }
 
@@ -103,6 +103,7 @@ void TriangulationNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("select_triangle", "point"), &TriangulationNode::select_triangle);
 	ClassDB::bind_method(D_METHOD("select_vertex", "point"), &TriangulationNode::select_vertex);
 	ClassDB::bind_method(D_METHOD("unselect_vertex"), &TriangulationNode::unselect_vertex);
+	ClassDB::bind_method(D_METHOD("get_no_index"), &TriangulationNode::get_no_index);
 }
 
 void TriangulationNode::_notification(int p_notification) {
@@ -119,4 +120,4 @@ void TriangulationNode::_notification(int p_notification) {
 	}
 }
 
-}
+} // namespace godot
