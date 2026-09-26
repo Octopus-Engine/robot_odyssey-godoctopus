@@ -170,6 +170,7 @@ octopus2_sources = [
     "./src/octopus2/src/octopus/src/octopus/systems/position/PositionSystems.cc",
     "./src/octopus2/src/octopus/src/octopus/systems/Systems.cc",
     "./src/octopus2/src/octopus/src/octopus/triangulation/DelaunayTriangulation.cc",
+    "./src/octopus2/src/octopus/src/octopus/triangulation/DelaunayTriangulationNavigator.cc",
     "./src/octopus2/src/octopus/src/octopus/utils/aabb/aabb.cc",
     "./src/octopus2/src/octopus/src/octopus/utils/FixedPoint.cc",
     "./src/octopus2/src/octopus/src/octopus/utils/Grid.cc",
