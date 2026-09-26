@@ -2,6 +2,8 @@
 
 #include "core/object/class_db.h"
 
+// #define DEBUG_CALLS
+
 namespace godot {
 
 void DelaunayTriangulationNode::draw_triangle(octopus::Triangle const &tri, Color fill_color, Color outline_color) {
@@ -38,13 +40,38 @@ void DelaunayTriangulationNode::_draw() {
 }
 
 int DelaunayTriangulationNode::add_point(Vector2 const &point) {
+	#ifdef DEBUG_CALLS
+		std::cout<<"tri.addPoint(" << point.x << ", " << point.y << ");" << std::endl;
+	#endif
 	octopus::PointIdx idx = _triangulation.addPoint(octopus::Fixed(point.x), octopus::Fixed(point.y));
 	queue_redraw();
 	return static_cast<int>(idx);
 }
 
 void DelaunayTriangulationNode::remove_point(int idx) {
+	#ifdef DEBUG_CALLS
+		std::cout<<"tri.removePoint(" << idx << ");" << std::endl;
+	#endif
 	_triangulation.removePoint(static_cast<octopus::PointIdx>(idx));
+	queue_redraw();
+}
+
+void DelaunayTriangulationNode::remove_points(TypedArray<int> const &indices) {
+	#ifdef DEBUG_CALLS
+		std::cout<<"tri.removePoints({";
+		for (int i = 0; i < indices.size(); ++i) {
+			std::cout<<(int)indices[i];
+			if (i < indices.size() - 1) {
+				std::cout<<", ";
+			}
+		}
+		std::cout<<"});" << std::endl;
+	#endif
+	std::vector<octopus::PointIdx> points_to_remove;
+	for (int i = 0; i < indices.size(); ++i) {
+		points_to_remove.push_back(static_cast<octopus::PointIdx>(indices[i]));
+	}
+	_triangulation.removePoints(points_to_remove);
 	queue_redraw();
 }
 
@@ -76,11 +103,17 @@ int DelaunayTriangulationNode::get_closest_point_idx(double x, double y) const {
 }
 
 void DelaunayTriangulationNode::add_constrained_edge(int a, int b) {
+	#ifdef DEBUG_CALLS
+		std::cout<<"tri.addConstrainedEdge(" << a << ", " << b << ");" << std::endl;
+	#endif
 	_triangulation.addConstrainedEdge(static_cast<octopus::PointIdx>(a), static_cast<octopus::PointIdx>(b));
 	queue_redraw();
 }
 
 void DelaunayTriangulationNode::remove_constrained_edge(int a, int b) {
+	#ifdef DEBUG_CALLS
+		std::cout<<"tri.removeConstrainedEdge(" << a << ", " << b << ");" << std::endl;
+	#endif
 	_triangulation.removeConstrainedEdge(static_cast<octopus::PointIdx>(a), static_cast<octopus::PointIdx>(b));
 	queue_redraw();
 }
@@ -104,9 +137,23 @@ void DelaunayTriangulationNode::clear_holes() {
 	queue_redraw();
 }
 
+TypedArray<Vector2> DelaunayTriangulationNode::find_path(Vector2 const &start, Vector2 const &end) const {
+	std::vector<octopus::Vector> path = _navigator.compute_funnel(
+		octopus::Vector(start.x, start.y),
+		octopus::Vector(end.x, end.y)
+	);
+	TypedArray<Vector2> result;
+	result.resize(static_cast<int>(path.size()));
+	for (size_t i = 0; i < path.size(); ++i) {
+		result[i] = Vector2(path[i].x.to_double(), path[i].y.to_double());
+	}
+	return result;
+}
+
 void DelaunayTriangulationNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("add_point", "point"), &DelaunayTriangulationNode::add_point);
 	ClassDB::bind_method(D_METHOD("remove_point", "idx"), &DelaunayTriangulationNode::remove_point);
+	ClassDB::bind_method(D_METHOD("remove_points", "indices"), &DelaunayTriangulationNode::remove_points);
 	ClassDB::bind_method(D_METHOD("get_point_count"), &DelaunayTriangulationNode::get_point_count);
 	ClassDB::bind_method(D_METHOD("get_closest_point_idx", "x", "y"), &DelaunayTriangulationNode::get_closest_point_idx);
 	ClassDB::bind_method(D_METHOD("add_constrained_edge", "a", "b"), &DelaunayTriangulationNode::add_constrained_edge);
@@ -114,6 +161,7 @@ void DelaunayTriangulationNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("is_constrained", "a", "b"), &DelaunayTriangulationNode::is_constrained);
 	ClassDB::bind_method(D_METHOD("mark_hole", "indices"), &DelaunayTriangulationNode::mark_hole);
 	ClassDB::bind_method(D_METHOD("clear_holes"), &DelaunayTriangulationNode::clear_holes);
+	ClassDB::bind_method(D_METHOD("find_path", "start", "end"), &DelaunayTriangulationNode::find_path);
 }
 
 void DelaunayTriangulationNode::_notification(int p_notification) {
