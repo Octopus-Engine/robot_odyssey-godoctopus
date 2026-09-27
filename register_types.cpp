@@ -33,7 +33,9 @@
 #include "godoctopus/resource_producer/ResourceNodeEventBus.h"
 #include "godoctopus/event_bus/ProductionNodeEventBus.h"
 #include "godoctopus/triangulation/TriangulationNode.h"
-#include "godoctopus/triangulation/DelaunayTriangulationNode.h"
+#include "godoctopus/triangulation/DelaunayTriangulationApiNode.h"
+#include "godoctopus/triangulation/DelaunayTriangulationDisplayNode.h"
+#include "godoctopus/triangulation/DelaunayTriangulationDisplay3DNode.h"
 
 void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	if (p_level != ModuleInitializationLevel::MODULE_INITIALIZATION_LEVEL_SCENE) {
@@ -89,7 +91,9 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ResourceNodeEventBus>();
 	ClassDB::register_class<godot::ProductionNodeEventBus>();
 	ClassDB::register_class<godot::TriangulationNode>();
-	ClassDB::register_class<godot::DelaunayTriangulationNode>();
+	ClassDB::register_class<godot::DelaunayTriangulationApiNode>();
+	ClassDB::register_class<godot::DelaunayTriangulationDisplayNode>();
+	ClassDB::register_class<godot::DelaunayTriangulationDisplay3DNode>();
 	// Demo Nodes
 	ClassDB::register_class<godot::AttackMoveDemoNode>();
 

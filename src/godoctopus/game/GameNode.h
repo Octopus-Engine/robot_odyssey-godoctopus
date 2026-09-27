@@ -78,6 +78,9 @@ public:
 	void _process(double delta_p);
 
 	octopus::WorldContext<custom_step_manager>& get_world() { return _world; }
+	// Callers must hold get_progress_mutex() while accessing either reference.
+	octopus::DelaunayTriangulation &get_delaunay_triangulation() { return _world.triangulation; }
+	octopus::DelaunayTriangulationNavigator const &get_delaunay_triangulation_navigator() const { return _world.triangulation_navigator; }
 	octopus::DefaultStepContext<custom_variant>& get_step_context() { return step_context; }
 	octopus::Input<custom_variant, custom_step_manager> * get_input_controller() { return _input_container; }
 	Ref<UnitPrefab> get_prefab(const String &prefab_name) const;

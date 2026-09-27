@@ -1,19 +1,30 @@
 #pragma once
 
-#include "scene/2d/node_2d.h"
+#include "scene/main/node.h"
 
 #include "octopus/triangulation/DelaunayTriangulation.hh"
-#include "octopus/triangulation/DelaunayTriangulationNavigator.hh"
+#include "godot_tools.h"
+
+#include <vector>
 
 namespace godot {
 
-class DelaunayTriangulationNode : public Node2D {
-	GDCLASS(DelaunayTriangulationNode, Node2D)
+class GameNode;
 
-	DelaunayTriangulationNode() : _triangulation(), _navigator(_triangulation) {}
+class DelaunayTriangulationApiNode : public Node {
+	GDCLASS(DelaunayTriangulationApiNode, Node)
 
-	void _draw();
+	SET_GET_NODE_PATH(GameNode, game_node);
 
+public:
+	struct RenderTriangle {
+		Vector2 points[3];
+		bool hole;
+	};
+
+	std::vector<RenderTriangle> get_render_triangles() const;
+
+private:
 	// ── Point management ────────────────────────────────────────────────────
 	int add_point(Vector2 const &point);
 	void remove_point(int idx);
@@ -37,12 +48,6 @@ class DelaunayTriangulationNode : public Node2D {
 
 protected:
 	void _notification(int p_notification);
-
-private:
-	void draw_triangle(octopus::Triangle const &tri, Color fill_color, Color outline_color);
-
-	octopus::DelaunayTriangulation _triangulation;
-	octopus::DelaunayTriangulationNavigator _navigator;
 };
 
 } // namespace godot
