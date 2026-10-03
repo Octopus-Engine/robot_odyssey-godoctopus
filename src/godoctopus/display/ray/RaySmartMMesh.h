@@ -27,7 +27,8 @@ class RaySmartResource : public Resource {
 	SET_GET_PARAM(Ref<Curve>, progress);
 	SET_GET_PARAM(Ref<Curve>, size);
 	SET_GET_PARAM(Ref<Curve>, width);
-	SET_GET_PARAM(Ref<Curve>, instance_data);
+	SET_GET_PARAM(Ref<Curve>, instance_data_1);
+	SET_GET_PARAM(Ref<Curve>, instance_data_2);
 public:
 	RaySmartResource() {}
 	~RaySmartResource() {}
@@ -39,7 +40,8 @@ public:
 		ADD_OBJECT_PROP(RaySmartResource, Curve, progress);
 		ADD_OBJECT_PROP(RaySmartResource, Curve, size);
 		ADD_OBJECT_PROP(RaySmartResource, Curve, width);
-		ADD_OBJECT_PROP(RaySmartResource, Curve, instance_data);
+		ADD_OBJECT_PROP(RaySmartResource, Curve, instance_data_1);
+		ADD_OBJECT_PROP(RaySmartResource, Curve, instance_data_2);
 	}
 };
 

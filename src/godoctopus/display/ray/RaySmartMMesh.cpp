@@ -44,8 +44,8 @@ void RaySmartMMesh::_process(double delta) {
 			Color custom_data(
 				current_resource->get_progress()->sample_baked(lifetime),
 				current_resource->get_size()->sample_baked(lifetime)/d.size,
-				current_resource->get_instance_data()->sample_baked(lifetime),
-				0.
+				current_resource->get_instance_data_1()->sample_baked(lifetime),
+				current_resource->get_instance_data_2()->sample_baked(lifetime)
 			);
 			mesh->set_instance_custom_data(instance_id, custom_data);
 
