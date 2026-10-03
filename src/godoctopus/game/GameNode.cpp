@@ -13,6 +13,7 @@
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/rally_point/RallyPoint.hh"
 #include "octopus/components/advanced/production/queue/ProductionQueue.hh"
+#include "octopus/triangulation/DelaunayPathFindingCache.hh"
 
 #include "godoctopus/death/DeathParticle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
@@ -339,6 +340,13 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	octopus::AbilityTemplateLibrary<custom_step_manager> cast_library;
 	ecs.set(std::move(cast_library));
 
+	_world.triangulation.addPoint(-100, -100);
+	_world.triangulation.addPoint(100, -100);
+	_world.triangulation.addPoint(100, 100);
+	_world.triangulation.addPoint(-100, 100);
+	ecs.set<octopus::DelaunayPathFindingCache>(octopus::DelaunayPathFindingCache(_world.triangulation_navigator));
+	auto cache = ecs.try_get_mut<octopus::DelaunayPathFindingCache>();
+	cache->declare_cache_update_system(ecs, _world.time_stats);
 	// grid set up
 	// delete _grid;
 	// _grid = new octopus::Grid(200,200, 4);
@@ -359,9 +367,9 @@ void GameNode::init_world(Dictionary const &meta_data, std::function<void(Dictio
 	//
 	// Systems
 	//
-	ecs.add<PathFindingCache>();
-	// ecs.try_get_mut<PathFindingCache>()->declare_sync_system(ecs, _grid);
-	ecs.try_get_mut<PathFindingCache>()->declare_cache_update_system(ecs, _world.time_stats);
+	// ecs.add<PathFindingCache>();
+	// // ecs.try_get_mut<PathFindingCache>()->declare_sync_system(ecs, _grid);
+	// ecs.try_get_mut<PathFindingCache>()->declare_cache_update_system(ecs, _world.time_stats);
 
 	set_up_systems<DefaultStepContext<custom_variant> >(_world, step_context, 100);
 	declare_proximity_custom_signal_system(ecs, _world.position_context);

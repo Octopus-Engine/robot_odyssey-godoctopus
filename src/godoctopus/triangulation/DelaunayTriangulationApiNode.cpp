@@ -21,7 +21,7 @@ std::vector<DelaunayTriangulationApiNode::RenderTriangle> DelaunayTriangulationA
 				render_triangle.hole = hole;
 				for (size_t i = 0; i < 3; ++i) {
 					octopus::TriPoint const &point = triangulation.point(tri.v[i]);
-					render_triangle.points[i] = Vector2(point.x, point.y);
+					render_triangle.points[i] = Vector2(octopus::to_fixed(point.x).to_double(), octopus::to_fixed(point.y).to_double());
 				}
 				triangles.push_back(render_triangle);
 			}
