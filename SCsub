@@ -247,6 +247,8 @@ godoctopus2_sources = [
     "./src/godoctopus/display/particule/ParticleOrchestrator.cpp",
     "./src/godoctopus/display/particule/ParticleLibrary.cpp",
     "./src/godoctopus/display/particule/ParticuleSmartMMesh.cpp",
+    "./src/godoctopus/display/ray/RayLibrary.cpp",
+    "./src/godoctopus/display/ray/RaySmartMMesh.cpp",
     "./src/godoctopus/pickable/Pickable.cpp",
     "./src/godoctopus/pickable/PickerNode.cpp",
     "./src/godoctopus/production/UnitProduction.cpp",

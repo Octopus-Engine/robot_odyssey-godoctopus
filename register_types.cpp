@@ -15,6 +15,8 @@
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
 #include "godoctopus/display/particule/ParticleOrchestrator.h"
 #include "godoctopus/display/particule/ParticleLibrary.h"
+#include "godoctopus/display/ray/RayLibrary.h"
+#include "godoctopus/display/ray/RaySmartMMesh.h"
 #include "godoctopus/entity_group/EntityGroup.h"
 #include "godoctopus/entity_group/SelectionGroup.h"
 #include "godoctopus/game/GameNode.h"
@@ -62,6 +64,9 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::ParticleOrchestrator>();
 	ClassDB::register_class<godot::ParticleLibrary>();
 	ClassDB::register_class<godot::ParticuleSmartMMesh>();
+	ClassDB::register_class<godot::RayLibrary>();
+	ClassDB::register_class<godot::RaySmartMMesh>();
+	ClassDB::register_class<godot::RaySmartResource>();
 	ClassDB::register_class<godot::LevelNode>();
 	ClassDB::register_class<godot::GameNode>();
 	ClassDB::register_class<godot::HealthBarNode>();
