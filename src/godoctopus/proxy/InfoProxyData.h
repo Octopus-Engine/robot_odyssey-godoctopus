@@ -89,6 +89,12 @@ public:
 	}
 
 	flecs::entity entity;
+
+	/// Out of model - Internal use only
+
+	// Production & cast actions
+	std::vector<flecs::string_view> available_productions;
+	std::vector<flecs::string_view> available_casts;
 };
 
 }

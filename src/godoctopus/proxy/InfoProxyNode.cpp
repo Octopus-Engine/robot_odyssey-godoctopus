@@ -170,15 +170,13 @@ TypedArray<InfoAvailableActionResource> InfoProxyNode::get_available_actions_fro
 			continue;
 		}
 
-		entity.each<octopus::Caster>([&append_action, entity](flecs::entity ability) {
-			append_action(InfoAvailableActionResource::ACTION_CAST, ability.name().c_str(), entity);
-		});
-		entity.each<octopus::ProductionQueue>([&append_action, entity](flecs::entity production) {
-			// Only append the production if player enables it
-			if (octopus::satisfy_player_production_requirements(entity, production.name().c_str())) {
-				append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production.name().c_str(), entity);
-			}
-		});
+		const InfoProxyData &infos_data = info_it->second;
+		for (const auto & cast_name : infos_data.available_casts) {
+			append_action(InfoAvailableActionResource::ACTION_CAST, cast_name.c_str(), entity);
+		}
+		for (const auto & production_name : infos_data.available_productions) {
+			append_action(InfoAvailableActionResource::ACTION_PRODUCTION, production_name.c_str(), entity);
+		}
 	}
 
 	return result;
@@ -338,6 +336,19 @@ void InfoProxyNode::setup() {
 				else {
 					infos_data.set_production_queue(TypedArray<InfoProductionQueueResource>());
 				}
+
+				// TODO may need to use a cache and only compute this once per entity
+				infos_data.available_casts.clear();
+				e.each<octopus::Caster>([&infos_data](flecs::entity ability) {
+					infos_data.available_casts.push_back(ability.name());
+				});
+				infos_data.available_productions.clear();
+				e.each<octopus::ProductionQueue>([&infos_data, &e](flecs::entity production) {
+					// Only append the production if player enables it
+					if (octopus::satisfy_player_production_requirements(e, production.name().c_str())) {
+						infos_data.available_productions.push_back(production.name());
+					}
+				});
 			});
 		});
 }
