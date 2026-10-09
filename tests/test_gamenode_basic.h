@@ -1,6 +1,7 @@
 #pragma once
 
 #include "testing/ActionNodeBasic.test.h"
+#include "testing/DelaunayPathFindingCache.test.h"
 #include "testing/GameNodeBasic.test.h"
 #include "testing/Triggers.StatBuff.test.h"
 #include "testing/Triggers.test.h"
@@ -26,6 +27,14 @@ TEST_CASE("[SceneTree][Node][Editor][godoctopus2] ActionNode kill dummy") {
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] ActionNode kill non-dummy") {
 	test_actionnode_kill_non_dummy();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] ActionNode places non-overlapping buildings and removes their holes") {
+	test_actionnode_place_building_grid_and_remove_hole();
+}
+
+TEST_CASE("[SceneTree][Node][Editor][godoctopus2] Delaunay path cache invalidates after mesh changes") {
+	test_delaunay_path_cache_invalidates_after_mesh_change();
 }
 
 TEST_CASE("[SceneTree][Node][Editor][godoctopus2] GameNode instantiation") {

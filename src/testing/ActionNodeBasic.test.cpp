@@ -4,9 +4,11 @@
 #include "scene/main/scene_tree.h"
 #include "scene/main/window.h"
 #include "godoctopus/game/GameNode.h"
+#include "godoctopus/components/building/Building.h"
 #include "godoctopus/action/ActionNode.h"
 #include "godoctopus/proxy/InfoProxyNode.h"
 #include "testing/ActionNodeBasic.test.h"
+#include "octopus/components/basic/position/Position.hh"
 
 struct ActionNodeTestContext {
 	godot::GameNode *game_node = nullptr;
@@ -20,6 +22,13 @@ struct ActionNodeTestContext {
 		auto prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
 		prefab->set_prefab_name("gunbot");
 		game_node->get_unit_prefabs().push_back(prefab);
+
+		auto building_prefab = Ref<godot::UnitPrefab>(memnew(godot::UnitPrefab));
+		building_prefab->set_prefab_name("tallbot");
+		building_prefab->set_is_building(true);
+		building_prefab->set_is_static(true);
+		building_prefab->set_ray_x100(100);
+		game_node->get_unit_prefabs().push_back(building_prefab);
 
 		action_node = memnew(godot::ActionNode);
 		action_node->set_ref_game_node(NodePath("/root/GameNode"));
@@ -83,4 +92,78 @@ void test_actionnode_kill_non_dummy() {
 		auto const &proxy_map = locker.proxy_map;
 		CHECK(proxy_map.size() == 0);
 	}
+}
+
+void test_actionnode_place_building_grid_and_remove_hole() {
+	godot::BuildingFootprintManager footprint_manager;
+	std::vector<godot::BuildingFootprintManager::GridCell> pending = {
+		{-2, -2},
+		{0, 0},
+		{2, 2},
+	};
+	footprint_manager.reserve_cells(1, pending);
+	std::set<godot::BuildingFootprintManager::GridCell> pending_snapshot =
+		footprint_manager.get_pending_cells(-1, -1, 1, 1);
+	CHECK(pending_snapshot.size() == 1);
+	CHECK(pending_snapshot.count({0, 0}) == 1);
+	footprint_manager.release_cells(1);
+	CHECK(footprint_manager.get_pending_cells(-1, -1, 1, 1).empty());
+
+	ActionNodeTestContext context;
+
+	Dictionary initial_preview = context.action_node->get_building_placement_preview("tallbot", Vector2(0.4, 0.4));
+	CHECK(initial_preview["valid"].booleanize());
+	CHECK(Vector2(initial_preview["position"]) == Vector2(0, 0));
+
+	std::size_t initial_point_count = 0;
+	{
+		std::lock_guard<std::mutex> lock(context.game_node->get_progress_mutex());
+		initial_point_count = context.game_node->get_delaunay_triangulation().pointCount();
+	}
+	int64_t const first_request = context.action_node->place_building("tallbot", Vector2(0.4, 0.4), 1);
+	int64_t const second_request = context.action_node->place_building("tallbot", Vector2(0.49, 0.49), 1);
+	CHECK(first_request > 0);
+	CHECK(second_request > first_request);
+	context.game_node->tick(2);
+
+	flecs::entity placed_building;
+	int building_count = 0;
+	bool snapped_to_grid = false;
+	{
+		std::lock_guard<std::mutex> lock(context.game_node->get_progress_mutex());
+		flecs::world &ecs = context.game_node->get_world().ecs;
+		ecs.query<Building const, octopus::Position const>().each(
+			[&](flecs::entity entity, Building const &, octopus::Position const &position) {
+				++building_count;
+				placed_building = entity;
+				snapped_to_grid = position.pos.x.to_int() == 0 && position.pos.y.to_int() == 0;
+			});
+		CHECK(!context.game_node->get_delaunay_triangulation().holeTriangles().empty());
+	}
+	CHECK(building_count == 1);
+	CHECK(snapped_to_grid);
+
+	Array occupied_cells = context.action_node->get_building_occupied_cells(Vector2i(-2, -2), Vector2i(2, 2));
+	CHECK(!occupied_cells.is_empty());
+	bool found_center_cell = false;
+	for (int i = 0; i < occupied_cells.size(); ++i) {
+		if (Vector2i(occupied_cells[i]) == Vector2i(0, 0)) {
+			found_center_cell = true;
+			break;
+		}
+	}
+	CHECK(found_center_cell);
+	Dictionary occupied_preview = context.action_node->get_building_placement_preview("tallbot", Vector2(0.4, 0.4));
+	CHECK(!occupied_preview["valid"].booleanize());
+
+	{
+		std::lock_guard<std::mutex> lock(context.game_node->get_progress_mutex());
+		placed_building.destruct();
+		CHECK(context.game_node->get_delaunay_triangulation().holeTriangles().empty());
+		CHECK(context.game_node->get_delaunay_triangulation().pointCount() == initial_point_count);
+	}
+
+	CHECK(context.action_node->get_building_occupied_cells(Vector2i(-2, -2), Vector2i(2, 2)).is_empty());
+	Dictionary cleared_preview = context.action_node->get_building_placement_preview("tallbot", Vector2(0.4, 0.4));
+	CHECK(cleared_preview["valid"].booleanize());
 }
