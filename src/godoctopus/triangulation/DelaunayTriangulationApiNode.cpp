@@ -151,6 +151,19 @@ void DelaunayTriangulationApiNode::mark_hole(Array const &indices) {
 	}
 }
 
+void DelaunayTriangulationApiNode::remove_hole(Array const &indices) {
+	ERR_FAIL_NULL(_game_node);
+	std::vector<octopus::PointIdx> polygon;
+	polygon.reserve(static_cast<std::size_t>(indices.size()));
+	for (int i = 0; i < indices.size(); ++i) {
+		polygon.push_back(static_cast<octopus::PointIdx>(static_cast<int>(indices[i])));
+	}
+	{
+		std::lock_guard<std::mutex> lock(_game_node->get_progress_mutex());
+		_game_node->get_delaunay_triangulation().removeHole(polygon);
+	}
+}
+
 void DelaunayTriangulationApiNode::clear_holes() {
 	ERR_FAIL_NULL(_game_node);
 	{
@@ -188,6 +201,7 @@ void DelaunayTriangulationApiNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("remove_constrained_edge", "a", "b"), &DelaunayTriangulationApiNode::remove_constrained_edge);
 	ClassDB::bind_method(D_METHOD("is_constrained", "a", "b"), &DelaunayTriangulationApiNode::is_constrained);
 	ClassDB::bind_method(D_METHOD("mark_hole", "indices"), &DelaunayTriangulationApiNode::mark_hole);
+	ClassDB::bind_method(D_METHOD("remove_hole", "indices"), &DelaunayTriangulationApiNode::remove_hole);
 	ClassDB::bind_method(D_METHOD("clear_holes"), &DelaunayTriangulationApiNode::clear_holes);
 	ClassDB::bind_method(D_METHOD("find_path", "start", "end"), &DelaunayTriangulationApiNode::find_path);
 }

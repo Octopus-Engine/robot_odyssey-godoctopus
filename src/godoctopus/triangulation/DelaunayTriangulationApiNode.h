@@ -39,6 +39,7 @@ private:
 
 	// ── Holes ────────────────────────────────────────────────────────────────
 	void mark_hole(Array const &indices);
+	void remove_hole(Array const &indices);
 	void clear_holes();
 
 	// ── Navigation ───────────────────────────────────────────────────────────
