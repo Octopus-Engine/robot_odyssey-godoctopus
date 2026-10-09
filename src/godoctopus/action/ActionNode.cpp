@@ -1,13 +1,16 @@
 #include "ActionNode.h"
 
 #include <cmath>
+#include <set>
 
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/position/PositionInTree.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
+#include "octopus/triangulation/DelaunayTriangulation.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
 #include "godoctopus/components/Dummy.h"
+#include "godoctopus/components/building/Building.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 
 namespace godot {
@@ -26,6 +29,16 @@ void ActionNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("mod_hp", "group", "hp_delta"), &ActionNode::mod_hp);
 	ClassDB::bind_method(D_METHOD("mod_rune", "unit_type", "rune_type", "player_idx", "rune_data", "add"), &ActionNode::mod_rune);
 	ClassDB::bind_method(D_METHOD("spawn_prop", "position", "ray_x100"), &ActionNode::spawn_prop);
+	ClassDB::bind_method(D_METHOD("place_building", "prefab", "position", "team"), &ActionNode::place_building);
+	ClassDB::bind_method(D_METHOD("snap_building_position", "position"), &ActionNode::snap_building_position);
+	ClassDB::bind_method(D_METHOD("get_building_occupied_cells", "min_cell", "max_cell"), &ActionNode::get_building_occupied_cells);
+	ClassDB::bind_method(D_METHOD("get_building_placement_preview", "prefab", "position"), &ActionNode::get_building_placement_preview);
+
+	ADD_SIGNAL(MethodInfo("building_placement_finished",
+		PropertyInfo(Variant::INT, "request_id"),
+		PropertyInfo(Variant::BOOL, "success"),
+		PropertyInfo(Variant::VECTOR2, "position"),
+		PropertyInfo(Variant::STRING, "reason")));
 }
 
 static ModRuneData createRuneData(Dictionary rune_data) {
@@ -57,6 +70,130 @@ void ActionNode::mod_rune(String const &unit_type, String const &rune_type, int 
 	_actions.push_back(ModRuneAction{unit_type, rune_type, player_idx, createRuneData(rune_data), add});
 }
 
+int64_t ActionNode::place_building(String const &prefab, Vector2 const &position, int team) {
+	ERR_FAIL_NULL_V(_game_node, -1);
+	int64_t const request_id = _next_placement_request_id.fetch_add(1);
+	std::lock_guard<std::mutex> lock(_mutex);
+	_actions.push_back(PlaceBuildingAction{prefab, position, team, request_id});
+	return request_id;
+}
+
+void ActionNode::emit_placement_result(int64_t request_id, bool success, Vector2 const &position, String const &reason) {
+	call_deferred("emit_signal", "building_placement_finished", request_id, success, position, reason);
+}
+
+Vector2i ActionNode::snap_building_position(Vector2 const &position) const {
+	if (!std::isfinite(position.x) || !std::isfinite(position.y)) {
+		return Vector2i();
+	}
+	return Vector2i(
+		static_cast<int32_t>(BuildingFootprintManager::snap_to_grid(octopus::Fixed(position.x))),
+		static_cast<int32_t>(BuildingFootprintManager::snap_to_grid(octopus::Fixed(position.y)))
+	);
+}
+
+Array ActionNode::get_building_occupied_cells(Vector2i const &min_cell, Vector2i const &max_cell) const {
+	Array cells;
+	ERR_FAIL_NULL_V(_game_node, cells);
+	if (min_cell.x > max_cell.x || min_cell.y > max_cell.y) {
+		return cells;
+	}
+
+	std::set<BuildingFootprintManager::GridCell> occupied_cells;
+	{
+		std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
+		flecs::world &ecs = _game_node->get_world().ecs;
+		flecs::query<Building const, octopus::Position const, octopus::Collision const> building_query =
+			ecs.query<Building const, octopus::Position const, octopus::Collision const>();
+		building_query.each([&](flecs::entity, Building const &, octopus::Position const &position, octopus::Collision const &collision) {
+			for (BuildingFootprintManager::GridCell const &cell : BuildingFootprintManager::get_grid_cells(
+				position.pos.x,
+				position.pos.y,
+				collision.ray)) {
+				if (cell.first >= min_cell.x && cell.first <= max_cell.x &&
+					cell.second >= min_cell.y && cell.second <= max_cell.y) {
+					occupied_cells.insert(cell);
+				}
+			}
+		});
+		std::set<BuildingFootprintManager::GridCell> const pending_cells =
+			_building_footprint_manager.get_pending_cells(min_cell.x, min_cell.y, max_cell.x, max_cell.y);
+		occupied_cells.insert(pending_cells.begin(), pending_cells.end());
+	}
+
+	for (BuildingFootprintManager::GridCell const &cell : occupied_cells) {
+		cells.push_back(Vector2i(static_cast<int32_t>(cell.first), static_cast<int32_t>(cell.second)));
+	}
+	return cells;
+}
+
+Dictionary ActionNode::get_building_placement_preview(String const &prefab_name, Vector2 const &position) const {
+	Dictionary preview;
+	preview["valid"] = false;
+	preview["reason"] = "invalid position";
+	preview["position"] = position;
+	preview["cells"] = Array();
+	preview["radius"] = 0.0;
+	if (!std::isfinite(position.x) || !std::isfinite(position.y)) {
+		return preview;
+	}
+	ERR_FAIL_NULL_V(_game_node, preview);
+	std::lock_guard<std::mutex> lock_progress(_game_node->get_progress_mutex());
+
+	Ref<UnitPrefab> prefab = _game_node->get_prefab(prefab_name);
+	if (!prefab.is_valid()) {
+		preview["reason"] = "unknown prefab";
+		return preview;
+	}
+	if (!prefab->get_is_building()) {
+		preview["reason"] = "prefab is not a building";
+		return preview;
+	}
+	int const ray_x100 = prefab->get_ray_x100();
+	if (ray_x100 < 2) {
+		preview["reason"] = "building footprint is too small";
+		return preview;
+	}
+
+	Vector2i const snapped = snap_building_position(position);
+	Vector2 const snapped_position(snapped.x, snapped.y);
+	octopus::Fixed const radius = octopus::Fixed(ray_x100) / 100;
+	std::vector<BuildingFootprintManager::GridCell> const requested_cells =
+		BuildingFootprintManager::get_grid_cells(
+			octopus::Fixed(snapped.x),
+			octopus::Fixed(snapped.y),
+			radius);
+	Array cells;
+	for (BuildingFootprintManager::GridCell const &cell : requested_cells) {
+		cells.push_back(Vector2i(static_cast<int32_t>(cell.first), static_cast<int32_t>(cell.second)));
+	}
+	preview["position"] = snapped_position;
+	preview["cells"] = cells;
+	preview["radius"] = static_cast<double>(ray_x100) / 100.0;
+
+	flecs::world &ecs = _game_node->get_world().ecs;
+	flecs::query<Building const, octopus::Position const, octopus::Collision const> building_query =
+		ecs.query<Building const, octopus::Position const, octopus::Collision const>();
+	std::set<BuildingFootprintManager::GridCell> occupied_cells;
+	building_query.each([&occupied_cells](
+		flecs::entity,
+		Building const &,
+		octopus::Position const &building_position,
+		octopus::Collision const &collision
+	) {
+		for (BuildingFootprintManager::GridCell const &cell : BuildingFootprintManager::get_grid_cells(
+			building_position.pos.x,
+			building_position.pos.y,
+			collision.ray)) {
+			occupied_cells.insert(cell);
+		}
+	});
+	bool const valid = !_building_footprint_manager.overlaps(requested_cells, occupied_cells);
+	preview["valid"] = valid;
+	preview["reason"] = valid ? String() : String("building footprint cells are occupied");
+	return preview;
+}
+
 void ActionNode::setup() {
 	if(!_game_node) {
 		return;
@@ -65,12 +202,22 @@ void ActionNode::setup() {
 	flecs::world& ecs = _game_node->get_world().ecs;
 	auto& step_manager = _game_node->get_step_context().step_manager;
 	flecs::query<octopus::PlayerInfo> query_player = ecs.query<octopus::PlayerInfo>();
+	flecs::query<Building const, octopus::Position const, octopus::Collision const> building_query =
+		ecs.query<Building const, octopus::Position const, octopus::Collision const>();
+	ecs.component<RuntimePlacedBuilding>();
+	ecs.observer<RuntimePlacedBuilding>()
+		.event(flecs::OnRemove)
+	.each([this](flecs::entity entity, RuntimePlacedBuilding const &) {
+		if (_game_node) {
+			_building_footprint_manager.remove_building(entity.id(), _game_node->get_delaunay_triangulation());
+		}
+	});
 	// flecs::query<RuneLoad<DefaultRune>> query_rune = ecs.query<RuneLoad<DefaultRune>>();
 
 	ecs.system<>()
 		.immediate()
 		.kind(ecs.entity(InputPhase))
-		.run([this, ecs, &step_manager, query_player](flecs::iter&) {
+		.run([this, ecs, &step_manager, query_player, building_query](flecs::iter&) {
 			// handle actions
 			std::lock_guard<std::mutex> lock(_mutex);
 			for (auto action : _actions) {
@@ -132,6 +279,98 @@ void ActionNode::setup() {
 						octopus::Logger::getDebug() << "adding ent creation"<<std::endl;
 						ecs.try_get_mut<octopus::StepEntityManager>()->get_last_layer().push_back(step_l);
 					}
+				}
+				else if (std::holds_alternative<PlaceBuildingAction>(action)) {
+					PlaceBuildingAction const &place_action = std::get<PlaceBuildingAction>(action);
+					Vector2 result_position = place_action.position;
+					auto reject = [this, &place_action, &result_position](String const &reason) {
+						emit_placement_result(place_action.request_id, false, result_position, reason);
+					};
+
+					if (!std::isfinite(place_action.position.x) || !std::isfinite(place_action.position.y)) {
+						reject("invalid position");
+						continue;
+					}
+					Ref<UnitPrefab> prefab = _game_node->get_prefab(place_action.prefab);
+					if (!prefab.is_valid()) {
+						reject("unknown prefab");
+						continue;
+					}
+					if (!prefab->get_is_building()) {
+						reject("prefab is not a building");
+						continue;
+					}
+					int const ray_x100 = prefab->get_ray_x100();
+					if (ray_x100 < 2) {
+						reject("building footprint is too small");
+						continue;
+					}
+
+					int64_t const grid_x = BuildingFootprintManager::snap_to_grid(octopus::Fixed(place_action.position.x));
+					int64_t const grid_y = BuildingFootprintManager::snap_to_grid(octopus::Fixed(place_action.position.y));
+					result_position = Vector2(static_cast<double>(grid_x), static_cast<double>(grid_y));
+					octopus::Fixed const center_x(grid_x);
+					octopus::Fixed const center_y(grid_y);
+					octopus::Fixed const radius = octopus::Fixed(ray_x100) / 100;
+					std::vector<BuildingFootprintManager::GridCell> const requested_cells =
+						BuildingFootprintManager::get_grid_cells(center_x, center_y, radius);
+
+					std::set<BuildingFootprintManager::GridCell> occupied_cells;
+					building_query.each([&occupied_cells](
+						flecs::entity,
+						Building const &,
+						octopus::Position const &position,
+						octopus::Collision const &collision
+					) {
+						for (BuildingFootprintManager::GridCell const &cell : BuildingFootprintManager::get_grid_cells(
+							position.pos.x,
+							position.pos.y,
+							collision.ray)) {
+							occupied_cells.insert(cell);
+						}
+					});
+					if (_building_footprint_manager.overlaps(requested_cells, occupied_cells)) {
+						reject("building footprint cells are occupied");
+						continue;
+					}
+
+					octopus::StepEntityManager *entity_manager = ecs.try_get_mut<octopus::StepEntityManager>();
+					if (!entity_manager) {
+						reject("entity creation manager is unavailable");
+						continue;
+					}
+					_building_footprint_manager.reserve_cells(place_action.request_id, requested_cells);
+					std::string const type = place_action.prefab.utf8().get_data();
+					octopus::Position position;
+					position.pos.x = center_x;
+					position.pos.y = center_y;
+					octopus::EntityCreationStep step;
+					step.set_up_function = [
+						this,
+						ecs,
+						position,
+						type,
+						place_action,
+						result_position,
+						ray_x100
+					](flecs::entity new_ent, flecs::world const &) {
+						custom_queue queue;
+						new_ent
+							.set<octopus::Position>(position)
+							.is_a(ecs.prefab(type.c_str()))
+							.set<octopus::Team>({static_cast<uint16_t>(place_action.team)})
+							.set<octopus::PlayerAppartenance>({static_cast<uint32_t>(place_action.team)})
+							.set<custom_queue>(queue)
+							.add<RuntimePlacedBuilding>();
+						_building_footprint_manager.add_building(
+							new_ent,
+							result_position,
+							ray_x100,
+							_game_node->get_delaunay_triangulation());
+						_building_footprint_manager.release_cells(place_action.request_id);
+					};
+					entity_manager->get_last_layer().push_back(step);
+					emit_placement_result(place_action.request_id, true, result_position, String());
 				}
 				else if (std::holds_alternative<ModRuneAction>(action)) {
 					ModRuneAction const &mod_rune_action = std::get<ModRuneAction>(action);

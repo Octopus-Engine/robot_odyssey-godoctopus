@@ -1,8 +1,7 @@
 #pragma once
 
-#include <map>
-
 #include "scene/main/node.h"
+#include "core/math/vector2i.h"
 
 // octopus2
 #include "octopus/world/WorldContext.hh"
@@ -12,9 +11,14 @@
 #include "godoctopus/game/GameNode.h"
 #include "godoctopus/pickable/Pickable.h"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
+#include "godoctopus/action/BuildingFootprintManager.h"
 
+#include <atomic>
+#include <cstdint>
+#include <utility>
 #include <variant>
 #include <mutex>
+#include <vector>
 
 namespace godot {
 
@@ -46,12 +50,21 @@ struct SpawnPropAction {
 	int ray_x100 = 100;
 };
 
+struct PlaceBuildingAction {
+	String prefab;
+	Vector2 position;
+	int team = 0;
+	int64_t request_id = 0;
+};
+
 struct HpModification {
 	Ref<EntityGroup> group;
 	int hp_delta = 0;
 };
 
-typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction, HpModification, KillUnitAction> Action;
+struct RuntimePlacedBuilding {};
+
+typedef std::variant<SpawnUnitsAction, ModRuneAction, SpawnPropAction, PlaceBuildingAction, HpModification, KillUnitAction> Action;
 
 class ActionNode : public Node {
 	GDCLASS(ActionNode, Node)
@@ -115,14 +128,23 @@ public:
 		_actions.push_back(SpawnPropAction{position, ray_x100});
 	}
 
+	int64_t place_building(String const &prefab, Vector2 const &position, int team);
+	Vector2i snap_building_position(Vector2 const &position) const;
+	Array get_building_occupied_cells(Vector2i const &min_cell, Vector2i const &max_cell) const;
+	Dictionary get_building_placement_preview(String const &prefab, Vector2 const &position) const;
+
 	void setup();
 
 	void init_nodes();
 protected:
 	void _notification(int p_notification);
 private:
+	void emit_placement_result(int64_t request_id, bool success, Vector2 const &position, String const &reason);
+
 	std::mutex _mutex;
 	std::vector<Action> _actions;
+	std::atomic_int64_t _next_placement_request_id{1};
+	BuildingFootprintManager _building_footprint_manager;
 };
 
 }
