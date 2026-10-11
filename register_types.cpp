@@ -49,6 +49,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	// VAT
 	ClassDB::register_class<godot::SmartMMeshLibrary>();
 	ClassDB::register_class<godot::SmartMultiMeshInstance>();
+	ClassDB::register_class<godot::SmartMultiMeshCloneInstance>();
 	ClassDB::register_class<godot::VatLibrary>();
 	ClassDB::register_class<godot::VatMultiMeshInstance>();
 	ClassDB::register_class<godot::VatAnimationTrack>();

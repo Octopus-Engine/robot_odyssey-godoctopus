@@ -145,9 +145,88 @@ void SmartMultiMeshInstance::_notification(int p_notification) {
 		case NOTIFICATION_READY: {
 			_ready();
 			set_process(true);
-			set_physics_process(true);
+			set_physics_process(false);
 		} break;
 	}
 }
 
+void SmartMultiMeshCloneInstance::_ready() {
+	if (!get_multimesh().is_valid()) {
+		set_multimesh(memnew(MultiMesh));
+	}
+	auto mesh = get_multimesh();
+	mesh->set_instance_count(0);
+	mesh->set_transform_format(MultiMesh::TRANSFORM_3D);
+	mesh->set_use_colors(true);
+	mesh->set_use_custom_data(true);
+
+	INIT_NODE_PATH(SmartMultiMeshInstance, ref_smart_mesh);
 }
+
+void SmartMultiMeshCloneInstance::_process(double /*delta*/) {
+	if (!_ref_smart_mesh) {
+		return;
+	}
+	_ref_smart_mesh->lock();
+	const auto &ref_data = _ref_smart_mesh->data;
+	const auto &old_transform = _ref_smart_mesh->old_transform;
+	const auto &new_transform = _ref_smart_mesh->new_transform;
+
+	auto mesh = get_multimesh();
+	if (ref_data.size() >= get_multimesh()->get_instance_count()) {
+		mesh->set_instance_count(2*ref_data.size());
+	}
+	if (mesh.is_valid() && _ref_smart_mesh->time_step > 0.) {
+		int instance_id = 0;
+		ref_data.for_each_const([&instance_id] (SmartMultiMeshInstance::MultiMeshData const &) {
+			++instance_id;
+		});
+		mesh->set_visible_instance_count(instance_id);
+		instance_id = 0;
+		ref_data.for_each_const([&] (SmartMultiMeshInstance::MultiMeshData const &d, size_t i) {
+			// transform
+			Transform3D transform = old_transform[i].interpolate_with(new_transform[i], std::clamp(_ref_smart_mesh->elapsed_time / _ref_smart_mesh->time_step, 0., 1.));
+			transform.origin.y = 0.;
+			// Get the current Y rotation in radians
+			real_t y_rotation = transform.basis.get_euler().y;
+			// Reset basis to identity (clears X, Y, Z rotation and scale)
+			transform.basis = Basis();
+			// Or if you want to preserve scale, use orthonormalization / re-apply scale:
+			// real_t current_scale = transform.basis.get_scale();
+			// Rotate back around the Y axis
+			transform.basis = transform.basis.rotated(Vector3(0, 1, 0), y_rotation);
+			mesh->set_instance_transform(instance_id, transform);
+			// color info
+			mesh->set_instance_color(instance_id, d.color);
+			mesh->set_instance_custom_data(instance_id, d.outline_color);
+			++instance_id;
+		});
+	}
+	_ref_smart_mesh->unlock();
+}
+
+void SmartMultiMeshCloneInstance::_bind_methods() {
+	BIND_NODE_PATH(SmartMultiMeshCloneInstance, SmartMultiMeshInstance, ref_smart_mesh);
+
+	ADD_SIMPLE_PROP(SmartMultiMeshCloneInstance, BOOL, preserve_scale);
+	ADD_SIMPLE_PROP(SmartMultiMeshCloneInstance, BOOL, preserve_rotation_xz);
+	ADD_SIMPLE_PROP(SmartMultiMeshCloneInstance, BOOL, preserve_translation_y);
+}
+
+void SmartMultiMeshCloneInstance::_notification(int p_notification) {
+	switch (p_notification) {
+		case NOTIFICATION_PROCESS: {
+			_process(get_process_delta_time());
+		} break;
+		case NOTIFICATION_PHYSICS_PROCESS: {
+			//_physics_process(get_physics_process_delta_time());
+		} break;
+		case NOTIFICATION_READY: {
+			_ready();
+			set_process(true);
+			set_physics_process(false);
+		} break;
+	}
+}
+
+} // namespace godoctopus2

@@ -136,6 +136,34 @@ protected:
 
 	/// @brief Target transform for each instance in the mesh.
 	std::vector<Transform3D> new_transform;
+
+	friend class SmartMultiMeshCloneInstance;
 };
 
-}
+class SmartMultiMeshCloneInstance : public MultiMeshInstance3D {
+	GDCLASS(SmartMultiMeshCloneInstance, MultiMeshInstance3D)
+public:
+	~SmartMultiMeshCloneInstance() {}
+
+	SET_GET_NODE_PATH(SmartMultiMeshInstance, ref_smart_mesh);
+
+	SET_GET_PARAM_DEF(bool, preserve_scale, true);
+	SET_GET_PARAM_DEF(bool, preserve_rotation_xz, true);
+	SET_GET_PARAM_DEF(bool, preserve_translation_y, true);
+
+	/// @brief Initializes the underlying MultiMesh and prepares instance storage.
+	void _ready();
+
+	/// @brief Advances the interpolation state and writes the current transforms to the mesh.
+	/// @param delta Elapsed game time since the previous frame.
+	void _process(double delta);
+protected:
+	/// @brief Registers the Godot-exposed methods and properties with the engine.
+	static void _bind_methods();
+
+	/// @brief Handles Godot lifecycle callbacks for ready and process notifications.
+	/// @param p_notification Notification type sent by Godot.
+	void _notification(int p_notification);
+};
+
+} // namespace godoctopus2
