@@ -15,7 +15,8 @@ void SmartMMeshLibrary::_ready() {
 
 void SmartMMeshLibrary::swap_transforms(int64_t time_stamp) {
 	for (auto &mmesh : vec_multi_mesh) {
-		if ( vec_multi_mesh.back()->get_refresh_factor() > 0 && time_stamp % mmesh->get_refresh_factor() == 0) {
+		int const refresh_factor = mmesh->get_refresh_factor();
+		if (refresh_factor > 0 && time_stamp % refresh_factor == 0) {
 			mmesh->swap_transforms();
 		}
 	}
