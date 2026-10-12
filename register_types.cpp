@@ -10,6 +10,7 @@
 #include "vat/VatMultiMeshInstance.h"
 #include "vat/VatAnimationTrack.h"
 #include "godoctopus/action/ActionNode.h"
+#include "godoctopus/action/BuildingFootprintGrid.h"
 #include "godoctopus/command/CommandNode.h"
 #include "godoctopus/custom_signal/CustomSignalNode.h"
 #include "godoctopus/display/particule/ParticuleSmartMMesh.h"
@@ -59,6 +60,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::PickerNode>();
 	ClassDB::register_class<godot::CustomSignalNode>();
 	ClassDB::register_class<godot::ActionNode>();
+	ClassDB::register_class<godot::BuildingFootprintGrid>();
 	ClassDB::register_class<godot::CommandNode>();
 	ClassDB::register_class<godot::ParticuleSmartResource>();
 	ClassDB::register_class<godot::ParticuleTypeResource>();

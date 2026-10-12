@@ -210,6 +210,7 @@ godoctopus2_sources = [
     "./src/godoctopus/trigger_module/SpawnUnitRune.cpp",
     "./src/godoctopus/trigger_module/UndyingRune.cpp",
     "./src/godoctopus/trigger_module/TriggerDeclaration.cpp",
+    "./src/godoctopus/action/BuildingFootprintGrid.cpp",
     "./src/godoctopus/action/BuildingFootprintManager.cpp",
     "./src/godoctopus/action/ActionNode.cpp",
     "./src/godoctopus/command/CommandNode.cpp",
