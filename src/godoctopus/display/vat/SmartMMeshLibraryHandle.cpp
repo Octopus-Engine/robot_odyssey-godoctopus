@@ -4,11 +4,16 @@
 
 #include "octopus/systems/phases/Phases.hh"
 #include "octopus/components/basic/position/Position.hh"
+#include "octopus/components/basic/projectile/Projectile.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
 #include "utils/log/Log.hh"
 
 #include "octopus_types.h"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
+
+using octopus::Collision;
+using octopus::Position;
+using octopus::Projectile;
 
 void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLibrary *library, godot::VatLibrary *vat_library,
 	int32_t selection_multi_mesh_id) {
@@ -37,16 +42,23 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 		.member("z", &RelativePosition::z)
 	;
 
-	using fcn_projectile = std::function<void(godot::SmartMultiMeshInstance*, SmartMMeshLibraryHandle const &, ProjectileSmartMMesh&)>;
-	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SmartMMeshLibraryHandle, ProjectileSmartMMesh>(
+	using fcn_projectile = std::function<void(godot::SmartMultiMeshInstance*, SmartMMeshLibraryHandle const &, Projectile const &, ProjectileSmartMMesh&)>;
+	declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SmartMMeshLibraryHandle, Projectile const, ProjectileSmartMMesh>(
 		ecs,
 		library,
-		fcn_projectile([](godot::SmartMultiMeshInstance* mmesh, SmartMMeshLibraryHandle const &handle, ProjectileSmartMMesh &proj) {
+		fcn_projectile([](godot::SmartMultiMeshInstance* mmesh, SmartMMeshLibraryHandle const &handle, Projectile const &proj_data, ProjectileSmartMMesh &proj) {
 			int instance_id = handle.instance_id;
 			mmesh->set_color(instance_id, Color(proj.r.to_double(), proj.g.to_double(), proj.b.to_double(), proj.a.to_double()).srgb_to_linear());
 			Transform3D transform = mmesh->get_old_instance_transform(instance_id);
 			transform.scale_basis(proj.scale.to_double()*Vector3(1,1,1));
 			transform.origin.y = WORLD_SCALE * proj.up.to_double();
+			if (!mmesh->get_disable_rotation()) {
+				// compute rotation
+				Vector3 forward = transform.xform(Vector3(-1,0,0)) - transform.origin;
+				Vector3 translation = Vector3(proj_data.pos_target.x.to_double(), transform.origin.y, proj_data.pos_target.y.to_double()) - transform.origin;
+				float delta_angle = translation.signed_angle_to(forward, Vector3(0,1,0));
+				transform.basis = transform.basis.rotated_local(Vector3(0,1,0), -delta_angle);
+			}
 			mmesh->set_instance_transform(instance_id, transform);
 		})
 	);
@@ -71,14 +83,14 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 
 	{
 		// Setup function to scale based on the ray collision
-		std::function<void(godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, octopus::Collision const &)> setup =
-			[](godot::SmartMultiMeshInstance* mmesh, SelectionSmartMeshHandle const & handle, octopus::Collision const & collision) {
+		std::function<void(godot::SmartMultiMeshInstance*, SelectionSmartMeshHandle const &, Collision const &)> setup =
+			[](godot::SmartMultiMeshInstance* mmesh, SelectionSmartMeshHandle const & handle, Collision const & collision) {
 				int instance_id = handle.instance_id;
 				Transform3D transform = mmesh->get_old_instance_transform(instance_id);
 				transform.scale_basis(collision.ray.to_double()*3.*Vector3(1,1,1));
 				mmesh->set_instance_transform(instance_id, transform);
 			};
-		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle, octopus::Collision const>(ecs, library,
+		declare_displayer_instance_handling_systems<godot::SmartMMeshLibrary, godot::SmartMultiMeshInstance, SelectionSmartMeshHandle, Collision const>(ecs, library,
 			setup);
 	}
 
@@ -128,10 +140,10 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 
 
 	// update all positions
-	ecs.system<octopus::Position const, SmartMMeshLibraryHandle const, ProjectileSmartMMesh const>()
+	ecs.system<Position const, SmartMMeshLibraryHandle const, ProjectileSmartMMesh const>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.multi_threaded()
-		.each([&ecs, library](flecs::entity e, octopus::Position const &pos, SmartMMeshLibraryHandle const &handle, ProjectileSmartMMesh const &proj) {
+		.each([&ecs, library](flecs::entity e, Position const &pos, SmartMMeshLibraryHandle const &handle, ProjectileSmartMMesh const &proj) {
 			if(handle.instance_id < 0 ) { return; }
 			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
 			double time = 1.;
@@ -160,20 +172,20 @@ void declare_smart_mmesh_library_systems(flecs::world &ecs, godot::SmartMMeshLib
 	}
 
 	// update all positions for selection
-	ecs.system<octopus::Position const, SelectionSmartMeshHandle const>()
+	ecs.system<Position const, SelectionSmartMeshHandle const>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.multi_threaded()
-		.each([&ecs, library](flecs::entity e, octopus::Position const &pos, SelectionSmartMeshHandle const &handle) {
+		.each([&ecs, library](flecs::entity e, Position const &pos, SelectionSmartMeshHandle const &handle) {
 			if(handle.instance_id < 0 ) { return; }
 			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
 			mmesh->set_instance_new_position(handle.instance_id, WORLD_SCALE * Vector3(real_t(octopus::to_double(pos.pos.x)), 0., real_t(octopus::to_double(pos.pos.y))));
 		});
 
 	// update all positions for vision
-	ecs.system<octopus::Position const, VisionSmartMeshHandle const>()
+	ecs.system<Position const, VisionSmartMeshHandle const>()
 		.kind(ecs.entity(DisplaySyncPhase))
 		.multi_threaded()
-		.each([&ecs, library](flecs::entity e, octopus::Position const &pos, VisionSmartMeshHandle const &handle) {
+		.each([&ecs, library](flecs::entity e, Position const &pos, VisionSmartMeshHandle const &handle) {
 			if(handle.instance_id < 0 ) { return; }
 
 			godot::SmartMultiMeshInstance *mmesh = library->get_multi_mesh(handle.multi_mesh_id);
