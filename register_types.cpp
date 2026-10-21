@@ -77,6 +77,7 @@ void initialize_godoctopus2_module(ModuleInitializationLevel p_level) {
 	ClassDB::register_class<godot::InfoNode>();
 	ClassDB::register_class<godot::StatsInfo>();
 	ClassDB::register_class<godot::AbilityCastableInfo>();
+	ClassDB::register_class<godot::CommandQueueInfo>();
 	ClassDB::register_class<godot::InfoTargetResource>();
 	ClassDB::register_class<godot::InfoProductionQueueResource>();
 	ClassDB::register_class<godot::InfoAvailableActionResource>();

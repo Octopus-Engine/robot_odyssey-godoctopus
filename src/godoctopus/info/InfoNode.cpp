@@ -5,6 +5,7 @@
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/player/Team.hh"
 #include "octopus/commands/basic/move/AttackCommand.hh"
+#include "octopus/commands/basic/move/MoveCommand.hh"
 #include "octopus/world/step/StepEntityManager.hh"
 #include "octopus/world/ability/AbilityTemplateLibrary.hh"
 #include "godoctopus/trigger_module/TriggerDeclaration.h"
@@ -24,6 +25,9 @@ void InfoNode::_bind_methods() {
 	ClassDB::bind_method(D_METHOD("query_stats_info", "group", "stats"), &InfoNode::query_stats_info);
 	ClassDB::bind_method(D_METHOD("query_ability_castable", "group", "ability_name", "out_info"), &InfoNode::query_ability_castable);
 
+	ClassDB::bind_method(D_METHOD("query_command_queue", "group", "out_info"), &InfoNode::query_command_queue);
+
+	ADD_SIGNAL(MethodInfo("command_queue_ready"));
 	ADD_SIGNAL(MethodInfo("is_ready"));
 	ADD_SIGNAL(MethodInfo("ability_castable_ready"));
 }
@@ -133,6 +137,50 @@ void InfoNode::setup() {
 				// clear query
 				_ability_castable_info = Ref<AbilityCastableInfo>();
 				_ability_castable_entities.clear();
+			}
+
+			// command queue query
+			if (_command_queue_info.is_valid()) {
+				PackedVector3Array starts, targets;
+				PackedInt32Array counts, kinds;
+				auto push_cmd = [&](custom_variant const &cmd, int &count) {
+					if (auto const *mv = std::get_if<octopus::MoveCommand>(&cmd)) {
+						targets.push_back(WORLD_SCALE * Vector3(mv->target.x.to_double(), 0., mv->target.y.to_double()));
+						kinds.push_back(0);
+						++count;
+					} else if (auto const *atk = std::get_if<octopus::AttackCommand>(&cmd)) {
+						if (atk->move && !atk->target) {
+							targets.push_back(WORLD_SCALE * Vector3(atk->target_pos.x.to_double(), 0., atk->target_pos.y.to_double()));
+							kinds.push_back(1);
+							++count;
+						}
+					}
+				};
+				for (auto e : _command_queue_entities) {
+					if (!e.is_valid() || !e.is_alive() || !e.enabled()) { continue; }
+					auto const *pos = e.try_get<octopus::Position>();
+					auto const *queue = e.try_get<custom_queue>();
+					if (!pos || !queue) { continue; }
+					int count = 0;
+					// the active command lives as a component, _current is only a type hint
+					if (std::holds_alternative<octopus::MoveCommand>(queue->_current)) {
+						if (auto const *mv = e.try_get<octopus::MoveCommand>()) { push_cmd(*mv, count); }
+					} else if (std::holds_alternative<octopus::AttackCommand>(queue->_current)) {
+						if (auto const *atk = e.try_get<octopus::AttackCommand>()) { push_cmd(*atk, count); }
+					}
+					for (auto const &cmd : queue->_queued) { push_cmd(cmd, count); }
+					if (count == 0) { continue; }
+					starts.push_back(WORLD_SCALE * Vector3(pos->pos.x.to_double(), 0., pos->pos.y.to_double()));
+					counts.push_back(count);
+				}
+				_command_queue_info->set_starts(starts);
+				_command_queue_info->set_counts(counts);
+				_command_queue_info->set_targets(targets);
+				_command_queue_info->set_kinds(kinds);
+				_command_queue_info->set_ready(true);
+				this->call_deferred("emit_signal", "command_queue_ready");
+				_command_queue_info = Ref<CommandQueueInfo>();
+				_command_queue_entities.clear();
 			}
 		});
 }

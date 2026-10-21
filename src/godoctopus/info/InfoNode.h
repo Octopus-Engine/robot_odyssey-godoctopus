@@ -62,6 +62,27 @@ class AbilityCastableInfo : public Resource {
 	}
 };
 
+/// @brief Flattened view of the command queues of a group of entities.
+/// Entity i owns the waypoints [sum(counts[0..i-1]), sum(counts[0..i])) of targets/kinds.
+/// kinds: 0 = move, 1 = attack move
+class CommandQueueInfo : public Resource {
+	GDCLASS(CommandQueueInfo, Resource)
+
+	SET_GET_PARAM_DEF(PackedVector3Array, starts, PackedVector3Array());
+	SET_GET_PARAM_DEF(PackedInt32Array, counts, PackedInt32Array());
+	SET_GET_PARAM_DEF(PackedVector3Array, targets, PackedVector3Array());
+	SET_GET_PARAM_DEF(PackedInt32Array, kinds, PackedInt32Array());
+	SET_GET_PARAM_DEF(bool, ready, false);
+public:
+	static void _bind_methods() {
+		ADD_SIMPLE_PROP(CommandQueueInfo, PACKED_VECTOR3_ARRAY, starts);
+		ADD_SIMPLE_PROP(CommandQueueInfo, PACKED_INT32_ARRAY, counts);
+		ADD_SIMPLE_PROP(CommandQueueInfo, PACKED_VECTOR3_ARRAY, targets);
+		ADD_SIMPLE_PROP(CommandQueueInfo, PACKED_INT32_ARRAY, kinds);
+		ADD_SIMPLE_PROP(CommandQueueInfo, BOOL, ready);
+	}
+};
+
 class InfoNode : public Node {
 	GDCLASS(InfoNode, Node)
 
@@ -95,6 +116,17 @@ public:
 		_ability_castable_entities = group->get_entities();
 	}
 
+	/// @brief Asynchronously fills out_info with the current and queued move/attack move commands of each entity of group
+	void query_command_queue(Ref<EntityGroup> group, Ref<CommandQueueInfo> out_info) {
+		std::lock_guard<std::mutex> lock(_mutex);
+		if (!group.is_valid() || !out_info.is_valid()) {
+			return;
+		}
+		out_info->set_ready(false);
+		_command_queue_info = out_info;
+		_command_queue_entities = group->get_entities();
+	}
+
 	void init_nodes();
 protected:
 	void _notification(int p_notification);
@@ -105,6 +137,8 @@ private:
 	Ref<AbilityCastableInfo> _ability_castable_info;
 	std::string _ability_castable_name;
 	std::vector<flecs::entity> _ability_castable_entities;
+	Ref<CommandQueueInfo> _command_queue_info;
+	std::vector<flecs::entity> _command_queue_entities;
 };
 
 }
