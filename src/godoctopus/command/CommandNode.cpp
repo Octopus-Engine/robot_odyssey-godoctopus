@@ -1,5 +1,7 @@
 #include "CommandNode.h"
 
+#include <set>
+
 #include "octopus/world/ability/AbilityTemplateLibrary.hh"
 
 namespace godot {
@@ -42,16 +44,27 @@ void CommandNode::move_command(Ref<EntityGroup> group, Vector3 const &world_targ
     {
         octopus::InputCommandPackage<custom_variant> command_package;
         command_package.command = move;
-        octopus::SetRallyPointCommand rally_point_cmd {move.target, octopus::Fixed::One()/10, true};
+        // players owning at least one selected producer (rally point holder)
+        std::set<uint32_t> rally_players;
         for(flecs::entity const &e : group->get_entities()) {
-            if(e.is_valid()) {
-                if(e.has<octopus::RallyPoint>()) {
-                    container.container_command.get_front_layer().push_back({e, rally_point_cmd, false});
-                } else {
-                    command_package.entities.push_back(e);
-                }
+            if(!e.is_valid()) { continue; }
+            if(e.has<octopus::RallyPoint>()) {
+                auto player_app = e.try_get<octopus::PlayerAppartenance>();
+                if(player_app) { rally_players.insert(player_app->idx); }
+            } else {
+                command_package.entities.push_back(e);
             }
 		}
+        // set the rally point of every producer of those players
+        if(!rally_players.empty()) {
+            octopus::SetRallyPointCommand rally_point_cmd {move.target, octopus::Fixed::One()/10, true};
+            auto query = world.ecs.query<const octopus::PlayerAppartenance, const octopus::RallyPoint>();
+            query.each([&](flecs::entity e, octopus::PlayerAppartenance const &player_app, octopus::RallyPoint const &) {
+                if(rally_players.count(player_app.idx)) {
+                    container.container_command.get_front_layer().push_back({e, rally_point_cmd, false});
+                }
+            });
+        }
         command_package.front = !queue;
         return command_package;
     };
