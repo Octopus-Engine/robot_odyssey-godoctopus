@@ -8,6 +8,7 @@
 
 #include "octopus/components/basic/position/Position.hh"
 #include "octopus/components/basic/timestamp/TimeStamp.hh"
+#include "godoctopus/display/ray/RayLibrary.h"
 #include "godoctopus/display/vat/SmartMMeshLibraryHandle.h"
 #include "godoctopus/display/vat/VatLibraryHandle.h"
 
@@ -84,6 +85,53 @@ void declare_attack_particule_systems(flecs::world &ecs, godot::VatLibrary *libr
 				direction,
 				20.,
 				info.effect_id
+			);
+		});
+}
+
+void declare_attack_ray_systems(flecs::world &ecs, godot::VatLibrary *library, godot::RayLibrary *ray_library) {
+	ecs.component<AttackRay>()
+		.member("key", &AttackRay::key)
+		.member("x", &AttackRay::x)
+		.member("y", &AttackRay::y)
+		.member("z", &AttackRay::z)
+		.member("r", &AttackRay::r)
+		.member("g", &AttackRay::g)
+		.member("b", &AttackRay::b)
+		.member("resource", &AttackRay::resource)
+	;
+
+	ecs.system<octopus::Position const, octopus::AttackTrigger const, AttackRay const, VatLibraryHandle const>()
+		.kind(ecs.entity(EndUpdatePhase))
+		.each([library, ray_library](flecs::entity, octopus::Position const&,
+				octopus::AttackTrigger const& trigger, AttackRay const& info, VatLibraryHandle const& handle) {
+			if (!trigger.target) {
+				return;
+			}
+			octopus::Position const* target_position = trigger.target.try_get<octopus::Position>();
+			if (!target_position) {
+				return;
+			}
+
+			octopus::Fixed target_y = 0.25;
+			if (ProjectileTrajectory const* trajectory = trigger.target.try_get<ProjectileTrajectory>()) {
+				target_y = trajectory->target_y;
+			}
+
+			octopus::Vector const& target_pos_2d = target_position->pos * WORLD_SCALE;
+			Vector3 target_pos(target_pos_2d.x.to_double(), target_y.to_double(), target_pos_2d.y.to_double());
+			Vector3 source_pos = get_transformed_position(Vector3(info.x, info.y, info.z), library, handle);
+			godot::RaySmartMMesh* ray = ray_library->get_element_from_key(String(info.key.c_str()));
+			if (!ray) {
+				WARN_PRINT_ONCE(vformat("Attack ray key '%s' was not found in RayLibrary.", String(info.key.c_str())));
+				return;
+			}
+
+			ray->add_instance_custom(
+				WORLD_SCALE * source_pos,
+				target_pos,
+				Color(info.r / 255., info.g / 255., info.b / 255., 1.),
+				info.resource
 			);
 		});
 }

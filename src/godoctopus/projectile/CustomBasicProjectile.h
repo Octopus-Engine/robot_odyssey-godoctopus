@@ -1,6 +1,7 @@
 #pragma once
 
 #include "flecs.h"
+#include <string>
 #include "octopus/components/basic/projectile/Projectile.hh"
 #include "vat/VatLibrary.h"
 
@@ -8,6 +9,10 @@
 #include "godoctopus/display/particule/ParticleOrchestrator.h"
 #include "octopus/world/WorldContext.hh"
 #include "octopus_types.h"
+
+namespace godot {
+class RayLibrary;
+}
 
 struct CustomBasicProjectile {
 	struct Impact {
@@ -41,7 +46,19 @@ struct AttackParticle {
 	float scale = 0.2;
 };
 
+struct AttackRay {
+	std::string key;
+	float x = 0.;
+	float y = 0.;
+	float z = 0.;
+	int64_t r = 255;
+	int64_t g = 255;
+	int64_t b = 255;
+	int32_t resource = -1;
+};
+
 void declare_attack_particule_systems(flecs::world &ecs, godot::VatLibrary *library, godot::ParticuleSmartMMesh *particules);
+void declare_attack_ray_systems(flecs::world &ecs, godot::VatLibrary *library, godot::RayLibrary *ray_library);
 
 struct WindupEffect {
 	// the particule effect to be played during windup

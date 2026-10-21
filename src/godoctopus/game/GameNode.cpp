@@ -240,6 +240,20 @@ static void declare_unit_prefab(flecs::world &ecs, Ref<UnitPrefab> unit_prefab, 
 			});
 		}
 
+		if (unit_prefab->get_attack_ray()) {
+			Color const& ray_color = unit_prefab->get_attack_ray_color();
+			prefab.set<AttackRay>({
+				std::string(unit_prefab->get_attack_ray_key().utf8().get_data()),
+				unit_prefab->get_attack_particle_origin().x,
+				unit_prefab->get_attack_particle_origin().y,
+				unit_prefab->get_attack_particle_origin().z,
+				ray_color.get_r8(),
+				ray_color.get_g8(),
+				ray_color.get_b8(),
+				unit_prefab->get_attack_ray_resource()
+			});
+		}
+
 		if (unit_prefab->get_windup_effect()) {
 			prefab.set<WindupEffect>({
 				unit_prefab->get_windup_effect_loading(),
@@ -485,6 +499,7 @@ void GameNode::init_nodes()
 	INIT_NODE_PATH(ParticleLibrary, particle_library);
 	INIT_NODE_PATH(ParticuleSmartMMesh, particules);
 	INIT_NODE_PATH(VatLibrary, vat_library);
+	INIT_NODE_PATH(RayLibrary, ray_library);
 	INIT_NODE_PATH(PickerNode, picker_node);
 	INIT_NODE_PATH(ResourceNodeEventBus, resource_node_event_bus);
 }
@@ -513,6 +528,7 @@ void GameNode::_bind_methods()
 	BIND_NODE_PATH(GameNode, ParticleLibrary, particle_library);
 	BIND_NODE_PATH(GameNode, ParticuleSmartMMesh, particules);
 	BIND_NODE_PATH(GameNode, VatLibrary, vat_library);
+	BIND_NODE_PATH(GameNode, RayLibrary, ray_library);
 	BIND_NODE_PATH(GameNode, PickerNode, picker_node);
 	BIND_NODE_PATH(GameNode, ResourceNodeEventBus, resource_node_event_bus);
 

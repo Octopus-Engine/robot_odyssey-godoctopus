@@ -64,6 +64,11 @@ public:
 		ADD_SIMPLE_PROP(UnitPrefab, COLOR, attack_particle_color);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, attack_particle_count);
 		ADD_SIMPLE_PROP(UnitPrefab, FLOAT, attack_particle_scale);
+		ClassDB::add_property_subgroup("UnitPrefab", "AttackRay");
+		ADD_SIMPLE_PROP(UnitPrefab, BOOL, attack_ray);
+		ADD_SIMPLE_PROP(UnitPrefab, STRING, attack_ray_key);
+		ADD_SIMPLE_PROP(UnitPrefab, COLOR, attack_ray_color);
+		ADD_SIMPLE_PROP(UnitPrefab, INT, attack_ray_resource);
 		ClassDB::add_property_subgroup("UnitPrefab", "WindUpEffect");
 		ADD_SIMPLE_PROP(UnitPrefab, BOOL, windup_effect);
 		ADD_SIMPLE_PROP(UnitPrefab, INT, windup_effect_loading);
@@ -177,7 +182,12 @@ public:
 		SET_GET_PARAM(Color, attack_particle_color);
 		SET_GET_PARAM_DEF(int, attack_particle_count, 4);
 		SET_GET_PARAM_DEF(float, attack_particle_scale, 0.2);
-		// Attack Particle
+		// Attack Ray
+		SET_GET_PARAM_DEF(bool, attack_ray, false);
+		SET_GET_PARAM(String, attack_ray_key);
+		SET_GET_PARAM_DEF(Color, attack_ray_color, Color(1, 1, 1, 1));
+		SET_GET_PARAM_DEF(int, attack_ray_resource, -1);
+		// Wind-Up Effect
 		SET_GET_PARAM_DEF(bool, windup_effect, false);
 		SET_GET_PARAM_DEF(int, windup_effect_loading, -1);
 		SET_GET_PARAM_DEF(int, windup_effect_incoming, -1);

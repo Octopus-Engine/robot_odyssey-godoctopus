@@ -13,6 +13,7 @@
 #include "godoctopus/display/particule/ParticleLibrary.h"
 #include "godoctopus/game/prefabs/UnitPrefab.h"
 #include "godoctopus/pickable/PickerNode.h"
+#include "godoctopus/display/ray/RayLibrary.h"
 
 #include "godot_tools.h"
 #include "octopus_types.h"
@@ -61,6 +62,7 @@ public:
 	SET_GET_NODE_PATH(ParticleLibrary, particle_library);
 	SET_GET_NODE_PATH(ParticuleSmartMMesh, particules);
 	SET_GET_NODE_PATH(VatLibrary, vat_library);
+	SET_GET_NODE_PATH(RayLibrary, ray_library);
 	SET_GET_NODE_PATH(PickerNode, picker_node);
 	SET_GET_NODE_PATH(ResourceNodeEventBus, resource_node_event_bus);
 	SET_GET_PARAM_DEF(LevelNode*, level_node, nullptr);
